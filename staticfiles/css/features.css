@@ -1,0 +1,384 @@
+/* Modern Features Page Design - Cyberpunk/Glassmorphism Style */
+:root {
+    --bg-dark: #050511;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.06);
+    --primary-glow: #00f3ff;
+    --secondary-glow: #bc13fe;
+    --text-main: #ffffff;
+    --text-muted: #9494a8;
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Background Effects */
+.features-page-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: -1;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.orb-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+    top: -20%;
+    left: 20%;
+    animation: pulse-glow 10s infinite alternate;
+}
+
+.orb-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--secondary-glow) 0%, transparent 70%);
+    bottom: -10%;
+    right: -10%;
+    opacity: 0.2;
+}
+
+@keyframes pulse-glow {
+    0% { opacity: 0.2; transform: scale(1); }
+    100% { opacity: 0.35; transform: scale(1.1); }
+}
+
+/* Animations */
+@keyframes grid-move {
+    0% { background-position: 0 0; }
+    100% { background-position: 50px 50px; }
+}
+
+/* Hero Section */
+.features-hero {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.hero-bg-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.1);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.2;
+    filter: blur(2px) brightness(0.6);
+    transition: transform 10s ease-out;
+}
+
+.features-hero:hover .hero-bg-image {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+.hero-content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 0.9rem;
+    color: var(--primary-glow);
+    margin-bottom: 24px;
+    backdrop-filter: blur(5px);
+    font-weight: 500;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, #fff 0%, #a5a5d0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-hero {
+    padding: 14px 36px;
+    font-size: 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Bento Grid System */
+.bento-grid-section {
+    padding: 60px 0 100px;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    auto-rows: minmax(280px, auto);
+}
+
+.bento-item {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+}
+
+.bento-item:hover {
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+/* Grid Spans */
+.span-4 { grid-column: span 4; }
+.span-8 { grid-column: span 8; }
+.span-6 { grid-column: span 6; }
+.span-12 { grid-column: span 12; }
+.row-span-2 { grid-row: span 2; }
+
+@media (max-width: 991px) {
+    .span-4, .span-6, .span-8 { grid-column: span 12; }
+    .row-span-2 { grid-row: span 1; min-height: 400px; }
+}
+
+/* Image Handling for Bento */
+.bento-image-bg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    transition: transform 0.6s ease;
+    filter: brightness(0.6);
+}
+
+.bento-item:hover .bento-image-bg {
+    transform: scale(1.05);
+    filter: brightness(0.7);
+}
+
+.bento-overlay-gradient {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(5,5,17,0.95) 10%, rgba(5,5,17,0.4) 60%, transparent 100%);
+    z-index: 1;
+}
+
+.bento-content {
+    position: relative;
+    z-index: 2;
+    padding: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.bento-content.top-align {
+    justify-content: flex-start;
+}
+
+/* Specific Card Styles */
+.bento-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.bento-desc {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.5;
+    margin-bottom: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Mini Cards (Now Image Supported) */
+.bento-mini {
+    justify-content: center;
+    background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+}
+
+.bento-mini .bento-content {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+}
+
+.bento-mini .bento-image-bg {
+    filter: brightness(0.4);
+}
+
+.bento-mini:hover .bento-image-bg {
+    filter: brightness(0.5);
+}
+
+
+/* Premium CTA Section */
+.cta-premium-wrapper {
+    position: relative;
+    padding: 100px 0;
+    margin-top: 50px;
+}
+
+.cta-premium-card {
+    background: radial-gradient(circle at top right, #2d1b4e 0%, #050511 60%);
+    border: 1px solid rgba(188, 19, 254, 0.3);
+    border-radius: 40px;
+    padding: 80px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(188, 19, 254, 0.15);
+}
+
+.cta-premium-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(from 90deg at 50% 50%, transparent 0%, rgba(188, 19, 254, 0.1) 50%, transparent 100%);
+    animation: rotate-slow 20s linear infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
+@keyframes rotate-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.cta-content {
+    position: relative;
+    z-index: 2;
+}
+
+.cta-title-large {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #fff, #bca5ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+}
+
+.cta-subtitle {
+    font-size: 1.2rem;
+    color: #a0a0b0;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-glow-premium {
+    background: #fff;
+    color: #000;
+    padding: 16px 48px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(255,255,255,0.4);
+}
+
+.btn-glow-premium:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(255,255,255,0.6);
+    color: #000;
+}
+
+/* Integrations Marquee / Ticker */
+.ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 40px 0;
+    margin: 80px 0;
+}
+
+.ticker {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: ticker 40s linear infinite;
+}
+
+.ticker:hover {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    font-size: 1.25rem;
+    color: rgba(255,255,255,0.7);
+    padding: 0 50px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.ticker-item:hover {
+    opacity: 1;
+    color: #fff;
+}
+
+.ticker-item i {
+    font-size: 1.5rem;
+}
+
+@keyframes ticker {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-50%, 0, 0); }
+}

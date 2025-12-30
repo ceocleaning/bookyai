@@ -1,0 +1,658 @@
+
+/* How It Works Section Modern */
+.how-it-works-modern {
+    padding: var(--space-3xl) 0;
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.how-it-works-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+    z-index: 0;
+}
+
+/* Timeline Container */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+/* Timeline Path - Left Aligned */
+.timeline-path {
+    position: absolute;
+    left: 35px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, 
+        transparent 0%,
+        rgba(79, 70, 229, 0.3) 10%,
+        rgba(79, 70, 229, 0.6) 50%,
+        rgba(79, 70, 229, 0.3) 90%,
+        transparent 100%
+    );
+}
+
+/* Timeline Step */
+.timeline-step {
+    position: relative;
+    margin-bottom: 4rem;
+    padding-left: 100px;
+}
+
+.timeline-step:last-child {
+    margin-bottom: 0;
+}
+
+/* Timeline Step Card */
+.timeline-step-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.timeline-step-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(79, 70, 229, 0.4);
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+    transform: translateY(-5px);
+}
+
+/* Step Number Badge - Left Aligned */
+.step-number-badge {
+    position: absolute;
+    left: -65px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.5);
+    z-index: 2;
+}
+
+/* Pulse Ring Animation */
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid rgba(79, 70, 229, 0.6);
+    animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Step Card Content */
+.step-card-content {
+    flex: 1;
+}
+
+.step-icon-container {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.timeline-step-card:hover .step-icon-container {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.4) 0%, rgba(124, 58, 237, 0.4) 100%);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.step-icon-container i {
+    font-size: 1.75rem;
+    color: #a5b4fc;
+}
+
+.step-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.step-description {
+    color: #94a3b8;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+/* Step Features */
+.step-features {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.step-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 20px;
+    color: #cbd5e1;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.step-feature-item:hover {
+    background: rgba(79, 70, 229, 0.2);
+    border-color: rgba(79, 70, 229, 0.4);
+    transform: translateY(-2px);
+}
+
+.step-feature-item i {
+    color: #a5b4fc;
+    font-size: 0.875rem;
+}
+
+/* Chat Demo */
+.chat-demo {
+    margin-top: 1rem;
+}
+
+.chat-message {
+    margin-bottom: 0.75rem;
+}
+
+.chat-message.client .message-bubble {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+.chat-message.ai .message-bubble {
+    background: rgba(6, 182, 212, 0.1);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.message-bubble {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border-radius: 15px;
+    max-width: 80%;
+}
+
+.message-bubble p {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 0.9rem;
+}
+
+/* Mini Calendar */
+.mini-calendar {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.calendar-grid {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-day {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.calendar-day:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.calendar-day.selected {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+.time-slots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.time-slot {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.time-slot:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.time-slot.active {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border-color: transparent;
+    color: #ffffff;
+}
+
+/* Confirmation Items */
+.confirmation-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.confirmation-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 10px;
+    color: #cbd5e1;
+    transition: all 0.3s ease;
+}
+
+.confirmation-item:hover {
+    background: rgba(34, 197, 94, 0.15);
+    transform: translateX(5px);
+}
+
+.confirmation-item i {
+    color: #22c55e;
+    font-size: 1.25rem;
+}
+
+/* Step Visual */
+.step-visual {
+    flex-shrink: 0;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animated Phone */
+.animated-phone {
+    position: relative;
+    font-size: 4rem;
+    color: #4f46e5;
+    animation: phoneRing 2s ease-in-out infinite;
+}
+
+@keyframes phoneRing {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    10%, 30% {
+        transform: rotate(-10deg);
+    }
+    20%, 40% {
+        transform: rotate(10deg);
+    }
+}
+
+.phone-rings span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #4f46e5;
+    border-radius: 50%;
+    animation: ringExpand 2s ease-out infinite;
+}
+
+.phone-rings span:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.phone-rings span:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes ringExpand {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Animated AI */
+.animated-ai {
+    position: relative;
+    font-size: 4rem;
+    color: #06b6d4;
+}
+
+.ai-thinking span {
+    position: absolute;
+    bottom: -10px;
+    width: 8px;
+    height: 8px;
+    background: #06b6d4;
+    border-radius: 50%;
+    animation: thinking 1.5s ease-in-out infinite;
+}
+
+.ai-thinking span:nth-child(1) {
+    left: 20%;
+}
+
+.ai-thinking span:nth-child(2) {
+    left: 50%;
+    animation-delay: 0.2s;
+}
+
+.ai-thinking span:nth-child(3) {
+    left: 80%;
+    animation-delay: 0.4s;
+}
+
+@keyframes thinking {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+/* Animated Calendar */
+.animated-calendar {
+    position: relative;
+    font-size: 4rem;
+    color: #f59e0b;
+}
+
+.calendar-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #f59e0b;
+    border-radius: 10px;
+    animation: calendarPulse 2s ease-out infinite;
+}
+
+@keyframes calendarPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* Animated Success */
+.animated-success {
+    position: relative;
+    font-size: 4rem;
+    color: #22c55e;
+    animation: successBounce 0.6s ease-in-out;
+}
+
+@keyframes successBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+.success-particles span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: particleFloat 2s ease-out infinite;
+}
+
+.success-particles span:nth-child(1) {
+    top: 0;
+    left: 0;
+}
+
+.success-particles span:nth-child(2) {
+    top: 0;
+    right: 0;
+    animation-delay: 0.3s;
+}
+
+.success-particles span:nth-child(3) {
+    bottom: 0;
+    left: 0;
+    animation-delay: 0.6s;
+}
+
+.success-particles span:nth-child(4) {
+    bottom: 0;
+    right: 0;
+    animation-delay: 0.9s;
+}
+
+@keyframes particleFloat {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-30px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Timeline Connector */
+.timeline-connector {
+    text-align: left;
+    margin: 2rem 0 2rem 100px;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-connector i {
+    font-size: 1.5rem;
+    color: #4f46e5;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(10px);
+    }
+}
+
+/* Process Stats */
+.process-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.stat-item-inline {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, rgba(79, 70, 229, 0.3), transparent);
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .timeline-step {
+        padding-left: 80px;
+    }
+    
+    .step-number-badge {
+        left: -55px;
+        width: 60px;
+        height: 60px;
+        font-size: 1.25rem;
+    }
+    
+    .timeline-path {
+        left: 30px;
+    }
+    
+    .timeline-step-card {
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+    }
+    
+    .step-visual {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .animated-phone,
+    .animated-ai,
+    .animated-calendar,
+    .animated-success {
+        font-size: 3rem;
+    }
+    
+    .timeline-connector {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .timeline-step {
+        padding-left: 60px;
+    }
+    
+    .timeline-path {
+        left: 20px;
+    }
+    
+    .step-number-badge {
+        left: -45px;
+        width: 50px;
+        height: 50px;
+        font-size: 1rem;
+    }
+    
+    .timeline-step-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .step-title {
+        font-size: 1.25rem;
+    }
+    
+    .step-description {
+        font-size: 0.875rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .process-stats {
+        gap: 1.5rem;
+    }
+    
+    .stat-divider {
+        display: none;
+    }
+    
+    .timeline-connector {
+        margin-left: 60px;
+    }
+}
