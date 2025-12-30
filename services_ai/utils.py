@@ -34,7 +34,7 @@ def send_email(from_email, to_email, subject, reply_to=None, text_content='', at
     }
 
     # Normalize from_email
-    default_domain = "trackifye.com"
+    default_domain = "cleaningbizai.com"
     pattern = r"^(.*?)<([^@<>]+)@([^@<>]+)>$"
     match = re.match(pattern, from_email.strip())
 
