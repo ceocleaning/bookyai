@@ -168,7 +168,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
-BASE_URL = 'https://services-ai.up.railway.app'
+BASE_URL = 'https://bookyai.up.railway.app'
 # OPENAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
@@ -178,14 +178,14 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'https://services-ai.up.railway.app',
+    'https://bookyai.up.railway.app',
 ]
 
 # Allow iframes from same origin for template preview
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 Q_CLUSTER = {
-    'name': 'services_ai',
+    'name': 'bookyai',
     'workers': 8,
     'recycle': 500,
     'timeout': 300,
