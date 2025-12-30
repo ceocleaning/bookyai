@@ -28,7 +28,7 @@ class Lead(models.Model):
     Main lead model to store basic lead information.
     Industry-specific data is stored in LeadField model.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='leads')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -122,7 +122,7 @@ class LeadCommunication(models.Model):
         ('received', 'Received'),
     )
     
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='communications')
     direction = models.CharField(max_length=10, choices=DIRECTION_CHOICES)
     comm_type = models.CharField(max_length=10, choices=TYPE_CHOICES)

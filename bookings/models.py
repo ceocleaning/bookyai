@@ -276,7 +276,7 @@ class StaffMember(models.Model):
     Represents staff members who provide services and can be assigned to bookings.
     Each staff member belongs to a business and can have one or more roles.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='staff_members')
     roles = models.ManyToManyField(StaffRole, related_name='staff_members')
     first_name = models.CharField(max_length=100)
@@ -475,7 +475,7 @@ class Booking(models.Model):
     Links to a lead and includes all details about the scheduled appointment.
     Staff members are assigned through the BookingStaffAssignment model.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='bookings')
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='bookings', null=True, blank=True)
     service_offering = models.ForeignKey(ServiceOffering, on_delete=models.SET_NULL, null=True, related_name='bookings')

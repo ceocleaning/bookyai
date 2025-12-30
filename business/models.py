@@ -54,7 +54,7 @@ class Business(models.Model):
     Represents a business entity that belongs to a specific industry.
     Each business can have its own configuration and customization.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     name = models.CharField(max_length=150)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='business')
     industry = models.ForeignKey(Industry, on_delete=models.CASCADE, related_name='businesses')
@@ -232,7 +232,7 @@ class ServiceOffering(models.Model):
     Represents a service offered by a business.
     This is a simplified model for managing service offerings directly.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='service_offerings')
     name = models.CharField(max_length=100)
     identifier = models.SlugField(max_length=120, blank=True, help_text="Unique identifier for this service (e.g., number_of_bedrooms)")

@@ -1,7 +1,7 @@
 {% extends 'common/base.html' %}
 {% load static %}
 
-{% block title %}Services AI - Intelligent Booking for Your Business{% endblock %}
+{% block title %}Booky AI - Intelligent Booking for Your Business{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/index.css' %}">
@@ -10,57 +10,77 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section py-5">
+    <!-- Animated Background Grid -->
+    <div class="hero-grid-bg"></div>
+    
+    <!-- Floating AI Particles -->
+    <div class="ai-particles">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+    </div>
+    
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <div class="position-relative">
-                    <span class="badge bg-opacity-25 mb-3 px-3 py-2 rounded-pill">Next-Gen AI Technology</span>
-                    <h1 class="display-4 fw-bold mb-3">Transform Your Business with <span class="text-primary">AI-Powered</span> Appointment Booking</h1>
-                    <p class="lead mb-4">Our intelligent assistant handles appointments, follows up with clients, and helps you focus on what matters most - growing your business.</p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="/accounts/signup/" class="btn btn-primary btn-lg">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="hero-content text-center position-relative">
+                    <!-- AI Badge -->
+                    <div class="ai-badge mb-4" data-aos="fade-down">
+                        <span class="badge-glow"></span>
+                        <i class="fas fa-brain me-2"></i>
+                        <span>Powered by Advanced AI</span>
+                    </div>
+                    
+                    <!-- Main Heading -->
+                    <h1 class="hero-title mb-4" data-aos="fade-up" data-aos-delay="100">
+                        Transform Your Business with
+                        <span class="gradient-text d-block mt-0">AI-Powered Automation</span>
+                    </h1>
+                    
+                    <!-- Subtitle -->
+                    <p class="hero-subtitle mb-5" data-aos="fade-up" data-aos-delay="200">
+                        Intelligent appointment booking that works 24/7. Let AI handle scheduling while you focus on growing your business.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="hero-cta-buttons mb-5" data-aos="fade-up" data-aos-delay="300">
+                        <a href="/accounts/signup/" class="btn btn-primary btn-lg px-5 py-3 me-3 mb-3">
+                            <i class="fas fa-rocket me-2"></i>
                             <span>Get Started Free</span>
                         </a>
-                        <a href="#demo" class="btn btn-outline-secondary btn-lg d-flex align-items-center">
-                            <i class="fas fa-play-circle me-2"></i> <span>See How It Works</span>
+                        <a href="#demo" class="btn btn-outline-light btn-lg px-5 py-3 mb-3">
+                            <i class="fas fa-play-circle me-2"></i>
+                            <span>Watch Demo</span>
                         </a>
                     </div>
-                    <div class="mt-4 d-flex align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
+                    
+                    <!-- Stats Row -->
+                    <div class="hero-stats row g-4 justify-content-center" data-aos="fade-up" data-aos-delay="400">
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                          
+                                <div class="stat-value">10K+</div>
+                                <div class="stat-label">Active Users</div>
                             </div>
-                            <span class="ms-2 fw-medium">4.8/5 from 500+ reviews</span>
                         </div>
-                        <div class="ms-4 d-flex align-items-center">
-                            <i class="fas fa-shield-alt text-success me-2"></i>
-                            <span class="fw-medium">Secure & Reliable</span>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <div class="stat-value">500K+</div>
+                                <div class="stat-label">Bookings Made</div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="hero-image-container text-center position-relative">
-                    <div class="position-absolute top-0 start-0 translate-middle">
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="fas fa-calendar-check fa-2x"></i>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <div class="stat-value">24/7</div>
+                                <div class="stat-label">AI Available</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="position-absolute bottom-0 end-0 translate-middle-y">
-                        <div class="rounded-circle bg-secondary bg-opacity-10 p-3">
-                            <i class="fas fa-robot text-secondary fa-2x"></i>
-                        </div>
-                    </div>
-                    <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Services AI Dashboard" class="img-fluid rounded-4 shadow-lg">
-                    <div class="position-absolute top-0 end-0 translate-middle">
-                        <div class="bg-dark p-3 rounded-3 shadow-lg">
-                            <div class="d-flex align-items-center">
-                                <div class="rounded-circle bg-success me-2" style="width: 10px; height: 10px;"></div>
-                                <span class="small">AI Active</span>
+                        <div class="col-6 col-md-3">
+                            <div class="stat-item">
+                                <div class="stat-value">4.9/5</div>
+                                <div class="stat-label">User Rating</div>
                             </div>
                         </div>
                     </div>
@@ -71,38 +91,107 @@
 </section>
 
 <!-- Trusted By Section -->
-<section class="trusted-by py-5">
+<section class="trusted-by-modern py-5">
     <div class="container">
-        <div class="text-center mb-4">
-            <div class="d-inline-block position-relative">
-                <h6 class="text-light text-uppercase mb-0 position-relative z-1">Trusted by businesses across industries</h6>
-                <div class="position-absolute bottom-0 start-50 translate-middle-x" style="height: 6px; width: 50%; background: linear-gradient(90deg, transparent, var(--primary-indigo-medium-light), transparent); opacity: 0.3;"></div>
+        <div class="text-center mb-5">
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <i class="fas fa-award me-2"></i>
+                <span>Trusted Worldwide</span>
+            </div>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                Trusted by <span class="gradient-text">10,000+</span> Businesses
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Join industry leaders who have transformed their appointment booking
+            </p>
+        </div>
+        
+        <!-- Logo Carousel -->
+        <div class="trusted-logos-container" data-aos="fade-up" data-aos-delay="200">
+            <div class="trusted-logos-track">
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/airbnb.svg" alt="Airbnb" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Airbnb</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/uber.svg" alt="Uber" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Uber</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/spotify.svg" alt="Spotify" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Spotify</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/slack.svg" alt="Slack" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Slack</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/adobe.svg" alt="Adobe" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Adobe</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="trusted-logo-item">
+                    <div class="logo-card">
+                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/microsoft.svg" alt="Microsoft" class="trusted-logo">
+                        <div class="logo-overlay">
+                            <span>Microsoft</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row justify-content-center align-items-center g-5">
-            <div class="col-4 col-md-2 text-center">
-                <div class="client-logo-wrapper">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/airbnb.svg" alt="Company Logo" class="client-logo" width="80">
+        
+        <!-- Trust Indicators -->
+        <div class="row g-4 mt-5" data-aos="fade-up" data-aos-delay="300">
+            <div class="col-6 col-md-3">
+                <div class="trust-indicator">
+                    <div class="trust-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="trust-label">Enterprise Security</div>
                 </div>
             </div>
-            <div class="col-4 col-md-2 text-center">
-                <div class="client-logo-wrapper">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/uber.svg" alt="Company Logo" class="client-logo" width="80">
+            <div class="col-6 col-md-3">
+                <div class="trust-indicator">
+                    <div class="trust-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="trust-label">99.9% Uptime</div>
                 </div>
             </div>
-            <div class="col-4 col-md-2 text-center">
-                <div class="client-logo-wrapper">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/spotify.svg" alt="Company Logo" class="client-logo" width="80">
+            <div class="col-6 col-md-3">
+                <div class="trust-indicator">
+                    <div class="trust-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="trust-label">24/7 Support</div>
                 </div>
             </div>
-            <div class="col-4 col-md-2 text-center">
-                <div class="client-logo-wrapper">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/slack.svg" alt="Company Logo" class="client-logo" width="80">
-                </div>
-            </div>
-            <div class="col-4 col-md-2 text-center">
-                <div class="client-logo-wrapper">
-                    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v7/icons/adobe.svg" alt="Company Logo" class="client-logo" width="80">
+            <div class="col-6 col-md-3">
+                <div class="trust-indicator">
+                    <div class="trust-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="trust-label">Global Coverage</div>
                 </div>
             </div>
         </div>
@@ -110,136 +199,171 @@
 </section>
 
 <!-- Features Section -->
-<section class="features-section py-5" id="features">
+<section class="features-section-modern py-5" id="features">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="d-inline-block position-relative mb-2">
-                <span class="badge bg-opacity-25 px-3 py-2">Core Capabilities</span>
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <i class="fas fa-sparkles me-2"></i>
+                <span>Core Capabilities</span>
             </div>
-            <h2 class="fw-bold mb-3">Powerful Features for Every Business</h2>
-            <p class="lead text-secondary mx-auto" style="max-width: 700px;">Everything you need to streamline your appointment booking process and enhance client engagement</p>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                Powerful Features for <span class="gradient-text">Every Business</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Everything you need to streamline your appointment booking process and enhance client engagement
+            </p>
         </div>
         
         <div class="row g-4 justify-content-center">
             <!-- Feature 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--primary-indigo-dark), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4">
-                            <i class="fas fa-robot fa-2x"></i>
-                        </div>
-                        <h4 class="card-title mb-3">AI-Powered Booking</h4>
-                        <p class="card-text mb-3">Our intelligent assistant handles appointment scheduling through natural conversation, available 24/7.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/ai_booking_feature_1766999898303.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-badge-top">
+                        <span class="badge-popular">Popular</span>
                     </div>
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <span class="badge rounded-pill bg-primary bg-opacity-25 text-primary">Popular</span>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">AI-Powered Booking</h4>
+                        <p class="feature-description-overlay">Our intelligent assistant handles appointment scheduling through natural conversation, available 24/7 to serve your clients.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Natural Language Processing</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>24/7 Availability</span>
+                            </div>
+                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Feature 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--secondary-teal-dark), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4" style="background: linear-gradient(135deg, var(--secondary-teal-dark) 0%, var(--secondary-teal) 100%);">
-                            <i class="fas fa-phone-alt fa-2x"></i>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/voice_text_feature_1766999913808.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">Voice & Text Integration</h4>
+                        <p class="feature-description-overlay">Connect with clients via phone calls and SMS messages for a seamless and flexible booking experience.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Voice Calls</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>SMS Messaging</span>
+                            </div>
                         </div>
-                        <h4 class="card-title mb-3">Voice & Text Integration</h4>
-                        <p class="card-text mb-3">Connect with clients via phone calls and SMS messages for a seamless booking experience.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Feature 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--home-services), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4" style="background: linear-gradient(135deg, var(--home-services) 0%, #FF9F43 100%);">
-                            <i class="fas fa-calendar-check fa-2x"></i>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/smart_scheduling_feature_1766999928903.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">Smart Scheduling</h4>
+                        <p class="feature-description-overlay">Automatically finds the best time slots based on your availability and client preferences for optimal efficiency.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Auto Time Optimization</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Conflict Prevention</span>
+                            </div>
                         </div>
-                        <h4 class="card-title mb-3">Smart Scheduling</h4>
-                        <p class="card-text mb-3">Automatically finds the best time slots based on your availability and client preferences.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Feature 4 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--success), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4" style="background: linear-gradient(135deg, var(--success) 0%, #2DCE89 100%);">
-                            <i class="fas fa-bell fa-2x"></i>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/automated_reminders_feature_1766999948390.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">Automated Reminders</h4>
+                        <p class="feature-description-overlay">Reduce no-shows with intelligent reminders sent at the optimal time before appointments.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Smart Timing</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Multi-Channel Alerts</span>
+                            </div>
                         </div>
-                        <h4 class="card-title mb-3">Automated Reminders</h4>
-                        <p class="card-text mb-3">Reduce no-shows with intelligent reminders sent at the optimal time before appointments.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Feature 5 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--real-estate), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4" style="background: linear-gradient(135deg, var(--real-estate) 0%, #A66FFE 100%);">
-                            <i class="fas fa-sync-alt fa-2x"></i>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/calendar_sync_feature_1766999963638.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">Calendar Sync</h4>
+                        <p class="feature-description-overlay">Seamlessly integrates with Google Calendar, Outlook, and other popular calendar services.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Two-Way Sync</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Multiple Platforms</span>
+                            </div>
                         </div>
-                        <h4 class="card-title mb-3">Calendar Sync</h4>
-                        <p class="card-text mb-3">Seamlessly integrates with Google Calendar, Outlook, and other popular calendar services.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Feature 6 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10" style="background: linear-gradient(45deg, var(--info), transparent);"></div>
-                    <div class="card-body p-4 position-relative">
-                        <div class="feature-icon-container mb-4" style="background: linear-gradient(135deg, var(--info) 0%, #0DCAF0 100%);">
-                            <i class="fas fa-chart-line fa-2x"></i>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card-overlay" style="background-image: url('{% static 'images/analytics_dashboard_feature_1766999978386.png' %}');">
+                    <div class="feature-overlay-gradient"></div>
+                    <div class="feature-content-overlay">
+                        <h4 class="feature-title-overlay">Analytics Dashboard</h4>
+                        <p class="feature-description-overlay">Gain insights into booking patterns, client behavior, and business performance with detailed analytics.</p>
+                        <div class="feature-highlights-overlay">
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Real-Time Data</span>
+                            </div>
+                            <div class="highlight-item-overlay">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Custom Reports</span>
+                            </div>
                         </div>
-                        <h4 class="card-title mb-3">Analytics Dashboard</h4>
-                        <p class="card-text mb-3">Gain insights into booking patterns, client behavior, and business performance.</p>
-                        <div class="mt-auto">
-                            <a href="#" class="text-decoration-none d-inline-flex align-items-center">
-                                <span class="me-2">Learn more</span>
-                                <i class="fas fa-arrow-right small"></i>
-                            </a>
-                        </div>
+                        <a href="#" class="feature-link-overlay">
+                            <span>Learn more</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -248,156 +372,208 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="how-it-works py-5" id="demo">
+<section class="how-it-works-modern py-5" id="demo">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="d-inline-block position-relative mb-2">
-                <span class="badge bg-opacity-25 px-3 py-2">Simple Process</span>
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <i class="fas fa-route me-2"></i>
+                <span>Simple Process</span>
             </div>
-            <h2 class="fw-bold mb-3">How It Works</h2>
-            <p class="lead text-secondary mx-auto" style="max-width: 700px;">See how our AI assistant transforms your appointment booking process in just a few simple steps</p>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                How It <span class="gradient-text">Works</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                See how our AI assistant transforms your appointment booking process in just 4 simple steps
+            </p>
         </div>
         
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6">
-                <div class="steps-container position-relative">
-                    <!-- Decorative element -->
-                    <div class="position-absolute" style="top: -30px; left: -20px; z-index: 0;">
-                        <div class="rounded-circle bg-primary bg-opacity-10" style="width: 100px; height: 100px;"></div>
+        <!-- Interactive Timeline -->
+        <div class="timeline-container">
+            <!-- Animated Path -->
+            <div class="timeline-path"></div>
+            
+            <!-- Step 1 -->
+            <div class="timeline-step" data-aos="fade-right" data-aos-delay="100">
+                <div class="timeline-step-card">
+                    <div class="step-number-badge">
+                        <span>01</span>
+                        <div class="pulse-ring"></div>
                     </div>
-                    
-                    <!-- Step 1 -->
-                    <div class="step-item d-flex mb-5 position-relative">
-                        <div class="step-number">
-                            <span>1</span>
-                        </div>
-                        <div class="step-content ms-4">
-                            <h4 class="mb-3">Client Reaches Out</h4>
-                            <p class="mb-0">Your client calls or texts your business number, which is handled by our AI assistant with natural conversation.</p>
-                            <div class="mt-3 d-flex align-items-center">
-                                <span class="badge bg-dark px-3 py-2 me-2"><i class="fas fa-phone-alt me-2"></i>Voice</span>
-                                <span class="badge bg-dark px-3 py-2"><i class="fas fa-comment-alt me-2"></i>Text</span>
+                    <div class="step-card-content">
+                        <h4 class="step-title">Client Reaches Out</h4>
+                        <p class="step-description">Your client calls or texts your business number, instantly connecting with our AI assistant</p>
+                        <div class="step-features">
+                            <div class="step-feature-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>Voice Calls</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-sms"></i>
+                                <span>SMS Text</span>
+                            </div>
+                            <div class="step-feature-item">
+                                <i class="fas fa-comments"></i>
+                                <span>Live Chat</span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Step 2 -->
-                    <div class="step-item d-flex mb-5 position-relative">
-                        <div class="step-number">
-                            <span>2</span>
-                        </div>
-                        <div class="step-content ms-4">
-                            <h4 class="mb-3">AI Assistant Engages</h4>
-                            <p class="mb-0">Our AI understands their needs through natural conversation and collects necessary information intelligently.</p>
-                            <div class="mt-3">
-                                <div class="chat-bubble p-3 mb-2 rounded-3 bg-primary bg-opacity-10 d-inline-block">
-                                    <p class="mb-0 small">"I'd like to schedule a cleaning service."</p>
-                                </div>
-                                <div class="chat-bubble p-3 rounded-3 bg-secondary bg-opacity-10 d-inline-block ms-4">
-                                    <p class="mb-0 small">"I can help with that! What day works best for you?"</p>
-                                </div>
+                    <div class="step-visual">
+                        <div class="animated-phone">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div class="phone-rings">
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Step 3 -->
-                    <div class="step-item d-flex mb-5 position-relative">
-                        <div class="step-number">
-                            <span>3</span>
-                        </div>
-                        <div class="step-content ms-4">
-                            <h4 class="mb-3">Appointment Scheduling</h4>
-                            <p class="mb-0">The AI suggests available time slots based on your calendar and client preferences, making scheduling effortless.</p>
-                            <div class="mt-3 d-flex">
-                                <div class="calendar-preview p-2 rounded-3 bg-dark">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="small">May 2025</span>
-                                        <div>
-                                            <i class="fas fa-chevron-left me-2 small"></i>
-                                            <i class="fas fa-chevron-right small"></i>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex justify-content-between small opacity-75 mb-1">
-                                        <span>M</span>
-                                        <span>T</span>
-                                        <span>W</span>
-                                        <span>T</span>
-                                        <span>F</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between small mb-1">
-                                        <span>1</span>
-                                        <span>2</span>
-                                        <span class="text-primary">3</span>
-                                        <span>4</span>
-                                        <span>5</span>
-                                    </div>
+                </div>
+                <div class="timeline-connector">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="timeline-step" data-aos="fade-left" data-aos-delay="200">
+                <div class="timeline-step-card">
+                    <div class="step-number-badge">
+                        <span>02</span>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <div class="step-card-content">
+                        <h4 class="step-title">AI Assistant Engages</h4>
+                        <p class="step-description">Our AI understands needs through natural conversation and intelligently collects information</p>
+                        <div class="chat-demo">
+                            <div class="chat-message client">
+                                <div class="message-bubble">
+                                    <p>"I'd like to book a cleaning service"</p>
+                                </div>
+                            </div>
+                            <div class="chat-message ai">
+                                <div class="message-bubble">
+                                    <p>"Perfect! What day works best for you?"</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Step 4 -->
-                    <div class="step-item d-flex position-relative">
-                        <div class="step-number">
-                            <span>4</span>
+                    <div class="step-visual">
+                        <div class="animated-ai">
+                            <i class="fas fa-robot"></i>
+                            <div class="ai-thinking">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </div>
-                        <div class="step-content ms-4">
-                            <h4 class="mb-3">Confirmation & Follow-up</h4>
-                            <p class="mb-0">The appointment is confirmed, added to your calendar, and automated reminders are scheduled to reduce no-shows.</p>
-                            <div class="mt-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <span>Appointment Confirmed</span>
-                                </div>
-                                <div class="d-flex align-items-center mt-2">
-                                    <i class="fas fa-bell text-warning me-2"></i>
-                                    <span>Reminders Scheduled</span>
-                                </div>
+                    </div>
+                </div>
+                <div class="timeline-connector">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="timeline-step" data-aos="fade-right" data-aos-delay="300">
+                <div class="timeline-step-card">
+                    <div class="step-number-badge">
+                        <span>03</span>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <div class="step-card-content">
+                        <h4 class="step-title">Smart Scheduling</h4>
+                        <p class="step-description">AI finds optimal time slots based on your availability and client preferences</p>
+                        <div class="mini-calendar">
+                            <div class="calendar-header">
+                                <span>December 2025</span>
+                            </div>
+                            <div class="calendar-grid">
+                                <div class="calendar-day">15</div>
+                                <div class="calendar-day">16</div>
+                                <div class="calendar-day selected">17</div>
+                                <div class="calendar-day">18</div>
+                                <div class="calendar-day">19</div>
+                            </div>
+                            <div class="time-slots">
+                                <span class="time-slot">10:00 AM</span>
+                                <span class="time-slot active">2:00 PM</span>
+                                <span class="time-slot">4:30 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-visual">
+                        <div class="animated-calendar">
+                            <i class="fas fa-calendar-check"></i>
+                            <div class="calendar-pulse"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-connector">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="timeline-step" data-aos="fade-left" data-aos-delay="400">
+                <div class="timeline-step-card">
+                    <div class="step-number-badge">
+                        <span>04</span>
+                        <div class="pulse-ring"></div>
+                    </div>
+                    <div class="step-card-content">
+                        <h4 class="step-title">Confirmation & Reminders</h4>
+                        <p class="step-description">Appointment confirmed, synced to calendar, with automated reminders to reduce no-shows</p>
+                        <div class="confirmation-items">
+                            <div class="confirmation-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Appointment Confirmed</span>
+                            </div>
+                            <div class="confirmation-item">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Calendar Synced</span>
+                            </div>
+                            <div class="confirmation-item">
+                                <i class="fas fa-bell"></i>
+                                <span>Reminders Set</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-visual">
+                        <div class="animated-success">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="success-particles">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="demo-video-container text-center position-relative">
-                    <!-- Decorative elements -->
-                    <div class="position-absolute" style="bottom: -20px; right: -20px; z-index: 0;">
-                        <div class="rounded-circle bg-secondary bg-opacity-10" style="width: 80px; height: 80px;"></div>
-                    </div>
-                    <div class="position-absolute" style="top: 20%; left: -30px; z-index: 0;">
-                        <div class="rounded-pill bg-primary bg-opacity-10" style="width: 60px; height: 120px;"></div>
-                    </div>
-                    
-                    <div class="ratio ratio-16x9 rounded-4 overflow-hidden position-relative z-1">
-                        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Product Demo" allowfullscreen></iframe>
-                    </div>
-                    
-                    <!-- Video controls overlay -->
-                    <div class="position-absolute bottom-0 start-0 end-0 p-3 text-start" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 2;">
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-sm btn-primary rounded-circle me-2">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <div class="progress flex-grow-1" style="height: 4px;">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <span class="ms-2 small">1:25 / 5:30</span>
-                        </div>
-                    </div>
+        </div>
+        
+        <!-- Bottom CTA -->
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="500">
+            <div class="process-stats">
+                <div class="stat-item-inline">
+                    <div class="stat-number">< 30s</div>
+                    <div class="stat-label">Average Booking Time</div>
                 </div>
-                
-                <!-- Additional info -->
-                <div class="mt-4 d-flex justify-content-center">
-                    <div class="d-flex align-items-center me-4">
-                        <i class="fas fa-clock text-secondary me-2"></i>
-                        <span>5:30 min</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-closed-captioning text-secondary me-2"></i>
-                        <span>Subtitles</span>
-                    </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item-inline">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item-inline">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Always Available</div>
                 </div>
             </div>
+            <a href="/accounts/signup/" class="btn btn-primary btn-lg mt-4 px-5 py-3">
+                <i class="fas fa-rocket me-2"></i>
+                <span>Start Your Free Trial</span>
+            </a>
         </div>
     </div>
 </section>
@@ -406,54 +582,91 @@
 <section class="industries-section py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Tailored for Your Industry</h2>
-            <p class="lead text-secondary">Specialized solutions for different business types</p>
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <i class="fas fa-industry me-2"></i>
+                <span>Industries We Serve</span>
+            </div>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                Perfect for <span class="gradient-text">Every Industry</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Our AI assistant adapts to your specific business needs across multiple industries
+            </p>
         </div>
         
         <div class="row g-4">
-            <!-- Industry 1 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="industry-card text-center p-4 h-100">
-                    <div class="industry-icon-container mb-3">
-                        <i class="fas fa-home" style="color: #14B8A6;"></i>
+            <!-- Industry 1 - Cleaning Services -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="industry-card-overlay" style="background-image: url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80');">
+                    <div class="industry-overlay-gradient"></div>
+                    <div class="industry-content-overlay">
+                        <h4 class="industry-title">Cleaning Services</h4>
+                        <p class="industry-description">Streamline scheduling for residential and commercial cleaning appointments</p>
+                        <div class="industry-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-check"></i> 40% Faster Booking
+                            </span>
+                        </div>
                     </div>
-                    <h4>Cleaning Services</h4>
-                    <p>Streamline scheduling for residential and commercial cleaning appointments.</p>
                 </div>
             </div>
             
-            <!-- Industry 2 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="industry-card text-center p-4 h-100">
-                    <div class="industry-icon-container mb-3">
-                        <i class="fas fa-building" style="color: #8B5CF6;"></i>
+            <!-- Industry 2 - Real Estate -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="industry-card-overlay" style="background-image: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80');">
+                    <div class="industry-overlay-gradient"></div>
+                    <div class="industry-content-overlay">
+                        <h4 class="industry-title">Real Estate</h4>
+                        <p class="industry-description">Effortlessly manage property viewings and client consultations</p>
+                        <div class="industry-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-check"></i> 3x More Viewings
+                            </span>
+                        </div>
                     </div>
-                    <h4>Real Estate</h4>
-                    <p>Effortlessly manage property viewings and client consultations.</p>
                 </div>
             </div>
             
-            <!-- Industry 3 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="industry-card text-center p-4 h-100">
-                    <div class="industry-icon-container mb-3">
-                        <i class="fas fa-tools" style="color: #F97316;"></i>
+            <!-- Industry 3 - Home Services -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="industry-card-overlay" style="background-image: url('https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=800&q=80');">
+                    <div class="industry-overlay-gradient"></div>
+                    <div class="industry-content-overlay">
+                        <h4 class="industry-title">Home Services</h4>
+                        <p class="industry-description">Optimize scheduling for repairs, installations, and maintenance visits</p>
+                        <div class="industry-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-check"></i> 50% Less No-Shows
+                            </span>
+                        </div>
                     </div>
-                    <h4>Home Services</h4>
-                    <p>Optimize scheduling for repairs, installations, and maintenance visits.</p>
                 </div>
             </div>
             
-            <!-- Industry 4 -->
-            <div class="col-md-6 col-lg-3">
-                <div class="industry-card text-center p-4 h-100">
-                    <div class="industry-icon-container mb-3">
-                        <i class="fas fa-spa" style="color: #06B6D4;"></i>
+            <!-- Industry 4 - Wellness -->
+            <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="industry-card-overlay" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80');">
+                    <div class="industry-overlay-gradient"></div>
+                    <div class="industry-content-overlay">
+                        <h4 class="industry-title">Wellness & Spa</h4>
+                        <p class="industry-description">Simplify booking for spas, salons, fitness centers, and wellness practitioners</p>
+                        <div class="industry-stats">
+                            <span class="stat-badge">
+                                <i class="fas fa-check"></i> 95% Satisfaction
+                            </span>
+                        </div>
                     </div>
-                    <h4>Wellness</h4>
-                    <p>Simplify booking for spas, salons, fitness centers, and wellness practitioners.</p>
                 </div>
             </div>
+        </div>
+        
+        <!-- View All Industries CTA -->
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="500">
+            <p class="text-muted mb-3">Serving 20+ industries worldwide</p>
+            <a href="/industries" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-th me-2"></i>
+                <span>View All Industries</span>
+            </a>
         </div>
     </div>
 </section>
@@ -462,86 +675,240 @@
 <section class="testimonials-section py-5">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">What Our Customers Say</h2>
-            <p class="lead text-secondary">Trusted by businesses of all sizes</p>
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <span>💬</span>
+                <span>Customer Stories</span>
+            </div>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                What Our <span class="gradient-text">Customers Say</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Trusted by thousands of businesses worldwide
+            </p>
         </div>
         
-        <div class="row g-4">
-            <!-- Testimonial 1 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex mb-3">
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+        <!-- Vertical Marquee Container -->
+        <div class="testimonials-marquee-container">
+            <!-- Column 1 -->
+            <div class="testimonial-column" data-direction="up">
+                <div class="testimonial-track">
+                    <!-- Original testimonials -->
+                    <div class="testimonial-card-modern">
+                       
+                        <p class="testimonial-text">This AI assistant has completely transformed how we handle appointments. Our no-show rate dropped by 60% and client satisfaction is at an all-time high.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Sarah Johnson</h6>
+                                <p class="author-role">Clean Home Services</p>
+                            </div>
+                             <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The natural language processing is incredible. Clients can't tell they're talking to an AI. It's like having a full-time receptionist without the overhead.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Chen" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">David Chen</h6>
+                                <p class="author-role">Tech Repairs Pro</p>
+                            </div>
+                             <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">Best investment we've made! The AI handles everything from booking to reminders. Our team can focus on delivering great service.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Emma Wilson" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Emma Wilson</h6>
+                                <p class="author-role">Wellness Center</p>
+                            </div>
+                             <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <!-- Duplicate for seamless loop -->
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">This AI assistant has completely transformed how we handle appointments. Our no-show rate dropped by 60% and client satisfaction is at an all-time high.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Sarah Johnson</h6>
+                                <p class="author-role">Clean Home Services</p>
                             </div>
                         </div>
-                        <p class="card-text mb-4">"This AI assistant has completely transformed how we handle appointments. Our no-show rate dropped by 60% and client satisfaction is at an all-time high."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Customer" class="rounded-circle" width="50" height="50">
-                            <div class="ms-3">
-                                <h6 class="mb-0">Sarah Johnson</h6>
-                                <small class="text-secondary">Clean Home Services</small>
+                        <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The natural language processing is incredible. Clients can't tell they're talking to an AI. It's like having a full-time receptionist without the overhead.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="David Chen" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">David Chen</h6>
+                                <p class="author-role">Tech Repairs Pro</p>
                             </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
                         </div>
+                        
+                        <div class="testimonial-gradient-accent"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Testimonial 2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex mb-3">
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+            <!-- Column 2 -->
+            <div class="testimonial-column" data-direction="down">
+                <div class="testimonial-track">
+                    <!-- Original testimonials -->
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">As a real estate agent, my time is valuable. This system handles all my appointment scheduling, freeing me up to focus on closing deals instead of administrative tasks.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Rodriguez" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Michael Rodriguez</h6>
+                                <p class="author-role">Elite Realty Group</p>
                             </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
                         </div>
-                        <p class="card-text mb-4">"As a real estate agent, my time is valuable. This system handles all my appointment scheduling, freeing me up to focus on closing deals instead of administrative tasks."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Customer" class="rounded-circle" width="50" height="50">
-                            <div class="ms-3">
-                                <h6 class="mb-0">Michael Rodriguez</h6>
-                                <small class="text-secondary">Elite Realty Group</small>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The voice calling feature is a game-changer. Our clients love the convenience and we've seen a 40% increase in bookings since implementing this.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Lisa Anderson" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Lisa Anderson</h6>
+                                <p class="author-role">Beauty Salon Owner</p>
                             </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>4.8</div>
                         </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">Incredible ROI! We recovered the cost in the first month through reduced no-shows and increased booking efficiency. Highly recommend!</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/33.jpg" alt="James Taylor" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">James Taylor</h6>
+                                <p class="author-role">Fitness Studio</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <!-- Duplicate for seamless loop -->
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">As a real estate agent, my time is valuable. This system handles all my appointment scheduling, freeing me up to focus on closing deals instead of administrative tasks.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Rodriguez" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Michael Rodriguez</h6>
+                                <p class="author-role">Elite Realty Group</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The voice calling feature is a game-changer. Our clients love the convenience and we've seen a 40% increase in bookings since implementing this.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/55.jpg" alt="Lisa Anderson" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Lisa Anderson</h6>
+                                <p class="author-role">Beauty Salon Owner</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>4.8</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
                     </div>
                 </div>
             </div>
             
-            <!-- Testimonial 3 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <div class="d-flex mb-3">
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
+            <!-- Column 3 -->
+            <div class="testimonial-column" data-direction="up">
+                <div class="testimonial-track">
+                    <!-- Original testimonials -->
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">Our clients love the natural conversation with the AI. It feels personal and efficient. We've expanded our client base without adding staff to handle calls.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Jennifer Lee" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Jennifer Lee</h6>
+                                <p class="author-role">Serenity Wellness Spa</p>
                             </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>4.8</div>
                         </div>
-                        <p class="card-text mb-4">"Our clients love the natural conversation with the AI. It feels personal and efficient. We've expanded our client base without adding staff to handle calls."</p>
-                        <div class="d-flex align-items-center">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Customer" class="rounded-circle" width="50" height="50">
-                            <div class="ms-3">
-                                <h6 class="mb-0">Jennifer Lee</h6>
-                                <small class="text-secondary">Serenity Wellness Spa</small>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The calendar integration is flawless. Everything syncs perfectly with our existing systems. Setup was easy and support has been excellent.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Robert Kim" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Robert Kim</h6>
+                                <p class="author-role">Dental Practice</p>
                             </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
                         </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">Finally, a solution that actually works! The AI is smart, the interface is intuitive, and our booking rate has never been higher. Worth every penny.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Maria Garcia" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Maria Garcia</h6>
+                                <p class="author-role">Home Services Co.</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>4.9</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <!-- Duplicate for seamless loop -->
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">Our clients love the natural conversation with the AI. It feels personal and efficient. We've expanded our client base without adding staff to handle calls.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Jennifer Lee" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Jennifer Lee</h6>
+                                <p class="author-role">Serenity Wellness Spa</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>4.8</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
+                    </div>
+                    
+                    <div class="testimonial-card-modern">
+                        <p class="testimonial-text">The calendar integration is flawless. Everything syncs perfectly with our existing systems. Setup was easy and support has been excellent.</p>
+                        <div class="testimonial-author">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Robert Kim" class="author-avatar">
+                            <div class="author-info">
+                                <h6 class="author-name">Robert Kim</h6>
+                                <p class="author-role">Dental Practice</p>
+                            </div>
+                            <div class="testimonial-rating"><i class="fas fa-star text-white"></i>5.0</div>
+                        </div>
+                        <div class="testimonial-gradient-accent"></div>
                     </div>
                 </div>
             </div>
         </div>
+        
+   
     </div>
 </section>
 
@@ -549,135 +916,179 @@
 <section class="pricing-section py-5" id="pricing">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="fw-bold">Simple, Transparent Pricing</h2>
-            <p class="lead text-secondary">Choose the plan that fits your business needs</p>
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <span>Pricing Plans</span>
+            </div>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                Simple, <span class="gradient-text">Transparent Pricing</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Choose the plan that fits your business needs • No hidden fees • Cancel anytime
+            </p>
         </div>
         
         <div class="row g-4 justify-content-center">
             <!-- Starter Plan -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="text-center mb-3">Starter</h5>
-                        <div class="price-container text-center mb-3">
-                            <span class="display-4 fw-bold">$29</span>
-                            <span class="text-secondary">/month</span>
-                        </div>
-                        <ul class="list-unstyled mb-4">
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Up to 100 appointments/month</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>SMS & Email notifications</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Basic calendar integration</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Standard AI assistant</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3 text-secondary">
-                                <i class="fas fa-times text-secondary me-2"></i>
-                                <span>Voice calling capabilities</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3 text-secondary">
-                                <i class="fas fa-times text-secondary me-2"></i>
-                                <span>Custom branding</span>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="/accounts/signup/?plan=starter" class="btn btn-outline-primary w-100"><span>Get Started</span></a>
-                        </div>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card-modern">
+                    <div class="pricing-header">
+                        <h5 class="plan-name">Starter</h5>
+                        <p class="plan-description">Perfect for small businesses</p>
                     </div>
+                    <div class="pricing-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount">29</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li class="feature-included">Up to 100 appointments/month</li>
+                        <li class="feature-included">SMS & Email notifications</li>
+                        <li class="feature-included">Basic calendar integration</li>
+                        <li class="feature-included">Standard AI assistant</li>
+                        <li class="feature-not-included">Voice calling capabilities</li>
+                        <li class="feature-not-included">Custom branding</li>
+                    </ul>
+                    <a href="/accounts/signup/?plan=starter" class="btn-pricing">
+                        <span>Get Started</span>
+                    </a>
+                    <div class="pricing-gradient-accent"></div>
                 </div>
             </div>
             
             <!-- Professional Plan -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-lg position-relative">
-                    <div class="position-absolute top-0 start-50 translate-middle">
-                        <span class="badge px-3 py-2 rounded-pill">Most Popular</span>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card-modern featured">
+                    
+                    <div class="pricing-header">
+                        <h5 class="plan-name">Professional</h5>
+                        <p class="plan-description">For growing businesses</p>
                     </div>
-                    <div class="card-body p-4 mt-3">
-                        <h5 class="text-center mb-3">Professional</h5>
-                        <div class="price-container text-center mb-3">
-                            <span class="display-4 fw-bold">$79</span>
-                            <span class="text-secondary">/month</span>
-                        </div>
-                        <ul class="list-unstyled mb-4">
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Up to 500 appointments/month</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>SMS, Email & Voice notifications</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Advanced calendar integration</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Industry-specific AI assistant</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Voice calling capabilities</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3 text-secondary">
-                                <i class="fas fa-times text-secondary me-2"></i>
-                                <span>Custom branding</span>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="/accounts/signup/?plan=professional" class="btn btn-primary w-100"><span>Get Started</span></a>
-                        </div>
+                    <div class="pricing-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount">79</span>
+                        <span class="price-period">/month</span>
                     </div>
+                    <ul class="pricing-features">
+                        <li class="feature-included">Up to 500 appointments/month</li>
+                        <li class="feature-included">SMS, Email & Voice notifications</li>
+                        <li class="feature-included">Advanced calendar integration</li>
+                        <li class="feature-included">Industry-specific AI assistant</li>
+                        <li class="feature-included">Voice calling capabilities</li>
+                        <li class="feature-not-included">Custom branding</li>
+                    </ul>
+                    <a href="/accounts/signup/?plan=professional" class="btn-pricing primary">
+                        <span>Get Started</span>
+                    </a>
+                    <div class="pricing-gradient-accent"></div>
                 </div>
             </div>
             
             <!-- Enterprise Plan -->
-            <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body p-4">
-                        <h5 class="text-center mb-3">Enterprise</h5>
-                        <div class="price-container text-center mb-3">
-                            <span class="display-4 fw-bold">$199</span>
-                            <span class="text-secondary">/month</span>
-                        </div>
-                        <ul class="list-unstyled mb-4">
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Unlimited appointments</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>All notification channels</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Premium calendar integration</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Custom-trained AI assistant</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Advanced voice capabilities</span>
-                            </li>
-                            <li class="d-flex align-items-center mb-3">
-                                <i class="fas fa-check text-success me-2"></i>
-                                <span>Custom branding & white label</span>
-                            </li>
-                        </ul>
-                        <div class="text-center">
-                            <a href="/accounts/signup/?plan=enterprise" class="btn btn-outline-primary w-100"><span>Contact Sales</span></a>
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="pricing-card-modern">
+                    <div class="pricing-header">
+                        <h5 class="plan-name">Enterprise</h5>
+                        <p class="plan-description">For large organizations</p>
+                    </div>
+                    <div class="pricing-price">
+                        <span class="price-currency">$</span>
+                        <span class="price-amount">199</span>
+                        <span class="price-period">/month</span>
+                    </div>
+                    <ul class="pricing-features">
+                        <li class="feature-included">Unlimited appointments</li>
+                        <li class="feature-included">All notification channels</li>
+                        <li class="feature-included">Premium calendar integration</li>
+                        <li class="feature-included">Custom-trained AI assistant</li>
+                        <li class="feature-included">Advanced voice capabilities</li>
+                        <li class="feature-included">Custom branding & white label</li>
+                    </ul>
+                    <a href="/accounts/signup/?plan=enterprise" class="btn-pricing">
+                        <span>Contact Sales</span>
+                    </a>
+                    <div class="pricing-gradient-accent"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQ Link -->
+        <div class="text-center mt-5" data-aos="fade-up" data-aos-delay="400">
+            <p class="text-muted mb-3">All plans include 14-day free trial • No credit card required</p>
+            <a href="/pricing" class="text-decoration-none">
+                <span class="gradient-text fw-semibold">View detailed comparison →</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section-modern py-5">
+    <div class="cta-background-effects">
+        <div class="cta-gradient-orb cta-orb-1"></div>
+        <div class="cta-gradient-orb cta-orb-2"></div>
+        <div class="cta-grid-pattern"></div>
+    </div>
+    
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+                <div class="cta-content text-center">
+                    <!-- Badge -->
+                    <div class="cta-badge mb-4" data-aos="fade-down">
+                        <span>🚀</span>
+                        <span>Start Your Journey</span>
+                    </div>
+                    
+                    <!-- Main Heading -->
+                    <h2 class="cta-title mb-4" data-aos="fade-up">
+                        Ready to <span class="gradient-text">Transform</span> Your Business?
+                    </h2>
+                    
+                    <!-- Subtitle -->
+                    <p class="cta-subtitle mb-5" data-aos="fade-up" data-aos-delay="100">
+                        Join thousands of businesses using AI to automate appointments, reduce no-shows, and delight customers. Start your free trial today—no credit card required.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="cta-buttons mb-5" data-aos="fade-up" data-aos-delay="200">
+                        <a href="/accounts/signup/" class="btn-cta-primary">
+                            <i class="fas fa-rocket me-2"></i>
+                            <span>Start Free Trial</span>
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        <a href="/contact" class="btn-cta-secondary">
+                            <i class="fas fa-comments me-2"></i>
+                            <span>Talk to Sales</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Trust Indicators -->
+                    <div class="cta-trust-indicators" data-aos="fade-up" data-aos-delay="300">
+                        <div class="row g-4 justify-content-center">
+                            <div class="col-6 col-md-3">
+                                <div class="trust-item">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>14-Day Free Trial</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="trust-item">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>No Credit Card</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="trust-item">
+                                    <i class="fas fa-times-circle"></i>
+                                    <span>Cancel Anytime</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="trust-item">
+                                    <i class="fas fa-headset"></i>
+                                    <span>24/7 Support</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -686,16 +1097,112 @@
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="cta-section py-5 bg-primary text-white">
+<!-- FAQ Section -->
+<section class="faq-section py-5">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8 text-center text-lg-start">
-                <h2 class="fw-bold mb-3">Ready to transform your appointment booking?</h2>
-                <p class="lead mb-0">Join thousands of businesses using our AI assistant to streamline their scheduling.</p>
+        <div class="text-center mb-5">
+            <div class="section-badge mb-3" data-aos="fade-down">
+                <span>❓</span>
+                <span>Frequently Asked Questions</span>
             </div>
-            <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
-                <a href="/accounts/signup/" class="btn btn-light btn-lg"><span>Start Free Trial</span></a>
+            <h2 class="section-title mb-3" data-aos="fade-up">
+                Got <span class="gradient-text">Questions?</span>
+            </h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Everything you need to know about our AI appointment assistant
+            </p>
+        </div>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="faq-accordion" data-aos="fade-up" data-aos-delay="200">
+                    <!-- FAQ 1 -->
+                    <div class="faq-item">
+                        <button class="faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            <span>How does the AI assistant handle appointments?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq1" class="collapse show" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                Our AI assistant uses natural language processing to understand customer requests via phone, SMS, or chat. It checks your availability, books appointments, sends confirmations, and manages reminders—all automatically, 24/7.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 2 -->
+                    <div class="faq-item">
+                        <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            <span>What integrations do you support?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq2" class="collapse" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                We integrate with Google Calendar, Outlook, iCal, Zoom, Microsoft Teams, Slack, and most popular CRM systems. Our API also allows custom integrations with your existing tools.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 3 -->
+                    <div class="faq-item">
+                        <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            <span>Can I customize the AI's responses?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq3" class="collapse" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                Absolutely! You can customize greetings, responses, business hours, service offerings, and even train the AI with industry-specific terminology. Professional and Enterprise plans offer advanced customization options.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 4 -->
+                    <div class="faq-item">
+                        <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            <span>Is my data secure?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq4" class="collapse" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                Yes! We use bank-level encryption (AES-256), are SOC 2 compliant, and follow GDPR and CCPA regulations. Your data is stored securely and never shared with third parties.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 5 -->
+                    <div class="faq-item">
+                        <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                            <span>What happens after the free trial?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq5" class="collapse" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                After your 14-day free trial, you can choose a plan that fits your needs. If you don't select a plan, your account will simply pause—no charges, no commitments. You can upgrade anytime.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 6 -->
+                    <div class="faq-item">
+                        <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                            <span>Do you offer customer support?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div id="faq6" class="collapse" data-bs-parent=".faq-accordion">
+                            <div class="faq-answer">
+                                Yes! All plans include email support. Professional plans get priority support, and Enterprise customers receive dedicated account management with 24/7 phone support.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Still have questions CTA -->
+                <div class="text-center mt-5" data-aos="fade-up">
+                    <p class="text-muted mb-3">Still have questions?</p>
+                    <a href="/contact" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>
+                        <span>Contact Support</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>

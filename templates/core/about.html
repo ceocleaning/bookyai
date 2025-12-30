@@ -1,0 +1,291 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}About Us - Booky AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+<style>
+    /* Inline styles for specific Mission Card enhancements */
+    .mission-card-enhanced {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        padding: 40px;
+        background: var(--bg-card);
+        border: 1px solid var(--glass-border);
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .mission-card-enhanced::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+    }
+
+    .mission-card-enhanced:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        border-color: rgba(255,255,255,0.2);
+    }
+
+    .mission-card-enhanced:hover::before {
+        opacity: 1;
+    }
+
+    .mission-bg-texture {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.15;
+        z-index: 0;
+        transition: transform 0.6s ease;
+    }
+    
+    .mission-card-enhanced:hover .mission-bg-texture {
+        transform: scale(1.1);
+    }
+
+    .mission-content-z {
+        position: relative;
+        z-index: 2;
+    }
+
+    .mission-icon-box {
+        width: 80px;
+        height: 80px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin-bottom: 24px;
+        transition: all 0.4s ease;
+    }
+
+    .mission-card-enhanced:hover .mission-icon-box {
+        background: rgba(255,255,255,0.1);
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <!-- Background Elements -->
+    <div class="animated-grid-bg"></div>
+    <div class="bg-glow-orb orb-1"></div>
+    <div class="bg-glow-orb orb-2"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <img src="{% static 'images/features/hero.png' %}" alt="Future of Work" class="hero-bg-image">
+        
+        <div class="container" style="position: relative; z-index: 2;" data-aos="fade-up">
+            <div class="hero-badge">
+                <i class="fas fa-rocket"></i> Our Mission
+            </div>
+            <h1 class="hero-title">
+                Building the <br>
+                <span style="color: #00f3ff;">Intelligent Future</span>
+            </h1>
+            <p class="hero-subtitle">
+                We are a team of engineers, designers, and dreamers dedicated to eliminating the friction of scheduling for businesses worldwide.
+            </p>
+        </div>
+    </section>
+
+    <!-- Enhanced Mission Grid -->
+    <section class="container pb-5">
+        <div class="mission-grid">
+            
+            <!-- Mission -->
+            <div class="mission-card-enhanced" data-aos="fade-up">
+                <img src="{% static 'images/features/texture.png' %}" class="mission-bg-texture" style="filter: hue-rotate(180deg);" alt="Texture">
+                <div class="mission-content-z">
+                   
+                    <h3 class="fw-bold text-white mb-3">Our Mission</h3>
+                    <p class="text-muted mb-0">
+                        To democratize access to enterprise-grade AI automation, enabling small businesses to compete on a global scale without administrative burnout.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Vision -->
+            <div class="mission-card-enhanced" data-aos="fade-up" data-aos-delay="100">
+                <img src="{% static 'images/features/texture.png' %}" class="mission-bg-texture" style="filter: hue-rotate(280deg);" alt="Texture">
+                <div class="mission-content-z">
+                    <h3 class="fw-bold text-white mb-3">Our Vision</h3>
+                    <p class="text-muted mb-0">
+                        A world where "scheduling" is an invisible background process, freeing humans to focus on meaningful connection and creative work.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Values -->
+            <div class="mission-card-enhanced" data-aos="fade-up" data-aos-delay="200">
+                <img src="{% static 'images/features/texture.png' %}" class="mission-bg-texture" style="filter: hue-rotate(40deg);" alt="Texture">
+                <div class="mission-content-z">
+                    <h3 class="fw-bold text-white mb-3">Core Values</h3>
+                    <p class="text-muted mb-0">
+                        Radical Transparency, Customer Obsession, and Relentless Innovation. We believe in building trust through code and conduct.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Timeline Story -->
+    <section class="timeline-section">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="display-5 fw-bold text-white">Our Journey</h2>
+            </div>
+            
+            <div class="timeline-line"></div>
+
+            <!-- Item 1 -->
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="badge bg-primary mb-2">2023</span>
+                    <h4 class="text-white fw-bold">The Inception</h4>
+                    <p class="text-muted mb-0">Booky AI was born in a garage in San Francisco. Our founders realized that 30% of business hours were lost to scheduling tag.</p>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="badge bg-info mb-2">Q1 2024</span>
+                    <h4 class="text-white fw-bold">First 1,000 Users</h4>
+                    <p class="text-muted mb-0">We launched our MVP. The response was overwhelming, confirming the massive market need for automated booking solutions.</p>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="timeline-item" data-aos="fade-right">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="badge bg-warning text-dark mb-2">Q3 2024</span>
+                    <h4 class="text-white fw-bold">Voice Agents Live</h4>
+                    <p class="text-muted mb-0">We introduced our breakthrough Neural Voice Engine, allowing the AI to answer phone calls naturally.</p>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="timeline-item" data-aos="fade-left">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <span class="badge bg-success mb-2">Today</span>
+                    <h4 class="text-white fw-bold">Global Scale</h4>
+                    <p class="text-muted mb-0">Serving 10,000+ businesses across 50 countries. We are just getting started on our path to full autonomy.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="container py-5">
+        <div class="glass-card" data-aos="zoom-in">
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-number">2M+</div>
+                    <div class="stat-label">Bookings Processed</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="container py-5 mb-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-6 fw-bold text-white">Leadership</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+                <div class="glass-card team-card text-center h-100">
+                    <div class="team-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="CEO">
+                    </div>
+                    <h4 class="text-white fw-bold mb-1">Alex Thorne</h4>
+                    <p class="text-primary mb-3">Co-Founder & CEO</p>
+                    <p class="text-muted small">Ex-DeepMind researcher passionate about making AI accessible to everyone.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="text-white-50"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card team-card text-center h-100">
+                    <div class="team-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="CTO">
+                    </div>
+                    <h4 class="text-white fw-bold mb-1">Sarah Chen</h4>
+                    <p class="text-info mb-3">Co-Founder & CTO</p>
+                    <p class="text-muted small">System Architect with 15 years experience building scalable cloud infrastructure.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="text-white-50"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card team-card text-center h-100">
+                    <div class="team-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="COO">
+                    </div>
+                    <h4 class="text-white fw-bold mb-1">Marcus Rodriguez</h4>
+                    <p class="text-success mb-3">Head of Growth</p>
+                    <p class="text-muted small">Growth strategist who helped scale two previous SaaS unicorns.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="text-white-50"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white-50"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 80
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,264 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}Pricing - Booky AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pricing_page.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="pricing-page-wrapper">
+    <!-- Background Elements -->
+    <div class="animated-grid-bg"></div>
+
+    <!-- Hero Section -->
+    <section class="pricing-hero">
+        <img src="{% static 'images/pricing_hero.png' %}" alt="Pricing Growth" class="hero-bg-image">
+        
+        <div class="container position-relative" style="z-index: 2;" data-aos="fade-up">
+            <div class="hero-badge">
+                <i class="fas fa-chart-line"></i> ROI Focused
+            </div>
+            <h1 class="hero-title">
+                Simple, Transparent <br>
+                <span style="color: #bc13fe;">Pricing for Scale</span>
+            </h1>
+            <p class="hero-subtitle">
+                Choose the plan that fits your growth stage. No hidden fees. Cancel anytime.
+            </p>
+
+            <!-- Toggle -->
+            <div class="pricing-toggle-container">
+                <span class="toggle-label active" id="monthly-label">Monthly</span>
+                <div class="toggle-switch" onclick="togglePricing()"></div>
+                <span class="toggle-label" id="annual-label">
+                    Annually <span class="save-badge">Save 20%</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section class="container mb-5" style="position: relative; z-index: 2;">
+        <div class="row g-4 align-items-center">
+            
+            <!-- Starter -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="pricing-card">
+                    <div class="card-content">
+                        <h3 class="plan-name">Starter</h3>
+                        <p class="plan-desc">For individuals and solo practitioners.</p>
+                        
+                        <div class="plan-price-wrapper">
+                            <span class="currency">$</span>
+                            <span class="price" data-monthly="29" data-annual="24">29</span>
+                            <span class="period">/mo</span>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li class="feature-item"><i class="fas fa-check"></i> 100 Appointments/mo</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> SMS & Email Reminders</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> Google Calendar Sync</li>
+                            <li class="feature-item disabled"><i class="fas fa-times"></i> Voice Agents</li>
+                            <li class="feature-item disabled"><i class="fas fa-times"></i> API Access</li>
+                        </ul>
+
+                        <a href="/accounts/signup/?plan=starter" class="btn-pricing">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional (Popular) -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing-card popular">
+                    <div class="popular-tag">Most Popular</div>
+                    <div class="card-content">
+                        <h3 class="plan-name">Professional</h3>
+                        <p class="plan-desc">For growing clinics and agencies.</p>
+                        
+                        <div class="plan-price-wrapper">
+                            <span class="currency">$</span>
+                            <span class="price" data-monthly="79" data-annual="63">79</span>
+                            <span class="period">/mo</span>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li class="feature-item"><i class="fas fa-check"></i> 500 Appointments/mo</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> <strong>Voice AI Agents</strong></li>
+                            <li class="feature-item"><i class="fas fa-check"></i> 2-Way Calendar Sync</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> Priority Support</li>
+                            <li class="feature-item disabled"><i class="fas fa-times"></i> Custom Integrations</li>
+                        </ul>
+
+                        <a href="/accounts/signup/?plan=professional" class="btn-pricing">Start Free Trial</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="pricing-card">
+                    <div class="card-content">
+                        <h3 class="plan-name">Enterprise</h3>
+                        <p class="plan-desc">For large networks and franchises.</p>
+                        
+                        <div class="plan-price-wrapper">
+                            <span class="price" style="font-size: 2.5rem;">Custom</span>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li class="feature-item"><i class="fas fa-check"></i> Unlimited Appointments</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> Custom Voice Models</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> Full API & Webhooks</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> Dedicated Success Manager</li>
+                            <li class="feature-item"><i class="fas fa-check"></i> SSO & SOC-2 Compliance</li>
+                        </ul>
+
+                        <a href="/contact" class="btn-pricing">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="comparison-section container" data-aos="fade-up">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold">Detailed Comparison</h2>
+        </div>
+        <div class="table-responsive">
+            <table class="table-glass">
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <th>Starter</th>
+                        <th class="highlight-col">Professional</th>
+                        <th>Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monthly Appointments</td>
+                        <td>100</td>
+                        <td class="highlight-col">500</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Voice AI Capabilities</td>
+                        <td><i class="fas fa-minus minus-icon"></i></td>
+                        <td class="highlight-col"><i class="fas fa-check check-icon"></i></td>
+                        <td>Custom</td>
+                    </tr>
+                    <tr>
+                        <td>Calendar Sync</td>
+                        <td>1-Way</td>
+                        <td class="highlight-col">2-Way Real-time</td>
+                        <td>2-Way Real-time</td>
+                    </tr>
+                    <tr>
+                        <td>SMS Reminders</td>
+                        <td><i class="fas fa-check check-icon"></i></td>
+                        <td class="highlight-col"><i class="fas fa-check check-icon"></i></td>
+                        <td><i class="fas fa-check check-icon"></i></td>
+                    </tr>
+                    <tr>
+                        <td>API Access</td>
+                        <td><i class="fas fa-minus minus-icon"></i></td>
+                        <td class="highlight-col"><i class="fas fa-minus minus-icon"></i></td>
+                        <td><i class="fas fa-check check-icon"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="container py-5 mb-5" id="faq">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <h2 class="fw-bold">Frequently Asked Questions</h2>
+                </div>
+                <div class="accordion faq-accordion" id="pricingFaq">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                Can I switch plans later?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#pricingFaq">
+                            <div class="accordion-body">
+                                Absolutely. You can upgrade or downgrade your plan at any time from your dashboard. Changes take effect on the next billing cycle.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Is there a discount for annual billing?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+                            <div class="accordion-body">
+                                Yes! We offer a 20% discount if you choose to be billed annually. The savings are reflected in the toggle switch above.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                What happens if I go over my appointment limit?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#pricingFaq">
+                            <div class="accordion-body">
+                                We'll notify you when you reach 90% of your limit. If you exceed it, we can either automatically upgrade you or charge a small overage fee per booking, depending on your preference settings.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 80,
+        easing: 'ease-out-quart'
+    });
+
+    // Simple Pricing Toggle Logic
+    let isAnnual = false;
+    const toggleSwitch = document.querySelector('.toggle-switch');
+    const monthlyLabel = document.getElementById('monthly-label');
+    const annualLabel = document.getElementById('annual-label');
+    const prices = document.querySelectorAll('.price[data-monthly]');
+
+    function togglePricing() {
+        isAnnual = !isAnnual;
+        toggleSwitch.classList.toggle('annual');
+        
+        if (isAnnual) {
+            monthlyLabel.classList.remove('active');
+            annualLabel.classList.add('active');
+            prices.forEach(el => {
+                el.innerText = el.dataset.annual;
+            });
+        } else {
+            monthlyLabel.classList.add('active');
+            annualLabel.classList.remove('active');
+            prices.forEach(el => {
+                el.innerText = el.dataset.monthly;
+            });
+        }
+    }
+</script>
+{% endblock %}

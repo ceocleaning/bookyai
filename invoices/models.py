@@ -34,7 +34,7 @@ class Invoice(models.Model):
     Main invoice model to store billing information related to bookings.
     Links to a booking and tracks payment status.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='invoices')
     invoice_number = models.CharField(max_length=50, unique=True)
     status = models.CharField(max_length=20, choices=InvoiceStatus.choices, default=InvoiceStatus.DRAFT)
@@ -75,7 +75,7 @@ class Payment(models.Model):
     Tracks individual payments made against invoices.
     Multiple payments can be made for a single invoice.
     """
-    id = models.CharField(primary_key=True, editable=False)
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
     payment_method = models.CharField(max_length=20, choices=PaymentMethod.choices)

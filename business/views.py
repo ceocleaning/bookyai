@@ -1246,15 +1246,15 @@ def test_smtp_config(request):
         msg = MIMEMultipart()
         msg['From'] = from_email
         msg['To'] = test_email
-        msg['Subject'] = 'Test Email from Services AI'
+        msg['Subject'] = 'Test Email from Booky AI'
         msg['Reply-To'] = reply_to
         
         # Email body
         body = f"""
         <html>
         <body>
-            <h2>Test Email from Services AI</h2>
-            <p>This is a test email from your Services AI SMTP configuration.</p>
+            <h2>Test Email from Booky AI</h2>
+            <p>This is a test email from your Booky AI SMTP configuration.</p>
             <p>If you received this email, your SMTP configuration is working correctly.</p>
             <p><strong>Business:</strong> {business.name}</p>
             <p><strong>SMTP Host:</strong> {host}</p>

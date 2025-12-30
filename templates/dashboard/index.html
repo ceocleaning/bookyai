@@ -1,8 +1,7 @@
 {% extends 'common/dashboard_base.html' %}
 {% load static %}
-{% load plugin_tags %}
 
-{% block title %}Dashboard - Services AI{% endblock %}
+{% block title %}Dashboard - Booky AI{% endblock %}
 
 {% block page_title %}Dashboard Overview{% endblock %}
 
@@ -31,326 +30,329 @@
     <div class="col-md-6 col-xl-3 mb-4">
         <div class="card stat-card">
             <div class="card-body d-flex justify-content-between align-items-start">
-          
+
                 <div class="stat-details">
                     <h3 class="stat-value">{{ todays_appointments_count }}</h3>
                     <p class="stat-label">Today's Appointments</p>
-                    <div class="stat-change {% if appointment_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
-                        <i class="fas fa-arrow-{% if appointment_change_percent >= 0 %}up{% else %}down{% endif %}"></i> 
-                        {% if appointment_change_percent < 0 %}{{ appointment_change_percent|cut:"-" }}{% else %}{{ appointment_change_percent }}{% endif %}% from yesterday
+                    <div
+                        class="stat-change {% if appointment_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
+                        <i class="fas fa-arrow-{% if appointment_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                        {% if appointment_change_percent < 0 %}{{ appointment_change_percent|cut:"-" }}
+                        {% else %} {{ appointment_change_percent }}{% endif %}% from yesterday </div>
                     </div>
-                </div>
-                <div class="stat-icon">
-                    <span class="badge">
-                        <i class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
-                        {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}{% else %}{{ revenue_change_percent }}{% endif %}%
-                    </span>
+                    <div class="stat-icon">
+                        <span class="badge">
+                            <i class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                            {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}
+                            {% else %} {{ revenue_change_percent }}{% endif %}% </span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-6 col-xl-3 mb-4">
-        <div class="card stat-card">
-            <div class="card-body d-flex justify-content-between align-items-start">
-        
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ new_leads_count }}</h3>
-                    <p class="stat-label">New Leads This Week</p>
-                    <div class="stat-change {% if lead_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
-                        <i class="fas fa-arrow-{% if lead_change_percent >= 0 %}up{% else %}down{% endif %}"></i> 
-                        {% if lead_change_percent < 0 %}{{ lead_change_percent|cut:"-" }}{% else %}{{ lead_change_percent }}{% endif %}% from last week
-                    </div>
-                </div>
-                <div class="stat-icon">
-                    <span class="badge">
-                        <i class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
-                        {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}{% else %}{{ revenue_change_percent }}{% endif %}%
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6 col-xl-3 mb-4">
-        <div class="card stat-card">
-            <div class="card-body d-flex justify-content-between align-items-start">
-        
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ ai_calls_count }}</h3>
-                    <p class="stat-label">AI Calls Made</p>
-                    <div class="stat-change {% if ai_calls_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
-                        <i class="fas fa-arrow-{% if ai_calls_change_percent >= 0 %}up{% else %}down{% endif %}"></i> 
-                        {% if ai_calls_change_percent < 0 %}{{ ai_calls_change_percent|cut:"-" }}{% else %}{{ ai_calls_change_percent }}{% endif %}% from last week
-                    </div>
-                </div>
-                <div class="stat-icon">
-                    <span class="badge">
-                        <i class="fas fa-arrow-{% if ai_calls_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
-                        {% if ai_calls_change_percent < 0 %}{{ ai_calls_change_percent|cut:"-" }}{% else %}{{ ai_calls_change_percent }}{% endif %}%
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6 col-xl-3 mb-4">
-        <div class="card stat-card">
-            <div class="card-body d-flex justify-content-between align-items-start">
-                <div class="stat-details">
-                    <h3 class="stat-value">${{ revenue_this_week|floatformat:2 }}</h3>
-                    <p class="stat-label">Revenue This Week</p>
-                    <div class="stat-change {% if revenue_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
-                        <i class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i> 
-                        {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}{% else %}{{ revenue_change_percent }}{% endif %}% from last week
-                    </div>
-                </div>
-                <div class="stat-icon">
-                    <span class="badge">
-                        <i class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
-                        {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}{% else %}{{ revenue_change_percent }}{% endif %}%
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <!-- Upcoming Appointments -->
-    <div class="col-lg-8 mb-4">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-calendar me-2"></i> Upcoming Appointments
-                </h5>
-                <a href="/bookings/" class="btn btn-sm btn-primary">View All</a>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover appointment-table mb-0">
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Service</th>
-                                <th>Date & Time</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% if upcoming_appointments %}
-                                {% for appointment in upcoming_appointments %}
-                                    <tr>
-                                        <td>
-                                           {{ appointment.name }}
-                                        </td>
-                                        <td>{{ appointment.service_offering.name }}</td>
-                                        <td>
-                                            {% if appointment.booking_date == today %}
-                                                Today, {{ appointment.start_time|time:"g:i A" }}
-                                            {% elif appointment.booking_date == tomorrow %}
-                                                Tomorrow, {{ appointment.start_time|time:"g:i A" }}
-                                            {% else %}
-                                                {{ appointment.booking_date|date:"M j" }}, {{ appointment.start_time|time:"g:i A" }}
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="badge">
-                                                {{ appointment.status|title }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                           
-                                            <a href="/bookings/{{ appointment.id }}/detail/" class="btn btn-sm btn-secondary me-1">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="5" class="text-center py-4">
-                                        <p class="text-muted mb-0">No upcoming appointments</p>
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
+        <div class="col-md-6 col-xl-3 mb-4">
+            <div class="card stat-card">
+                <div class="card-body d-flex justify-content-between align-items-start">
+
+                    <div class="stat-details">
+                        <h3 class="stat-value">{{ new_leads_count }}</h3>
+                        <p class="stat-label">New Leads This Week</p>
+                        <div class="stat-change {% if lead_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
+                            <i class="fas fa-arrow-{% if lead_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                            {% if lead_change_percent < 0 %}{{ lead_change_percent|cut:"-" }}
+                            {% else %} {{ lead_change_percent }}{% endif %}% from last week </div>
+                        </div>
+                        <div class="stat-icon">
+                            <span class="badge">
+                                <i
+                                    class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}
+                                {% else %} {{ revenue_change_percent }}{% endif %}% </span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- Recent Leads -->
-    <div class="col-lg-4 mb-4">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-user-plus me-2"></i> Recent Leads
-                </h5>
-                <a href="/leads/" class="btn btn-sm btn-primary">View All</a>
-            </div>
-            <div class="card-body py-2 px-3">
-                <div class="lead-list">
-                    {% if new_leads %}
-                        {% for lead in new_leads %}
-                            <div class="lead-item p-2 mb-2 {% if not forloop.last %}border-bottom{% endif %}">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="lead-info">
-                               
-                                        <h6 class="mb-1 fw-bold">{{ lead.first_name }} {{ lead.last_name }}</h6>
-                                        
-                                        <span class="badge">
-                                            {{ lead.get_source_display }}
-                                        </span>
-                                    </div>
-                                    <div class="lead-status text-end">
-                                        <span class="badge">
-                                            {{ lead.get_status_display }}
-                                        </span>
-                                        <div class="small text-muted mt-1">
-                                            {% if lead.created_at.date == today %}
-                                                Today
-                                            {% elif lead.created_at.date == yesterday %}
-                                                Yesterday
+
+            <div class="col-md-6 col-xl-3 mb-4">
+                <div class="card stat-card">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+
+                        <div class="stat-details">
+                            <h3 class="stat-value">{{ ai_calls_count }}</h3>
+                            <p class="stat-label">AI Calls Made</p>
+                            <div
+                                class="stat-change {% if ai_calls_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
+                                <i
+                                    class="fas fa-arrow-{% if ai_calls_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                                {% if ai_calls_change_percent < 0 %}{{ ai_calls_change_percent|cut:"-" }}
+                                {% else %} {{ ai_calls_change_percent }}{% endif %}% from last week </div>
+                            </div>
+                            <div class="stat-icon">
+                                <span class="badge">
+                                    <i
+                                        class="fas fa-arrow-{% if ai_calls_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                                    {% if ai_calls_change_percent < 0 %}{{ ai_calls_change_percent|cut:"-" }}
+                                    {% else %} {{ ai_calls_change_percent }}{% endif %}% </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3 mb-4">
+                    <div class="card stat-card">
+                        <div class="card-body d-flex justify-content-between align-items-start">
+                            <div class="stat-details">
+                                <h3 class="stat-value">${{ revenue_this_week|floatformat:2 }}</h3>
+                                <p class="stat-label">Revenue This Week</p>
+                                <div
+                                    class="stat-change {% if revenue_change_percent >= 0 %}increase{% else %}decrease{% endif %}">
+                                    <i
+                                        class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                                    {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}
+                                    {% else %} {{ revenue_change_percent }}{% endif %}% from last week </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <span class="badge">
+                                        <i
+                                            class="fas fa-arrow-{% if revenue_change_percent >= 0 %}up{% else %}down{% endif %}"></i>
+                                        {% if revenue_change_percent < 0 %}{{ revenue_change_percent|cut:"-" }}
+                                        {% else %} {{ revenue_change_percent }}{% endif %}% </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Upcoming Appointments -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-calendar me-2"></i> Upcoming Appointments
+                                </h5>
+                                <a href="/bookings/" class="btn btn-sm btn-primary">View All</a>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover appointment-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Client</th>
+                                                <th>Service</th>
+                                                <th>Date & Time</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if upcoming_appointments %}
+                                            {% for appointment in upcoming_appointments %}
+                                            <tr>
+                                                <td>
+                                                    {{ appointment.name }}
+                                                </td>
+                                                <td>{{ appointment.service_offering.name }}</td>
+                                                <td>
+                                                    {% if appointment.booking_date == today %}
+                                                    Today, {{ appointment.start_time|time:"g:i A" }}
+                                                    {% elif appointment.booking_date == tomorrow %}
+                                                    Tomorrow, {{ appointment.start_time|time:"g:i A" }}
+                                                    {% else %}
+                                                    {{ appointment.booking_date|date:"M j" }}, {{
+                                                    appointment.start_time|time:"g:i A" }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge">
+                                                        {{ appointment.status|title }}
+                                                    </span>
+                                                </td>
+                                                <td>
+
+                                                    <a href="/bookings/{{ appointment.id }}/detail/"
+                                                        class="btn btn-sm btn-secondary me-1">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
                                             {% else %}
-                                                {{ lead.created_at|date:"M j" }}
+                                            <tr>
+                                                <td colspan="5" class="text-center py-4">
+                                                    <p class="text-muted mb-0">No upcoming appointments</p>
+                                                </td>
+                                            </tr>
                                             {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Leads -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user-plus me-2"></i> Recent Leads
+                                </h5>
+                                <a href="/leads/" class="btn btn-sm btn-primary">View All</a>
+                            </div>
+                            <div class="card-body py-2 px-3">
+                                <div class="lead-list">
+                                    {% if new_leads %}
+                                    {% for lead in new_leads %}
+                                    <div class="lead-item p-2 mb-2 {% if not forloop.last %}border-bottom{% endif %}">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="lead-info">
+
+                                                <h6 class="mb-1 fw-bold">{{ lead.first_name }} {{ lead.last_name }}</h6>
+
+                                                <span class="badge">
+                                                    {{ lead.get_source_display }}
+                                                </span>
+                                            </div>
+                                            <div class="lead-status text-end">
+                                                <span class="badge">
+                                                    {{ lead.get_status_display }}
+                                                </span>
+                                                <div class="small text-muted mt-1">
+                                                    {% if lead.created_at.date == today %}
+                                                    Today
+                                                    {% elif lead.created_at.date == yesterday %}
+                                                    Yesterday
+                                                    {% else %}
+                                                    {{ lead.created_at|date:"M j" }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="text-center py-4">
+                                        <p class="text-muted mb-0">No recent leads</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Quick Actions -->
+                    <div class="col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-bolt me-2"></i> Quick Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-3 col-6">
+                                        <a href="/bookings/create/" class="quick-action-card">
+                                            <div class="quick-action-icon bg-secondary">
+                                                <i class="fas fa-calendar-plus"></i>
+                                            </div>
+                                            <div class="quick-action-text">New Appointment</div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <a href="/leads/create/" class="quick-action-card">
+                                            <div class="quick-action-icon bg-secondary">
+                                                <i class="fas fa-user-plus"></i>
+                                            </div>
+                                            <div class="quick-action-text">Add Lead</div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <a href="/invoices/create/" class="quick-action-card">
+                                            <div class="quick-action-icon bg-secondary">
+                                                <i class="fas fa-file-invoice-dollar"></i>
+                                            </div>
+                                            <div class="quick-action-text">Create Invoice</div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <a href="/ai_agent/configure/" class="quick-action-card">
+                                            <div class="quick-action-icon bg-secondary">
+                                                <i class="fas fa-robot"></i>
+                                            </div>
+                                            <div class="quick-action-text">Configure AI</div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <h6 class="mb-3">System Status</h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="system-status-item">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span>Booking System</span>
+                                                    <div class="badge">
+                                                        <span><i class="fa-solid fa-circle text-success me-1"
+                                                                style="font-size: 10px;"></i></span>
+                                                        <span class="">Active</span>
+                                                    </div>
+
+                                                </div>
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="system-status-item">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span>Voice Agent</span>
+                                                    <div class="badge">
+                                                        <span><i class="fa-solid fa-circle text-success me-1"
+                                                                style="font-size: 10px;"></i></span>
+                                                        <span class="">Active</span>
+                                                    </div>
+                                                </div>
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar bg-success role=" progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="system-status-item">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span>Email System</span>
+                                                    <div class="badge">
+                                                        <span><i class="fa-solid fa-circle text-success me-1"
+                                                                style="font-size: 10px;"></i></span>
+                                                        <span class="">Active</span>
+                                                    </div>
+                                                </div>
+                                                <div class="progress" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" role="progressbar"
+                                                        style="width: 100%;" aria-valuenow="100" aria-valuemin="0"
+                                                        aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="text-center py-4">
-                            <p class="text-muted mb-0">No recent leads</p>
                         </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                    </div>
 
-<div class="row">
-    <!-- Quick Actions -->
-    <div class="col-md-12 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="fas fa-bolt me-2"></i> Quick Actions
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3 col-6">
-                        <a href="/bookings/create/" class="quick-action-card">
-                            <div class="quick-action-icon bg-secondary">
-                                <i class="fas fa-calendar-plus"></i>
-                            </div>
-                            <div class="quick-action-text">New Appointment</div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <a href="/leads/create/" class="quick-action-card">
-                            <div class="quick-action-icon bg-secondary">
-                                <i class="fas fa-user-plus"></i>
-                            </div>
-                            <div class="quick-action-text">Add Lead</div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <a href="/invoices/create/" class="quick-action-card">
-                            <div class="quick-action-icon bg-secondary">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <div class="quick-action-text">Create Invoice</div>
-                        </a>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <a href="/ai_agent/configure/" class="quick-action-card">
-                            <div class="quick-action-icon bg-secondary">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <div class="quick-action-text">Configure AI</div>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <h6 class="mb-3">System Status</h6>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="system-status-item">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>Booking System</span>
-                                    <div class="badge">
-                                        <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 10px;"></i></span>
-                                        <span class="">Active</span>
-                                    </div>
-                                    
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="system-status-item">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>Voice Agent</span>
-                                    <div class="badge">
-                                        <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 10px;"></i></span>
-                                        <span class="">Active</span>
-                                    </div>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-success role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="system-status-item">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>Email System</span>
-                                    <div class="badge">
-                                        <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 10px;"></i></span>
-                                        <span class="">Active</span>
-                                    </div>
-                                </div>
-                                <div class="progress" style="height: 6px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Plugin Widgets Section -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-puzzle-piece me-2"></i> Plugin Widgets
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% render_plugin_widgets %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/dashboard-index.js' %}"></script>
-{% endblock %}
+                </div>
+                {% endblock %}
+
+                {% block extra_js %}
+                <script src="{% static 'js/dashboard-index.js' %}"></script>
+                {% endblock %}

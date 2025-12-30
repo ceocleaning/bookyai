@@ -13,7 +13,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+  
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -27,8 +28,24 @@
     <link rel="stylesheet" href="{% static 'css/util_css/cards.css' %}">
     <link rel="stylesheet" href="{% static 'css/util_css/tables.css' %}">
     <link rel="stylesheet" href="{% static 'css/util_css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/how_it_works.css' %}">
+    <link rel="stylesheet" href="{% static 'css/industries.css' %}">
+    <link rel="stylesheet" href="{% static 'css/testimonials_pricing.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cta_faq.css' %}">
     
     {% block extra_css %}{% endblock %}
+
+    <style>
+        .logo {
+            font-size: 2rem;
+            font-weight: 600;
+            color: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Varela Round', sans-serif;
+        }
+    </style>
     
     <!-- Set Dark Mode as Default -->
     <script>
@@ -38,14 +55,15 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg sticky-top navbar-modern">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <i class="fas fa-calendar-check me-2 primary-icon"></i>
-                <span class="fw-semibold">Services AI</span>
+                <div class="logo-container">
+                    <span class="logo-text">Booky AI</span>
+                </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" 
                     aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -53,36 +71,61 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/">
+                            <span>Home</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/features">Features</a>
+                        <a class="nav-link" href="/features">
+                            <span>Features</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/pricing">Pricing</a>
+                        <a class="nav-link" href="/use-cases">
+                            <span>Use Cases</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/industries">Industries</a>
+                        <a class="nav-link" href="/pricing">
+                            <span>Pricing</span>
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contact">Contact</a>
+                        <a class="nav-link" href="/about">
+                            <span>About</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact">
+                            <span>Contact</span>
+                        </a>
                     </li>
                 </ul>
                 
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center nav-actions">
                     <!-- Authentication Links -->
                     {% if user.is_authenticated %}
-                        <a href="/accounts/logout/" class="btn btn-danger me-2">Logout</a>
                         {% if request.user.business %}
-                            <a href="{% url 'dashboard:index' %}" class="btn btn-primary me-2">Dashboard</a>
+                            <a href="{% url 'dashboard:index' %}" class="btn btn-nav-primary me-2">
+                                <i class="fas fa-chart-line me-1"></i>
+                                Dashboard
+                            </a>
                         {% else %}
-                            <a href="/business/register/" class="btn btn-primary me-2">Register</a>
+                            <a href="/business/register/" class="btn btn-nav-primary me-2">
+                                <i class="fas fa-plus-circle me-1"></i>
+                                Register
+                            </a>
                         {% endif %}
+                        <a href="/accounts/logout/" class="btn btn-nav-outline">
+                            <i class="fas fa-sign-out-alt me-1"></i>
+                            Logout
+                        </a>
                     {% else %}
-                        <div class="ms-3 d-flex">
-                            <a href="/accounts/login/" class="btn btn-outline-primary me-2">Login</a>
-                            <a href="/accounts/signup/" class="btn btn-primary">Sign Up</a>
-                        </div>
+                        <a href="/accounts/login/" class="btn btn-nav-outline me-2">Login</a>
+                        <a href="/accounts/signup/" class="btn btn-nav-primary">
+                            <i class="fas fa-rocket me-1"></i>
+                            Get Started
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -111,69 +154,98 @@
     </main>
     
     <!-- Footer -->
-    <footer class="footer mt-auto py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-12 col-md-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-calendar-check me-2 primary-icon"></i>
-                        <span class="fw-semibold">Services AI</span>
+    <footer class="footer-modern mt-auto">
+        <div class="footer-content">
+            <div class="container">
+                <div class="row g-4 py-5">
+                    <div class="col-12 col-md-4">
+                        <div class="footer-brand mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas fa-brain footer-logo-icon me-2"></i>
+                                <span class="footer-logo-text">Booky AI</span>
+                            </div>
+                            <p class="footer-description">Transforming how businesses manage appointments with AI-powered automation. Available 24/7 to help you grow.</p>
+                        </div>
+                        <div class="social-links-modern">
+                            <a href="#" class="social-link" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Facebook">
+                                <i class="fab fa-facebook"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
                     </div>
-                    <p class="text-secondary">Transforming how businesses manage appointments with AI-powered automation.</p>
-                    <div class="social-links mt-3">
-                        <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
+                    
+                    <div class="col-6 col-md-2">
+                        <h6 class="footer-heading">Product</h6>
+                        <ul class="footer-links">
+                            <li><a href="/features" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Features</a></li>
+                            <li><a href="/pricing" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Pricing</a></li>
+                            <li><a href="/use-cases" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Use Cases</a></li>
+                            <li><a href="/integrations" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Integrations</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-6 col-md-2">
+                        <h6 class="footer-heading">Company</h6>
+                        <ul class="footer-links">
+                            <li><a href="/about" class="footer-link"><i class="fas fa-chevron-right me-2"></i>About Us</a></li>
+                            <li><a href="/contact" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Contact</a></li>
+                            <li><a href="/careers" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Careers</a></li>
+                            <li><a href="/blog" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Blog</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-6 col-md-2">
+                        <h6 class="footer-heading">Support</h6>
+                        <ul class="footer-links">
+                            <li><a href="/help" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Help Center</a></li>
+                            <li><a href="/docs" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Documentation</a></li>
+                            <li><a href="/status" class="footer-link"><i class="fas fa-chevron-right me-2"></i>System Status</a></li>
+                            <li><a href="/faq" class="footer-link"><i class="fas fa-chevron-right me-2"></i>FAQ</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-6 col-md-2">
+                        <h6 class="footer-heading">Legal</h6>
+                        <ul class="footer-links">
+                            <li><a href="/terms" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Terms</a></li>
+                            <li><a href="/privacy" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Privacy</a></li>
+                            <li><a href="/cookies" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Cookies</a></li>
+                            <li><a href="/gdpr" class="footer-link"><i class="fas fa-chevron-right me-2"></i>GDPR</a></li>
+                        </ul>
                     </div>
                 </div>
                 
-                <div class="col-6 col-md-2">
-                    <h5 class="fw-semibold mb-3">Product</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/features" class="footer-link">Features</a></li>
-                        <li class="mb-2"><a href="/pricing" class="footer-link">Pricing</a></li>
-                        <li class="mb-2"><a href="/industries" class="footer-link">Industries</a></li>
-                        <li class="mb-2"><a href="/integrations" class="footer-link">Integrations</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-6 col-md-2">
-                    <h5 class="fw-semibold mb-3">Company</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/about" class="footer-link">About Us</a></li>
-                        <li class="mb-2"><a href="/contact" class="footer-link">Contact</a></li>
-                        <li class="mb-2"><a href="/careers" class="footer-link">Careers</a></li>
-                        <li class="mb-2"><a href="/blog" class="footer-link">Blog</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-6 col-md-2">
-                    <h5 class="fw-semibold mb-3">Support</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/help" class="footer-link">Help Center</a></li>
-                        <li class="mb-2"><a href="/docs" class="footer-link">Documentation</a></li>
-                        <li class="mb-2"><a href="/status" class="footer-link">System Status</a></li>
-                        <li class="mb-2"><a href="/faq" class="footer-link">FAQ</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-6 col-md-2">
-                    <h5 class="fw-semibold mb-3">Legal</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="/terms" class="footer-link">Terms of Service</a></li>
-                        <li class="mb-2"><a href="/privacy" class="footer-link">Privacy Policy</a></li>
-                        <li class="mb-2"><a href="/cookies" class="footer-link">Cookie Policy</a></li>
-                        <li class="mb-2"><a href="/gdpr" class="footer-link">GDPR</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="my-4">
-            
-            <div class="row">
-                <div class="col-12 text-center">
-                    <p class="text-secondary mb-0">&copy; {% now "Y" %} Services AI. All rights reserved.</p>
+                <div class="footer-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                            <p class="footer-copyright mb-0">
+                                &copy; {% now "Y" %} Booky AI. All rights reserved.
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-center text-md-end">
+                            <div class="footer-badges">
+                                <span class="footer-badge">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    SSL Secured
+                                </span>
+                                <span class="footer-badge">
+                                    <i class="fas fa-lock me-1"></i>
+                                    GDPR Compliant
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

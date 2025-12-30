@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 
 from .models import EmailVerification
-from core.email_notifications import send_email, get_smtp_config
+from services_ai.utils import send_email
 from business.models import Business
 
 def create_verification(user, email):
@@ -141,11 +141,8 @@ def send_verification_email(user, email, otp):
     business = None
     try:
         business = Business.objects.get(user=user)
-        # Get SMTP config for the business
-        smtp_config = get_smtp_config(business)
     except Business.DoesNotExist:
-        # Use default email settings from settings.py
-        smtp_config = None
+        pass
     
     # Prepare context for email template
     context = {
@@ -158,25 +155,20 @@ def send_verification_email(user, email, otp):
     # Render email template
     html_content = render_to_string('emails/otp_verification.html', context)
     
-    # Send email
+    # Send email using custom send_email function
     subject = "Verify Your Email Address"
+    from_email = f"{business.name if business else 'Booky AI'} <noreply@trackifye.com>"
     
-    if smtp_config:
-        # Use business SMTP configuration
-        return send_email(smtp_config, email, subject, html_content)
-    else:
-        # Use Django's default email backend
-        from django.core.mail import send_mail
-        try:
-            send_mail(
-                subject=subject,
-                message="",  # Plain text version (not used)
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                html_message=html_content,
-                fail_silently=False,
-            )
-            return True
-        except Exception as e:
-            print(f"Failed to send email: {str(e)}")
-            return False
+    try:
+        result = send_email(
+            from_email=from_email,
+            to_email=email,
+            subject=subject,
+            html_content=html_content,
+            text_content=f"Your OTP is: {otp}. It will expire in 30 minutes."
+        )
+        return result.get('success', False) if result else False
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        return False
+

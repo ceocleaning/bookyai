@@ -1,0 +1,238 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}Industries & Use Cases - Booky AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/usecases.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="usecases-page-wrapper">
+    <!-- Background Elements -->
+    <div class="animated-grid-bg"></div>
+    <div class="bg-glow-orb orb-1"></div>
+    <div class="bg-glow-orb orb-2"></div>
+
+    <!-- Hero Section -->
+    <section class="usecases-hero">
+        <img src="{% static 'images/usecases/hero.png' %}" alt="Global Network" class="hero-bg-image">
+        
+        <div class="container hero-content-wrapper" data-aos="fade-up">
+            <div class="hero-badge">
+                <i class="fas fa-briefcase"></i> Solutions by Industry
+            </div>
+            <h1 class="hero-title">
+                Adapting to <br>
+                <span style="color: #00f3ff;">Every Workflow</span>
+            </h1>
+            <p class="hero-subtitle">
+                From solo practitioners to enterprise teams, our AI engine configures itself to match your specific business requirements.
+            </p>
+        </div>
+    </section>
+
+    <!-- Use Cases Grid -->
+    <section class="usecases-grid-section">
+        <div class="container">
+            <div class="usecase-grid">
+                
+                <!-- 1. Healthcare -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/usecases/healthcare.png' %}" alt="Healthcare AI" class="usecase-image">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Healthcare & Clinics</h3>
+                        <p class="usecase-desc">
+                            HIPAA-compliant scheduling for clinics. Handle patient intake, insurance verification, and complex multi-provider calendars.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #00f3ff;">65%</span>
+                            <span class="stat-label">Reduction in<br>No-Shows</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Real Estate -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/usecases/real_estate.png' %}" alt="Real Estate AI" class="usecase-image">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Real Estate</h3>
+                        <p class="usecase-desc">
+                            Automated property viewing coordination. Syncs agents with buyers and sellers instantly to close deals faster.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #bc13fe;">3x</span>
+                            <span class="stat-label">More Viewings<br>Booked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Beauty & Wellness (Using Texture Filter Pink) -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/features/texture.png' %}" alt="Beauty AI" class="usecase-image" style="filter: hue-rotate(300deg) brightness(0.7);">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Beauty & Wellness</h3>
+                        <p class="usecase-desc">
+                            Fill last-minute cancellations automatically with smart waitlists. Perfect for salons, spas, and aesthetic centers.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #ff00de;">40%</span>
+                            <span class="stat-label">Revenue<br>Increase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Fitness (Using Texture Filter Cyan/Orange mix -> Orange via 30deg) -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="0">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/features/texture.png' %}" alt="Fitness AI" class="usecase-image" style="filter: hue-rotate(45deg) brightness(0.6);">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Fitness & Gyms</h3>
+                        <p class="usecase-desc">
+                            Class management and personal trainer scheduling. Let members book spots and manage memberships effortlessly.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #ff9d00;">95%</span>
+                            <span class="stat-label">Class<br>Capacity</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Professional Services (Using Texture Filter Blue) -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/features/texture.png' %}" alt="Professional AI" class="usecase-image" style="filter: hue-rotate(220deg) brightness(0.6);">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Professional Services</h3>
+                        <p class="usecase-desc">
+                            For legal, financial, and consulting firms. Securely schedule client consultations and automate document collection.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #4f80ff;">15h</span>
+                            <span class="stat-label">Saved Weekly<br>Per Admin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Home Services (Using Texture Filter Green) -->
+                <div class="usecase-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-image-wrapper">
+                        <img src="{% static 'images/features/texture.png' %}" alt="Home Services AI" class="usecase-image" style="filter: hue-rotate(100deg) brightness(0.6);">
+                        <div class="card-image-overlay"></div>
+                    </div>
+                    <div class="usecase-content">
+                        <h3 class="usecase-title">Home Services</h3>
+                        <p class="usecase-desc">
+                            Dispatch optimization for plumbers, HVAC, and contractors. Route optimization and job status tracking.
+                        </p>
+                        <div class="usecase-stats">
+                            <span class="stat-value" style="color: #00ff9d;">30%</span>
+                            <span class="stat-label">Efficiency<br>Gain</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories Carousel-ish Grid -->
+    <section class="success-stories-section">
+        <div class="container">
+            <div class="text-center mb-5" data-aos="fade-up">
+                <h2 class="display-6 fw-bold">Client Impact</h2>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="0">
+                    <div class="story-card-modern">
+                        <div class="story-quote-icon">“</div>
+                        <p class="story-text">
+                            We scaled from 5 to 20 agents without hiring a single receptionist. The AI handles 100% of our initial scheduling.
+                        </p>
+                        <div class="story-author">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="story-avatar">
+                            <div class="story-meta">
+                                <h5>Marcus Thorne</h5>
+                                <p>CEO, Thorne Realty</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="story-card-modern">
+                        <div class="story-quote-icon">“</div>
+                        <p class="story-text">
+                            No-shows were killing our clinic's profitability. Since switching to Booky AI, our attendance rate is near perfect.
+                        </p>
+                        <div class="story-author">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="story-avatar">
+                            <div class="story-meta">
+                                <h5>Dr. Elena Rostova</h5>
+                                <p>Medical Director</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="story-card-modern">
+                        <div class="story-quote-icon">“</div>
+                        <p class="story-text">
+                            The visual workflow builder let us customize exactly when to send deposits and reminders. It's incredibly flexible.
+                        </p>
+                        <div class="story-author">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="User" class="story-avatar">
+                            <div class="story-meta">
+                                <h5>Sarah Jenkins</h5>
+                                <p>Founder, Glow Spa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="container cta-compact-wrapper">
+        <div class="cta-glass-card" data-aos="zoom-in">
+            <h2 class="mb-3 display-5 fw-bold text-white">Scale Your Operations</h2>
+            <p class="lead text-white-50 mb-5">
+                Don't see your industry? Our AI is adaptable to any time-based service business.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="/accounts/signup/" class="btn btn-light rounded-pill px-5 py-3 fw-bold">
+                    Start Building
+                </a>
+                <a href="/contact" class="btn btn-outline-light rounded-pill px-5 py-3 fw-bold">
+                    Talk to Sales
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 80,
+        easing: 'ease-out-quart'
+    });
+</script>
+{% endblock %}

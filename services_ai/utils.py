@@ -44,7 +44,7 @@ def send_email(from_email, to_email, subject, reply_to=None, text_content='', at
         from_email = f"{business_name} <{user}@{default_domain}>"
     else:
         # Fallback if invalid format
-        from_email = f"Services AI <noreply@{default_domain}>"
+        from_email = f"Booky AI <noreply@{default_domain}>"
 
     data = {
         "from": from_email,
