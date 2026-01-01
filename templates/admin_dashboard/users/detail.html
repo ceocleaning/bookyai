@@ -1,0 +1,645 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}User: {{ user_obj.username }}{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-3" data-aos="fade-right">
+    <a href="{% url 'admin_dashboard:users_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Users List
+    </a>
+</div>
+
+<!-- User Info Card -->
+<div class="row g-4">
+    <!-- Left Column - User Information -->
+    <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-user me-2" style="color: var(--admin-primary);"></i>
+                    User Information
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'admin_dashboard:user_edit' user_obj.id %}" class="card-action-btn">
+                        <i class="fas fa-edit me-1"></i>
+                        Edit
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-user me-2"></i>
+                                Username
+                            </label>
+                            <div class="info-value">{{ user_obj.username }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Email
+                            </label>
+                            <div class="info-value">{{ user_obj.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-id-card me-2"></i>
+                                First Name
+                            </label>
+                            <div class="info-value">{{ user_obj.first_name|default:"—" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-id-card me-2"></i>
+                                Last Name
+                            </label>
+                            <div class="info-value">{{ user_obj.last_name|default:"—" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-calendar me-2"></i>
+                                Date Joined
+                            </label>
+                            <div class="info-value">{{ user_obj.date_joined|date:"F d, Y H:i" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-clock me-2"></i>
+                                Last Login
+                            </label>
+                            <div class="info-value">
+                                {% if user_obj.last_login %}
+                                    {{ user_obj.last_login|date:"F d, Y H:i" }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Business Information -->
+        {% if has_business %}
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-building me-2" style="color: var(--admin-secondary);"></i>
+                    Business Information
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-building me-2"></i>
+                                Business Name
+                            </label>
+                            <div class="info-value">{{ business.name }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-industry me-2"></i>
+                                Industry
+                            </label>
+                            <div class="info-value">{{ business.industry.name }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-phone me-2"></i>
+                                Phone
+                            </label>
+                            <div class="info-value">{{ business.phone_number }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Business Email
+                            </label>
+                            <div class="info-value">{{ business.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Address
+                            </label>
+                            <div class="info-value">
+                                {{ business.address|default:"—" }}
+                                {% if business.city %}, {{ business.city }}{% endif %}
+                                {% if business.state %}, {{ business.state }}{% endif %}
+                                {% if business.zip_code %} {{ business.zip_code }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Right Column - Status & Statistics -->
+    <div class="col-lg-4">
+        <!-- Status Card -->
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-shield-alt me-2" style="color: var(--admin-warning);"></i>
+                    Status & Permissions
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="status-item">
+                    <div class="status-label">Account Status</div>
+                    <div class="status-value">
+                        {% if user_obj.is_active %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle me-1"></i>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="status-item">
+                    <div class="status-label">Staff Status</div>
+                    <div class="status-value">
+                        {% if user_obj.is_staff %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-check me-1"></i>
+                                Staff Member
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                Not Staff
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="status-item">
+                    <div class="status-label">Superuser</div>
+                    <div class="status-value">
+                        {% if user_obj.is_superuser %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-crown me-1"></i>
+                                Superuser
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-times me-1"></i>
+                                Regular User
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if groups %}
+                <div class="status-item">
+                    <div class="status-label">Groups</div>
+                    <div class="status-value">
+                        {% for group in groups %}
+                            <span class="badge bg-info me-1">{{ group.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Statistics Card -->
+        {% if has_business %}
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-bar me-2" style="color: var(--admin-success);"></i>
+                    Statistics
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-number">{{ total_bookings }}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Leads</div>
+                        <div class="stat-number">{{ total_leads }}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Invoices</div>
+                        <div class="stat-number">{{ total_invoices }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Password Management Card -->
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="150">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-key me-2" style="color: var(--admin-info);"></i>
+                    Password Management
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-info" onclick="viewPasswordInfo({{ user_obj.id }})">
+                        <i class="fas fa-eye me-2"></i>
+                        View Password Info
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary" onclick="showChangePasswordModal()">
+                        <i class="fas fa-lock me-2"></i>
+                        Change Password
+                    </button>
+                </div>
+                
+                <!-- Password Info Display -->
+                <div id="passwordInfo" class="mt-3" style="display: none;">
+                    <div class="alert alert-info">
+                        <h6 class="mb-2"><i class="fas fa-info-circle me-2"></i>Password Information</h6>
+                        <div class="password-info-item">
+                            <strong>Algorithm:</strong> <span id="pwdAlgorithm">-</span>
+                        </div>
+                        <div class="password-info-item">
+                            <strong>Has Usable Password:</strong> <span id="pwdUsable">-</span>
+                        </div>
+                        <div class="password-info-item">
+                            <strong>Last Login:</strong> <span id="pwdLastLogin">-</span>
+                        </div>
+                        <div class="password-info-item mt-2">
+                            <strong>Password Hash:</strong>
+                            <div class="password-hash" id="pwdHash" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; word-break: break-all; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem;">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions Card -->
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-cog me-2" style="color: var(--admin-danger);"></i>
+                    Actions
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_dashboard:user_edit' user_obj.id %}" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit User
+                    </a>
+                    
+                    <button type="button" class="btn btn-info" onclick="toggleStatus({{ user_obj.id }})">
+                        <i class="fas fa-toggle-on me-2"></i>
+                        {% if user_obj.is_active %}Deactivate{% else %}Activate{% endif %} Account
+                    </button>
+                    
+                    <button type="button" class="btn btn-danger" onclick="deleteUser({{ user_obj.id }}, '{{ user_obj.username }}')">
+                        <i class="fas fa-trash me-2"></i>
+                        Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background: var(--admin-card-bg); border: 1px solid var(--admin-border);">
+            <div class="modal-header" style="border-bottom: 1px solid var(--admin-border);">
+                <h5 class="modal-title" style="color: var(--admin-text);">
+                    <i class="fas fa-lock me-2"></i>
+                    Change Password for {{ user_obj.username }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label" style="color: var(--admin-text);">
+                            <i class="fas fa-key me-2"></i>
+                            New Password
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="newPassword" 
+                               required
+                               minlength="8"
+                               style="background: rgba(255,255,255,0.05); border: 1px solid var(--admin-border); color: var(--admin-text);">
+                        <small class="form-text text-muted">Minimum 8 characters</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label" style="color: var(--admin-text);">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Confirm Password
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="confirmPassword" 
+                               required
+                               minlength="8"
+                               style="background: rgba(255,255,255,0.05); border: 1px solid var(--admin-border); color: var(--admin-text);">
+                    </div>
+                    
+                    <div class="alert alert-warning" style="font-size: 0.875rem;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Note:</strong> The user will need to use this new password to log in.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--admin-border);">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitPasswordChange()">
+                    <i class="fas fa-save me-2"></i>
+                    Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: var(--admin-text);
+        font-weight: 500;
+    }
+    
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--admin-border);
+    }
+    
+    .status-item:last-child {
+        border-bottom: none;
+    }
+    
+    .status-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+    }
+    
+    .status-value {
+        text-align: right;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--admin-border);
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .stat-content {
+        flex: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--admin-text);
+        font-family: 'JetBrains Mono', monospace;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleStatus(userId) {
+        if (!confirm('Are you sure you want to change this user\'s status?')) {
+            return;
+        }
+        
+        fetch(`/admin-dashboard/users/${userId}/toggle-status/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    
+    function deleteUser(userId, username) {
+        if (!confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
+            return;
+        }
+        
+        fetch(`/admin-dashboard/users/${userId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '{% url "admin_dashboard:users_list" %}';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the user');
+        });
+    }
+    
+    // Password Management Functions
+    function viewPasswordInfo(userId) {
+        fetch(`/admin-dashboard/users/${userId}/password-info/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('pwdAlgorithm').textContent = data.algorithm;
+                    document.getElementById('pwdUsable').textContent = data.has_usable_password ? 'Yes' : 'No';
+                    document.getElementById('pwdLastLogin').textContent = data.last_login ? new Date(data.last_login).toLocaleString() : 'Never';
+                    document.getElementById('pwdHash').textContent = data.password_hash;
+                    document.getElementById('passwordInfo').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching password information');
+            });
+    }
+    
+    function showChangePasswordModal() {
+        const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+        modal.show();
+    }
+    
+    function submitPasswordChange() {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        if (!newPassword || !confirmPassword) {
+            alert('Please fill in both password fields');
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+        
+        if (newPassword.length < 8) {
+            alert('Password must be at least 8 characters long');
+            return;
+        }
+        
+        fetch(`/admin-dashboard/users/{{ user_obj.id }}/change-password/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                new_password: newPassword,
+                confirm_password: confirmPassword
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+                modal.hide();
+                // Clear form
+                document.getElementById('changePasswordForm').reset();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while changing the password');
+        });
+    }
+</script>
+{% endblock %}

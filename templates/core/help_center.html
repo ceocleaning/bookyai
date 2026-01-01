@@ -1,0 +1,205 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}Help Center - Booky AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<style>
+    .help-page-wrapper {
+        padding-top: 80px;
+        padding-bottom: 60px;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);
+    }
+
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .search-input-group .input-group-text {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-right: none;
+        color: #64748b;
+    }
+
+    .search-input-group .form-control {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-left: none;
+        color: #e2e8f0;
+        padding: 0.75rem 1rem;
+    }
+
+    .search-input-group .form-control:focus {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(79, 70, 229, 0.3);
+        color: #ffffff;
+        box-shadow: none;
+    }
+
+    .search-input-group .form-control::placeholder {
+        color: #64748b;
+    }
+
+    .category-card {
+        background: rgba(10, 14, 39, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(79, 70, 229, 0.15);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+    }
+
+    .category-card:hover {
+        background: rgba(10, 14, 39, 0.6);
+        border-color: rgba(79, 70, 229, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.15));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.25rem;
+        color: #a5b4fc;
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover .category-icon {
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .category-title {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .category-desc {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-count {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .support-section {
+        margin-top: 4rem;
+        padding-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .support-card {
+        background: rgba(10, 14, 39, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(79, 70, 229, 0.15);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-page-wrapper">
+    <div class="container position-relative z-1">
+        <!-- Header -->
+        <section class="text-center mb-5" data-aos="fade-down">
+            <div class="ai-badge mb-3">
+                <span class="badge-glow"></span>
+                <i class="fas fa-life-ring me-2"></i>
+                <span>Help Center</span>
+            </div>
+            
+            <h1 class="hero-title mb-3" style="font-size: 2.5rem;">
+                How can we <span class="gradient-text">help you?</span>
+            </h1>
+            
+            <!-- Search -->
+            <div class="search-container mb-4">
+                <form action="{% url 'help_center' %}" method="get">
+                    <div class="input-group input-group-lg search-input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control" 
+                               placeholder="Search articles, guides, and tutorials..." 
+                               value="{{ request.GET.q }}">
+                        <button class="btn btn-primary" type="submit" style="padding: 0.75rem 1.5rem;">Search</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        {% if categories %}
+        <div class="row g-3 mb-5">
+            {% for category in categories %}
+            <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}00">
+                <a href="{% url 'help_article' category.slug category.first_article_slug %}" class="category-card">
+                    <div class="category-icon">
+                        <i class="{{ category.icon|default:'fas fa-book' }}"></i>
+                    </div>
+                    <h3 class="category-title">{{ category.name }}</h3>
+                    <p class="category-desc">{{ category.description|truncatewords:12 }}</p>
+                    <div class="category-count">
+                        {{ category.articles.count }} article{{ category.articles.count|pluralize }}
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5" data-aos="fade-up">
+            <i class="far fa-folder-open fa-3x mb-3 opacity-50"></i>
+            <p>No categories found.</p>
+        </div>
+        {% endif %}
+
+        <!-- Support Section -->
+        <section class="support-section">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="support-card" data-aos="fade-up">
+                        <h3 class="text-white mb-3" style="font-size: 1.5rem;">Still need support?</h3>
+                        <p class="text-muted mb-4" style="font-size: 0.9rem;">
+                            Can't find the answer you're looking for? Our team is here to help you.
+                        </p>
+                        <div class="d-flex justify-content-center gap-3 flex-wrap">
+                            <a href="/contact" class="btn btn-primary" style="padding: 0.625rem 1.5rem;">
+                                <i class="fas fa-envelope me-2"></i> Contact Support
+                            </a>
+                            <a href="/status" class="btn btn-outline-light" style="padding: 0.625rem 1.5rem;">
+                                <i class="fas fa-server me-2"></i> System Status
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,757 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} | Booky AI</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/svgs/solid/shield-halved.svg" type="image/svg+xml">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <style>
+        :root {
+            --admin-primary: #4f46e5;
+            --admin-primary-dark: #4338ca;
+            --admin-secondary: #06b6d4;
+            --admin-success: #10b981;
+            --admin-warning: #f59e0b;
+            --admin-danger: #ef4444;
+            --admin-info: #3b82f6;
+            --admin-dark: #0a0e27;
+            --admin-darker: #050711;
+            --admin-sidebar: rgba(10, 14, 39, 0.95);
+            --admin-card-bg: rgba(15, 20, 45, 0.6);
+            --admin-border: rgba(79, 70, 229, 0.2);
+            --admin-text: #e2e8f0;
+            --admin-text-muted: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+            color: var(--admin-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
+            animation: backgroundShift 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Sidebar */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--admin-sidebar);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--admin-border);
+            padding: 2rem 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .admin-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: var(--admin-primary);
+            border-radius: 10px;
+        }
+        
+        .sidebar-brand {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--admin-border);
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-brand-icon {
+            font-size: 1.75rem;
+            filter: drop-shadow(0 0 10px rgba(79, 70, 229, 0.5));
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar-nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: var(--admin-text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .sidebar-nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            border-radius: 0 4px 4px 0;
+            transition: height 0.3s ease;
+        }
+        
+        .sidebar-nav-link:hover,
+        .sidebar-nav-link.active {
+            color: #ffffff;
+            background: rgba(79, 70, 229, 0.1);
+        }
+        
+        .sidebar-nav-link:hover::before,
+        .sidebar-nav-link.active::before {
+            height: 100%;
+        }
+        
+        .sidebar-nav-icon {
+            width: 24px;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-section-title {
+            padding: 1.5rem 1.5rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--admin-text-muted);
+            opacity: 0.7;
+        }
+        
+        /* Main Content */
+        .admin-main {
+            margin-left: 280px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Top Bar */
+        .admin-topbar {
+            background: var(--admin-sidebar);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--admin-border);
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        .topbar-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .topbar-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--admin-border);
+            color: var(--admin-text);
+            padding: 0.625rem 1rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .topbar-btn:hover {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--admin-primary);
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+        
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--admin-border);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .topbar-user:hover {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--admin-primary);
+        }
+        
+        .topbar-user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .topbar-user-name {
+            font-weight: 600;
+            color: var(--admin-text);
+        }
+        
+        /* Content Area */
+        .admin-content {
+            padding: 2rem;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--admin-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--admin-border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--card-color), transparent);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+            border-color: var(--card-color);
+        }
+        
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--admin-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--card-color), transparent);
+            color: var(--card-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-card-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .stat-card-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .stat-trend.up {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--admin-success);
+        }
+        
+        .stat-trend.down {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--admin-danger);
+        }
+        
+        .stat-trend-text {
+            color: var(--admin-text-muted);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: var(--admin-card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--admin-border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--admin-border);
+        }
+        
+        .dashboard-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+        
+        .dashboard-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .card-action-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--admin-border);
+            color: var(--admin-text);
+            padding: 0.5rem 0.875rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .card-action-btn:hover {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--admin-primary);
+            color: #ffffff;
+        }
+        
+        /* Table Styling */
+        .table {
+            color: var(--admin-text);
+            margin-bottom: 0;
+        }
+        
+        .table-dark {
+            --bs-table-bg: transparent;
+            --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+            --bs-table-hover-bg: rgba(79, 70, 229, 0.1);
+            --bs-table-border-color: var(--admin-border);
+            background: transparent;
+        }
+        
+        .table-dark thead th {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 2px solid var(--admin-border);
+            color: var(--admin-text-muted);
+            font-weight: 600;
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 0.75rem;
+        }
+        
+        .table-dark tbody tr {
+            border-bottom: 1px solid var(--admin-border);
+            transition: all 0.2s ease;
+        }
+        
+        .table-dark tbody tr:hover {
+            background: rgba(79, 70, 229, 0.08);
+            transform: translateX(2px);
+        }
+        
+        .table-dark tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+            border-color: var(--admin-border);
+            background: transparent;
+        }
+        
+        .table-responsive {
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+        }
+        
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-main {
+                margin-left: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--admin-border);
+            color: var(--admin-text);
+            padding: 0.625rem 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-toggle:hover {
+            background: rgba(79, 70, 229, 0.2);
+            border-color: var(--admin-primary);
+        }
+        
+        @media (max-width: 991.98px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+        
+        /* ========================================
+           BOOTSTRAP MODAL Z-INDEX FIX
+           ======================================== */
+        /* Fix for modals appearing behind sidebar/topbar */
+        /* Sidebar is z-index: 1000, Topbar is z-index: 999 */
+        /* Bootstrap dynamically creates backdrop with z-index: 951 */
+        /* We need to override this with maximum specificity */
+        
+        /* Target backdrop with multiple selectors for specificity */
+        .modal-backdrop,
+        .modal-backdrop.fade,
+        .modal-backdrop.show,
+        .modal-backdrop.fade.show,
+        div.modal-backdrop {
+            z-index: 10000 !important;
+        }
+        
+        /* Target modal with multiple selectors */
+        .modal,
+        .modal.fade,
+        .modal.show,
+        .modal.fade.show,
+        div.modal {
+            z-index: 10001 !important;
+        }
+        
+        /* Target modal dialog */
+        .modal-dialog,
+        .modal .modal-dialog,
+        div.modal-dialog {
+            z-index: 10002 !important;
+        }
+        
+        /* Ensure modal content is on top */
+        .modal-content,
+        .modal-dialog .modal-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Additional fix for body with modal-open class */
+        body.modal-open .modal-backdrop {
+            z-index: 10000 !important;
+        }
+        
+        body.modal-open .modal {
+            z-index: 10001 !important;
+        }
+    </style>
+    
+    <!-- Set Dark Mode as Default -->
+    <script>
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+    </script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-text">
+                <i class="fas fa-shield-halved sidebar-brand-icon"></i>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+        
+        <nav>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{% url 'admin_dashboard:index' %}" class="sidebar-nav-link active">
+                        <i class="fas fa-chart-line sidebar-nav-icon"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">Management</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="{% url 'admin_dashboard:users_list' %}" class="sidebar-nav-link">
+                        <i class="fas fa-users sidebar-nav-icon"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{% url 'admin_dashboard:business_list' %}" class="sidebar-nav-link">
+                        <i class="fas fa-building sidebar-nav-icon"></i>
+                        <span>Businesses</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-calendar-check sidebar-nav-icon"></i>
+                        <span>Bookings</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-file-invoice-dollar sidebar-nav-icon"></i>
+                        <span>Invoices</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">Content</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-newspaper sidebar-nav-icon"></i>
+                        <span>Blog Posts</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="{% url 'admin_dashboard:help_article_list' %}" class="sidebar-nav-link">
+                        <i class="fas fa-question-circle sidebar-nav-icon"></i>
+                        <span>Help Center</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-comments sidebar-nav-icon"></i>
+                        <span>Testimonials</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-section-title">System</div>
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-cog sidebar-nav-icon"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-bell sidebar-nav-icon"></i>
+                        <span>Notifications</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-chart-bar sidebar-nav-icon"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <i class="fas fa-database sidebar-nav-icon"></i>
+                        <span>Database</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Top Bar -->
+        <div class="admin-topbar">
+            <div class="d-flex align-items-center gap-3">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="topbar-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <a href="/" class="topbar-btn" target="_blank">
+                    <i class="fas fa-globe"></i>
+                    <span>View Site</span>
+                </a>
+                <div class="topbar-user">
+                    <div class="topbar-user-avatar">
+                        {{ request.user.first_name.0|default:"A" }}{{ request.user.last_name.0|default:"D" }}
+                    </div>
+                    <span class="topbar-user-name">{{ request.user.get_full_name|default:"Admin" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="admin-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 600,
+            once: true,
+            offset: 50,
+            easing: 'ease-out-cubic',
+        });
+    </script>
+    
+    <!-- Mobile Menu Toggle -->
+    <script>
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const adminSidebar = document.getElementById('adminSidebar');
+        
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                adminSidebar.classList.toggle('show');
+            });
+        }
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 991.98) {
+                if (!adminSidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                    adminSidebar.classList.remove('show');
+                }
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

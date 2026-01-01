@@ -1,0 +1,468 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }}{% endblock %}
+{% block page_title %}Article Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard/help-articles.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" data-aos="fade-down">
+    <div class="page-header-content">
+        <div class="page-header-text">
+            <h2 class="page-header-title">
+                <i class="fas fa-file-alt me-2"></i>
+                {{ article.title }}
+            </h2>
+            <p class="page-header-subtitle">
+                <span class="badge-category" style="--category-color: {{ article.category.color|default:'#4f46e5' }}">
+                    <i class="{{ article.category.icon }} me-1"></i>
+                    {{ article.category.name }}
+                </span>
+                <span class="mx-2">•</span>
+                {% if article.is_published %}
+                <span class="badge-status status-published">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Published
+                </span>
+                {% else %}
+                <span class="badge-status status-draft">
+                    <i class="fas fa-edit me-1"></i>
+                    Draft
+                </span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'admin_dashboard:help_article_list' %}" class="btn-secondary-admin">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to List
+            </a>
+            <a href="{% url 'admin_dashboard:help_article_edit' article.id %}" class="btn-primary-admin">
+                <i class="fas fa-edit me-2"></i>
+                Edit Article
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Article Content -->
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-file-text me-2"></i>
+                    Article Content
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'help_article' article.category.slug article.slug %}" 
+                       class="card-action-btn" 
+                       target="_blank">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        View Live
+                    </a>
+                </div>
+            </div>
+
+            <div class="article-content" style="padding: 1.5rem; line-height: 1.8;">
+                {{ article.content|safe }}
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-history me-2"></i>
+                    Activity Log
+                </h3>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker" style="background: var(--admin-success);"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <strong>Article Created</strong>
+                            <span class="timeline-date">{{ article.created_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        <p class="timeline-text">Article was created and added to the help center</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker" style="background: var(--admin-info);"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <strong>Last Updated</strong>
+                            <span class="timeline-date">{{ article.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        <p class="timeline-text">Article content was last modified</p>
+                    </div>
+                </div>
+
+                {% if article.is_published %}
+                <div class="timeline-item">
+                    <div class="timeline-marker" style="background: var(--admin-primary);"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <strong>Published</strong>
+                            <span class="timeline-date">{{ article.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                        <p class="timeline-text">Article is now visible to all users</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Statistics -->
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Statistics
+                </h3>
+            </div>
+
+            <div class="stats-list">
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background: rgba(79, 70, 229, 0.1); color: var(--admin-primary);">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-item-content">
+                        <div class="stat-item-label">Total Views</div>
+                        <div class="stat-item-value">{{ article.views|default:0 }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--admin-success);">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="stat-item-content">
+                        <div class="stat-item-label">Created</div>
+                        <div class="stat-item-value-small">{{ article.created_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--admin-warning);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-item-content">
+                        <div class="stat-item-label">Last Updated</div>
+                        <div class="stat-item-value-small">{{ article.updated_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-item-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--admin-info);">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="stat-item-content">
+                        <div class="stat-item-label">Slug</div>
+                        <div class="stat-item-value-small">{{ article.slug }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-bolt me-2"></i>
+                    Quick Actions
+                </h3>
+            </div>
+
+            <div class="action-list">
+                <a href="{% url 'admin_dashboard:help_article_edit' article.id %}" class="action-list-item">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit Article</span>
+                </a>
+
+                <a href="{% url 'help_article' article.category.slug article.slug %}" 
+                   class="action-list-item" 
+                   target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span>View Live Article</span>
+                </a>
+
+                <button class="action-list-item" id="duplicateBtn" data-article-id="{{ article.id }}">
+                    <i class="fas fa-copy"></i>
+                    <span>Duplicate Article</span>
+                </button>
+
+                <button class="action-list-item text-danger" id="deleteBtn" data-article-id="{{ article.id }}">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete Article</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-link me-2"></i>
+                    Related Articles
+                </h3>
+            </div>
+
+            <div class="related-articles-list">
+                {% for related in related_articles %}
+                <a href="{% url 'admin_dashboard:help_article_detail' related.id %}" class="related-article-item">
+                    <div class="related-article-title">{{ related.title }}</div>
+                    <div class="related-article-meta">
+                        <span class="views-count">
+                            <i class="fas fa-eye me-1"></i>
+                            {{ related.views|default:0 }}
+                        </span>
+                    </div>
+                </a>
+                {% empty %}
+                <p class="text-muted text-center py-3">No related articles</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<strong>{{ article.title }}</strong>"?</p>
+                <p class="text-muted mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary-admin" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-danger-admin" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-2"></i>
+                    Delete Article
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin_dashboard/help-articles-detail.js' %}"></script>
+<style>
+    .article-content {
+        color: var(--admin-text);
+    }
+
+    .article-content h1, .article-content h2, .article-content h3 {
+        color: #ffffff;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .article-content p {
+        margin-bottom: 1rem;
+    }
+
+    .article-content a {
+        color: var(--admin-primary);
+        text-decoration: none;
+    }
+
+    .article-content a:hover {
+        text-decoration: underline;
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--admin-border);
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 2rem;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -1.5rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid var(--admin-dark);
+    }
+
+    .timeline-content {
+        padding-left: 1rem;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-date {
+        color: var(--admin-text-muted);
+        font-size: 0.875rem;
+    }
+
+    .timeline-text {
+        color: var(--admin-text-muted);
+        margin: 0;
+    }
+
+    .stats-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-item-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .stat-item-content {
+        flex: 1;
+    }
+
+    .stat-item-label {
+        font-size: 0.8125rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-item-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .stat-item-value-small {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--admin-text);
+    }
+
+    .action-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .action-list-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--admin-border);
+        border-radius: 10px;
+        color: var(--admin-text);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+    }
+
+    .action-list-item:hover {
+        background: rgba(79, 70, 229, 0.1);
+        border-color: var(--admin-primary);
+        color: #ffffff;
+        transform: translateX(5px);
+    }
+
+    .action-list-item.text-danger:hover {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--admin-danger);
+        color: var(--admin-danger);
+    }
+
+    .action-list-item i {
+        width: 20px;
+        text-align: center;
+    }
+
+    .related-articles-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .related-article-item {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--admin-border);
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .related-article-item:hover {
+        background: rgba(79, 70, 229, 0.1);
+        border-color: var(--admin-primary);
+        transform: translateX(5px);
+    }
+
+    .related-article-title {
+        color: var(--admin-text);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-article-meta {
+        font-size: 0.8125rem;
+        color: var(--admin-text-muted);
+    }
+</style>
+{% endblock %}

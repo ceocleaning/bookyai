@@ -1,0 +1,589 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Business: {{ business.name }}{% endblock %}
+{% block page_title %}Business Details{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-3" data-aos="fade-right">
+    <a href="{% url 'admin_dashboard:business_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Businesses List
+    </a>
+</div>
+
+<!-- Business Info -->
+<div class="row g-4">
+    <!-- Left Column - Business Information -->
+    <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-building me-2" style="color: var(--admin-primary);"></i>
+                    Business Information
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'admin_dashboard:business_edit' business.id %}" class="card-action-btn">
+                        <i class="fas fa-edit me-1"></i>
+                        Edit
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-building me-2"></i>
+                                Business Name
+                            </label>
+                            <div class="info-value">{{ business.name }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-industry me-2"></i>
+                                Industry
+                            </label>
+                            <div class="info-value">{{ business.industry.name }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Email
+                            </label>
+                            <div class="info-value">{{ business.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-phone me-2"></i>
+                                Phone
+                            </label>
+                            <div class="info-value">{{ business.phone_number }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-globe me-2"></i>
+                                Website
+                            </label>
+                            <div class="info-value">
+                                {% if business.website %}
+                                    <a href="{{ business.website }}" target="_blank" style="color: var(--admin-primary);">
+                                        {{ business.website }}
+                                        <i class="fas fa-external-link-alt ms-1" style="font-size: 0.75rem;"></i>
+                                    </a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-calendar me-2"></i>
+                                Created
+                            </label>
+                            <div class="info-value">{{ business.created_at|date:"F d, Y H:i" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Address
+                            </label>
+                            <div class="info-value">
+                                {% if business.address %}
+                                    {{ business.address }}
+                                    {% if business.city %}, {{ business.city }}{% endif %}
+                                    {% if business.state %}, {{ business.state }}{% endif %}
+                                    {% if business.zip_code %} {{ business.zip_code }}{% endif %}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if business.description %}
+                    <div class="col-12">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Description
+                            </label>
+                            <div class="info-value">{{ business.description }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Owner Information -->
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-user me-2" style="color: var(--admin-secondary);"></i>
+                    Owner Information
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'admin_dashboard:user_detail' business.user.id %}" class="card-action-btn">
+                        <i class="fas fa-eye me-1"></i>
+                        View User
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-4">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-user me-2"></i>
+                                Username
+                            </label>
+                            <div class="info-value">{{ business.user.username }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Email
+                            </label>
+                            <div class="info-value">{{ business.user.email }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-id-card me-2"></i>
+                                Full Name
+                            </label>
+                            <div class="info-value">{{ business.user.get_full_name|default:"—" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <label class="info-label">
+                                <i class="fas fa-clock me-2"></i>
+                                Last Login
+                            </label>
+                            <div class="info-value">
+                                {% if business.user.last_login %}
+                                    {{ business.user.last_login|date:"F d, Y H:i" }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column - Statistics & Actions -->
+    <div class="col-lg-4">
+        <!-- Status Card -->
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-info-circle me-2" style="color: var(--admin-warning);"></i>
+                    Status
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="status-item">
+                    <div class="status-label">Business Status</div>
+                    <div class="status-value">
+                        {% if business.is_active %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle me-1"></i>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Card -->
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-bar me-2" style="color: var(--admin-success);"></i>
+                    Statistics
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Bookings</div>
+                        <div class="stat-number">{{ total_bookings }}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Leads</div>
+                        <div class="stat-number">{{ total_leads }}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Invoices</div>
+                        <div class="stat-number">{{ total_invoices }}</div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-icon" style="background: rgba(6, 182, 212, 0.1); color: #06b6d4;">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total Revenue</div>
+                        <div class="stat-number">${{ total_revenue }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions Card -->
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-cog me-2" style="color: var(--admin-danger);"></i>
+                    Actions
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'admin_dashboard:business_edit' business.id %}" class="btn btn-warning">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Business
+                    </a>
+                    
+                    <button type="button" class="btn btn-info" onclick="toggleStatus('{{ business.id }}')">
+                        <i class="fas fa-toggle-on me-2"></i>
+                        {% if business.is_active %}Deactivate{% else %}Activate{% endif %} Business
+                    </button>
+                    
+                    <button type="button" class="btn btn-danger" onclick="deleteBusiness('{{ business.id }}', '{{ business.name }}')">
+                        <i class="fas fa-trash me-2"></i>
+                        Delete Business
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings & Leads -->
+<div class="row g-4 mt-2">
+    <!-- Recent Bookings -->
+    <div class="col-lg-6">
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-calendar-check me-2" style="color: var(--admin-primary);"></i>
+                    Recent Bookings
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'admin_dashboard:business_bookings' business.id %}" class="card-action-btn">
+                        <i class="fas fa-list me-1"></i>
+                        View All
+                    </a>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Customer</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Service</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Date</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text); font-size: 0.875rem;">
+                                <a href="{% url 'admin_dashboard:booking_detail' business.id booking.id %}">
+                                {% if booking.lead %}
+                                    {{ booking.lead.get_full_name }}
+                                {% else %}
+                                    {{ booking.name }}
+                                {% endif %}
+                                </a>
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                                {{ booking.service_offering.name|default:"—" }}
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                                {{ booking.booking_date|date:"M d, Y" }}
+                            </td>
+                            <td style="border-color: var(--admin-border); font-size: 0.875rem;">
+                                <span class="badge bg-{% if booking.status == 'confirmed' %}success{% elif booking.status == 'completed' %}primary{% elif booking.status == 'cancelled' %}danger{% else %}secondary{% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="border-color: var(--admin-border); text-align: center; padding: 2rem; color: var(--admin-text-muted); background: transparent;">
+                                <i class="fas fa-inbox fa-2x mb-2" style="opacity: 0.3;"></i>
+                                <p class="mb-0">No bookings yet</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Leads -->
+    <div class="col-lg-6">
+        <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-user-plus me-2" style="color: var(--admin-success);"></i>
+                    Recent Leads
+                </h3>
+                <div class="dashboard-card-actions">
+                    <a href="{% url 'admin_dashboard:business_leads' business.id %}" class="card-action-btn">
+                        <i class="fas fa-list me-1"></i>
+                        View All
+                    </a>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Name</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Contact</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Date</th>
+                            <th style="border-color: var(--admin-border); font-size: 0.8125rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in recent_leads %}
+                        <tr>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text); font-size: 0.875rem;">
+                                <a href="{% url 'admin_dashboard:lead_detail' business.id lead.id %}">
+                                    {{ lead.get_full_name }}
+                                </a>
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                                <div>{{ lead.email }}</div>
+                                <div>{{ lead.phone }}</div>
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                                {{ lead.created_at|date:"M d, Y" }}
+                            </td>
+                            <td style="border-color: var(--admin-border); font-size: 0.875rem;">
+                                <span class="badge bg-{% if lead.status == 'new' %}info{% elif lead.status == 'contacted' %}warning{% elif lead.status == 'converted' %}success{% else %}secondary{% endif %}">
+                                    {{ lead.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="border-color: var(--admin-border); text-align: center; padding: 2rem; color: var(--admin-text-muted);">
+                                <i class="fas fa-inbox fa-2x mb-2" style="opacity: 0.3;"></i>
+                                <p class="mb-0">No leads yet</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .info-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .info-value {
+        font-size: 1rem;
+        color: var(--admin-text);
+        font-weight: 500;
+    }
+    
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--admin-border);
+    }
+    
+    .status-item:last-child {
+        border-bottom: none;
+    }
+    
+    .status-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+    }
+    
+    .status-value {
+        text-align: right;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--admin-border);
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    .stat-content {
+        flex: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--admin-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--admin-text);
+        font-family: 'JetBrains Mono', monospace;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleStatus(businessId) {
+        if (!confirm('Are you sure you want to change this business status?')) {
+            return;
+        }
+        
+        fetch(`/admin-dashboard/businesses/${businessId}/toggle-status/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred');
+        });
+    }
+    
+    function deleteBusiness(businessId, businessName) {
+        if (!confirm(`Are you sure you want to delete business "${businessName}"? This action cannot be undone and will delete all associated data.`)) {
+            return;
+        }
+        
+        fetch(`/admin-dashboard/businesses/${businessId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '{% url "admin_dashboard:business_list" %}';
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the business');
+        });
+    }
+</script>
+{% endblock %}

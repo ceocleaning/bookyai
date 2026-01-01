@@ -1,0 +1,267 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Help Categories{% endblock %}
+{% block page_title %}Help Categories{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard/help-articles.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" data-aos="fade-down">
+    <div class="page-header-content">
+        <div class="page-header-text">
+            <h2 class="page-header-title">
+                <i class="fas fa-folder me-2"></i>
+                Help Categories
+            </h2>
+            <p class="page-header-subtitle">Organize your help articles into categories</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'admin_dashboard:help_article_list' %}" class="btn-secondary-admin">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Articles
+            </a>
+            <a href="{% url 'admin_dashboard:help_category_add' %}" class="btn-primary-admin">
+                <i class="fas fa-plus me-2"></i>
+                Add Category
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Grid -->
+<div class="row">
+    {% for category in categories %}
+    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+        <div class="dashboard-card category-card">
+            <div class="category-card-header">
+                <div class="category-icon" style="background: linear-gradient(135deg, {{ category.color|default:'#4f46e5' }}, transparent);">
+                    <i class="{{ category.icon }}"></i>
+                </div>
+                <div class="category-actions">
+                    <a href="{% url 'admin_dashboard:help_category_edit' category.id %}" 
+                       class="btn-action btn-action-edit" 
+                       title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="btn-action btn-action-delete" 
+                            data-category-id="{{ category.id }}"
+                            data-category-name="{{ category.name }}"
+                            data-has-articles="{{ category.articles.count }}"
+                            title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="category-card-body">
+                <h3 class="category-title">{{ category.name }}</h3>
+                <p class="category-description">{{ category.description|truncatewords:15 }}</p>
+                
+                <div class="category-stats">
+                    <div class="category-stat">
+                        <i class="fas fa-file-alt me-2"></i>
+                        <span>{{ category.articles.count }} article{{ category.articles.count|pluralize }}</span>
+                    </div>
+                    <div class="category-stat">
+                        <i class="fas fa-sort me-2"></i>
+                        <span>Order: {{ category.order }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category-card-footer">
+                <a href="{% url 'admin_dashboard:help_article_list' %}?category={{ category.id }}" class="category-link">
+                    View Articles
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="dashboard-card">
+            <div class="empty-state">
+                <i class="fas fa-folder-open fa-3x mb-3 text-muted"></i>
+                <p class="text-muted">No categories found. Create your first category!</p>
+                <a href="{% url 'admin_dashboard:help_category_add' %}" class="btn-primary-admin mt-3">
+                    <i class="fas fa-plus me-2"></i>
+                    Add Category
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the category "<strong id="deleteCategoryName"></strong>"?</p>
+                <p class="text-warning mb-0" id="deleteWarning" style="display: none;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    This category has <strong id="articleCount"></strong> article(s). Please reassign or delete them first.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary-admin" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-danger-admin" id="confirmDeleteCategoryBtn">
+                    <i class="fas fa-trash me-2"></i>
+                    Delete Category
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin_dashboard/help-categories.js' %}"></script>
+<style>
+    .category-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+    }
+
+    .category-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+
+    .category-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .category-card-body {
+        flex: 1;
+    }
+
+    .category-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-description {
+        color: var(--admin-text-muted);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .category-stats {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        border-top: 1px solid var(--admin-border);
+    }
+
+    .category-stat {
+        display: flex;
+        align-items: center;
+        color: var(--admin-text-muted);
+        font-size: 0.875rem;
+    }
+
+    .category-card-footer {
+        padding-top: 1rem;
+        border-top: 1px solid var(--admin-border);
+        margin-top: 1rem;
+    }
+
+    .category-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        background: rgba(79, 70, 229, 0.1);
+        border: 1px solid var(--admin-primary);
+        border-radius: 8px;
+        color: var(--admin-primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .category-link:hover {
+        background: var(--admin-primary);
+        color: #ffffff;
+    }
+
+    .form-control-admin {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        border-radius: 10px;
+        color: var(--admin-text);
+        font-size: 0.9375rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-admin:focus {
+        outline: none;
+        border-color: var(--admin-primary);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--admin-text);
+        margin-bottom: 0.5rem;
+        font-size: 0.9375rem;
+    }
+
+    .form-label-required::after {
+        content: ' *';
+        color: var(--admin-danger);
+    }
+
+    .form-help-text {
+        display: block;
+        font-size: 0.8125rem;
+        color: var(--admin-text-muted);
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}

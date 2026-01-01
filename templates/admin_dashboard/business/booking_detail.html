@@ -1,0 +1,683 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+{% load booking_filters %}
+{% load user_groups %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Booking Header -->
+    <div class="card mb-4" style="z-index: 1050 !important;">
+        <div class="card-header text-white d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Booking Details</h5>
+                <p class="text-white-50 small mb-0">ID: {{ booking.id }}</p>
+            </div>
+            <div class="d-flex">
+                <a href="{% url 'admin_dashboard:business_bookings' business.id %}" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Bookings
+                </a>
+            </div>
+           
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Booking Information -->
+        <div class="col-lg-8">
+            <!-- Status Card -->
+            <div class="card mb-4">
+                <div class="card-header text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Booking Status</h5>
+                    {% if booking.status == 'pending' %}
+                        <span class="badge badge-md">Pending</span>
+                    {% elif booking.status == 'confirmed' %}
+                        <span class="badge badge-md bg-success">Confirmed</span>
+                    {% elif booking.status == 'completed' %}
+                        <span class="badge badge-md bg-success">Completed</span>
+                    {% elif booking.status == 'cancelled' %}
+                        <span class="badge badge-md bg-danger">Cancelled</span>
+                    {% elif booking.status == 'rescheduled' %}
+                        <span class="badge badge-md bg-warning">Rescheduled</span>
+                    {% elif booking.status == 'no_show' %}
+                        <span class="badge badge-md bg-info">No Show</span>
+                    {% else %}
+                        <span class="badge">{{ booking.status }}</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span class="text-muted">Service</span>
+                            <p class="fw-bold">{{ booking.service_offering.name }}</p>
+                            
+                            <span class="text-muted mt-3">Date & Time</span>
+                            <p class="fw-bold">{{ booking.booking_date|date:"l, F j, Y" }}<br>
+                            {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</p>
+                            
+                            <span class="text-muted mt-3">Location</span>
+                            <p class="fw-bold">
+                                {% if booking.location_type == 'business' %}
+                                    <span class="">Business Location</span>
+                                {% elif booking.location_type == 'onsite' %}
+                                    <span class="">On-site (Client Location)</span>
+                                {% elif booking.location_type == 'virtual' %}
+                                    <span class="">Virtual Meeting</span>
+                                {% endif %}
+                                {% if booking.location_details %}
+                                    <br>{{ booking.location_details }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted">Created:</span>
+                            <p class="fw-bold">{{ booking.created_at|date:"M d, Y" }} at {{ booking.created_at|time:"g:i A" }}</p>
+                            
+                            <span class="mt-3 text-muted">Last Updated</span>
+                            <p class="fw-bold">{{ booking.updated_at|date:"M d, Y" }} at {{ booking.updated_at|time:"g:i A" }}</p>
+                            
+                            {% if booking.cancellation_reason %}
+                                <span class="mt-3 text-muted">Cancellation Reason</span>
+                                <p class="fw-bold">{{ booking.cancellation_reason }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if booking.notes %}
+                        <div class="mt-3">
+                            <span class="text-muted">Notes</span>
+                            <p class="fw-bold">{{ booking.notes }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Client Information -->
+            <div class="card mb-4">
+                <div class="card-header text-white">
+                    <h5 class="mb-0">Client Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span class="text-muted">Name</span>
+                            <p class="fw-bold">{{ booking.name }}</p>
+                            
+                            <span class="text-muted mt-3">Email</span>
+                            <p class="fw-bold"><a class="text-light" href="mailto:{{ booking.email }}">{{ booking.email }}</a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted">Phone</span>
+                            <p class="fw-bold"><a class="text-light" href="tel:{{ booking.phone_number }}">{{ booking.phone_number }}</a></p>
+                            
+                            {% if booking.lead %}
+                                <span class="text-muted mt-3">Lead Source</span>
+                                <p>
+                                    <a href="{% url 'leads:lead_detail' booking.lead.id %}" class="text-light">
+                                        <i class="fas fa-external-link-alt me-1"></i> View Lead Details
+                                    </a>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Fields -->
+                    {% if custom_fields %}
+                        <div class="mt-4">
+                            <h6 class="fw-bold border-bottom pb-2">Additional Information</h6>
+                            <div class="row mt-3">
+                                {% for field in custom_fields %}
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-bold small text-muted">{{ field.business_field.name }}</h6>
+                                        <p>{{ field.value }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Industry Fields -->
+                    {% if industry_fields %}
+                        <div class="mt-4">
+                            <h6 class="fw-bold border-bottom pb-2">Industry-Specific Information</h6>
+                            <div class="row mt-3">
+                                {% for field in industry_fields %}
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-bold small text-muted">{{ field.industry_field.name }}</h6>
+                                        <p>{{ field.value }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Service Items - Dark Theme Design -->
+            <div class="card mb-4 service-details-card">
+                <div class="card-header text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Service Details</h5>
+                    <span class="badge">Duration: {{ duration }} minutes</span>
+                </div>
+                <div class="card-body">
+
+                    <!-- Service Items List -->
+                    <div class="service-items-list">
+                        <h5 class="fw-bold mb-3 pb-2">Service Breakdown</h5>
+                        
+                        <!-- Base Service -->
+                        <div class="service-item card mb-3 p-3 rounded">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ booking.service_offering.name }}</h6>
+                                            <span class="badge">Base Service</span> <span class="badge">{{ booking.service_offering.duration }} minutes</span>
+                                            {% if booking.service_offering.description %}
+                                                <p class="small text-white-50 mb-0 mt-1">{{ booking.service_offering.description }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if not request.user|has_group:"staff" %}
+                                <div class="col-md-6 text-md-end">
+                                    <div class="fw-bold">${{ booking.service_offering.price }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Service Items -->
+                        {% for item in service_items %}
+                            <div class="service-item card mb-3 p-3 rounded">
+                                <div class="row align-items-center">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center">
+                                           
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">{{ item.service_item.name }}</h6>
+                                                {% if item.service_item.description %}
+                                                    <p class="small text-white-50 mb-1 mt-1">{{ item.service_item.description }}</p>
+                                                {% endif %}
+                                                <div class="d-flex gap-2 align-items-center flex-wrap mt-1">
+                                                    {% if item.price_at_booking == 0 %}
+                                                        <span class="badge">Free</span>
+                                                    {% endif %}
+                                                    {% if item.service_item.duration_minutes > 0 %}
+                                                        <span class="badge"><i class="far fa-clock me-1 text-success"></i> +{{ item.service_item.duration_minutes }} min</span>
+                                                    {% endif %}
+                                                    {% if item.service_item.field_type %}
+                                                        <span class="badge">
+                                                            {% if item.service_item.field_type == 'text' %}
+                                                                <i class="fas fa-font"></i> Text
+                                                            {% elif item.service_item.field_type == 'textarea' %}
+                                                                <i class="fas fa-align-left"></i> Text Area
+                                                            {% elif item.service_item.field_type == 'number' %}
+                                                                <i class="fas fa-hashtag"></i> Number
+                                                            {% elif item.service_item.field_type == 'boolean' %}
+                                                                <i class="fas fa-toggle-on"></i> Yes/No
+                                                            {% elif item.service_item.field_type == 'select' %}
+                                                                <i class="fas fa-list"></i> Select
+                                                            {% endif %}
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <!-- Display field value and pricing -->
+                                        <div class="field-value-container d-flex justify-content-between align-items-center">
+                                            <div>
+                                            {% if item.service_item.field_type == 'text' %}
+                                                {% if item.text_value %}
+                                                    <div class="mb-2">
+                                                        <span class="text-muted small">Value:</span>
+                                                        <div class="text-light fw-bold">{{ item.text_value }}</div>
+                                                    </div>
+                                                {% endif %}
+                                            {% elif item.service_item.field_type == 'number' %}
+                                                {% if item.number_value %}
+                                                    <div class="mb-2">
+                                                        <span class="text-muted small">Value:</span>
+                                                        <div class="text-light fw-bold">{{ item.number_value }}</div>
+                                                    </div>
+                                                {% endif %}
+                                            {% elif item.service_item.field_type == 'textarea' %}
+                                                {% if item.textarea_value %}
+                                                    <div class="mb-2">
+                                                        <span class="text-muted small">Details:</span>
+                                                        <div class="text-light" style="white-space: pre-line;">{{ item.textarea_value }}</div>
+                                                    </div>
+                                                {% endif %}
+                                           
+                                            {% elif item.service_item.field_type == 'boolean' %}
+                                                <div class="mb-2">
+                                                    <span class="text-muted small">Selection:</span>
+                                                    <div class="text-light fw-bold">
+                                                        {% if item.boolean_value == True %}
+                                                            <span class="text-light"><i class="fas fa-check-circle"></i> Yes</span>
+                                                        {% elif item.boolean_value == False %}
+                                                            <span class="text-light"><i class="fas fa-times-circle"></i> No</span>
+                                                        {% else %}
+                                                            <span class="text-muted">Not specified</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% elif item.service_item.field_type == 'select' %}
+                                                <div class="mb-2">
+                                                    <span class="text-muted small">Selected Option:</span>
+                                                    <div class="text-light fw-bold">
+                                                        {% if item.select_value %}
+                                                            {{ item.select_value }}
+                                                        {% else %}
+                                                            <span class="text-muted fst-italic">Not specified</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            </div>
+                                            <!-- Display pricing information -->
+                                            {% if not request.user|has_group:"staff" %}
+                                            {% if item.price_at_booking > 0 %}
+                                            <div class="d-flex justify-content-between align-items-center gap-5">
+                                                {% if item.quantity > 1 %}
+                                                    <div class="d-flex flex-column">
+                                                        <span class="small text-muted">Unit Price:</span>
+                                                        <span class="fw-bold text-light">${{ item.price_at_booking|divide:item.quantity|floatformat:2 }}</span>
+                                                    </div>
+                                                   
+                                                {% endif %}
+                                                <div class="item-total d-flex flex-column">
+                                                    <span class="small text-muted">{% if item.quantity > 1 %}Total:{% else %}Price:{% endif %}</span>
+                                                    <span class="fw-bold text-light">${{ item.price_at_booking|floatformat:2 }}</span>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                                <div class="text-end">
+                                                    <span class="badge">Free</span>
+                                                </div>
+                                            {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+                        <!-- Price Summary -->
+                        {% if not request.user|has_group:"staff" %}
+                        {% if booking.service_offering.price > 0 or has_paid_items %}
+                        <div class="price-summary card mt-4">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Base Price:</span>
+                                        <span>${{ booking.service_offering.price }}</span>
+                                    </div>
+                                    {% if paid_service_items %}
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Additional Items:</span>
+                                            <span>${{ paid_service_items_total }}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="d-flex justify-content-between fw-bold mt-md-0 mt-3 pt-2">
+                                        <span class="fs-5">Total:</span>
+                                        <span class="fs-5 text-success">${{ total_price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Assigned Staff -->
+            {% if booking.staff_assignments.all %}
+                <div class="card mb-4">
+                    <div class="card-header text-white">
+                        <h5 class="mb-0">Assigned Staff</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for assignment in booking.staff_assignments.all %}
+                                <a href="{% url 'business:staff_detail' assignment.staff_member.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex align-items-center">
+                                        {% if assignment.staff_member.profile_image %}
+                                            <img src="{{ assignment.staff_member.profile_image.url }}" alt="{{ assignment.staff_member.get_full_name }}" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0">{{ assignment.staff_member.get_full_name }}</h6>
+                                            <p class="text-muted mb-0 small">
+                                                {% for role in assignment.staff_member.roles.all %}
+                                                    {{ role.name }}{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {% if assignment.assignment_notes %}
+                                        <div class="mt-2 small text-muted">
+                                            <i class="fas fa-comment-alt me-1"></i> {{ assignment.assignment_notes }}
+                                        </div>
+                                    {% endif %}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Invoice & Payment Information -->
+            {% if not request.user|has_group:"staff" %}
+            {% if invoice %}
+                <div class="card mb-4">
+                    <div class="card-header text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Invoice & Payment</h5>
+                        {% if invoice.status == 'draft' %}
+                           <div class="badge">
+                            <span><i class="fa-brands fa-firstdraft me-1"></i></span>
+                            <span>Draft</span>
+                           </div>
+                        {% elif invoice.status == 'pending' %}
+                        <div class="badge">
+                            <span><i class="fa-solid fa-spinner me-1"></i></span>
+                            <span>Pending</span>
+                           </div>
+                        {% elif invoice.status == 'paid' %}
+                        <div class="badge">
+                            <span><i class="fas fa-check me-1 text-success"></i></span>
+                            <span>Paid</span>
+                        </div>
+                        {% elif invoice.status == 'partially_paid' %}
+                        <div class="badge">
+                            <span><i class="fas fa-file-invoice-dollar me-1"></i></span>
+                            <span>Partially Paid</span>
+                           </div>
+                        {% elif invoice.status == 'overdue' %}
+                        <div class="badge">
+                            <span><i class="fas fa-file-invoice-dollar"></i></span>
+                            <span>Overdue</span>
+                           </div>
+                        {% elif invoice.status == 'cancelled' %}
+                        <div class="badge bg-danger">
+                            <span>Cancelled</span>
+                           </div>
+                        {% elif invoice.status == 'refunded' %}
+                        <div class="badge">
+                            <span><i class="fa-solid fa-rotate-left me-1"></i></span>
+                            <span>Refunded</span>
+                           </div>
+                        {% else %}
+                        <div class="badge">
+                            <span><i class="fas fa-file-invoice-dollar"></i></span>
+                            <span>Draft</span>
+                           </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- Invoice Info -->
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <span class="text-muted small">Invoice #</span>
+                                        <p class="mb-0 fw-bold">{{ invoice.invoice_number }}</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted small">Due Date</span>
+                                        <p class="mb-0 fw-bold">{{ invoice.due_date|date:"M d, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment History -->
+                        {% if payments %}
+                            <div class="list-group list-group-flush border-top">
+                                <div class="list-group-item bg-dark">
+                                    <h6 class="mb-0 small text-white-50">Payment History</h6>
+                                </div>
+                                {% for payment in payments %}
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1 small">
+                                                    {% if payment.payment_method == 'cash' %}
+                                                        <i class="fas fa-money-bill-wave me-1 text-success"></i> Cash
+                                                    {% elif payment.payment_method == 'credit_card' %}
+                                                        <i class="fas fa-credit-card me-1 text-primary"></i> Credit Card
+                                                    {% elif payment.payment_method == 'debit_card' %}
+                                                        <i class="fas fa-credit-card me-1 text-info"></i> Debit Card
+                                                    {% elif payment.payment_method == 'bank_transfer' %}
+                                                        <i class="fas fa-university me-1 text-primary"></i> Bank Transfer
+                                                    {% elif payment.payment_method == 'paypal' %}
+                                                        <i class="fab fa-paypal me-1 text-primary"></i> PayPal
+                                                    {% elif payment.payment_method == 'stripe' %}
+                                                        <i class="fab fa-stripe me-1 text-primary"></i> Stripe
+                                                    {% else %}
+                                                        <i class="fas fa-dollar-sign me-1"></i> {{ payment.payment_method|title }}
+                                                    {% endif %}
+                                                </h6>
+                                                <p class="text-muted mb-0 small">
+                                                    {{ payment.payment_date|date:"M d, Y" }}
+                                                </p>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-bold">${{ payment.amount }}</div>
+                                                {% if payment.is_refunded %}
+                                                    <span class="badge text-dark small">Refunded</span>
+                                                {% else %}
+                                                    <span class="badge bg-success small">Paid</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Payment Summary -->
+                        <div class="card-body">
+                            <div class="card rounded">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Total Amount:</span>
+                                    <span class="fw-bold">${{ total_price }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Total Paid:</span>
+                                    <span class="fw-bold">${{ total_paid }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between pt-2 border-top border-secondary">
+                                    <span class="fw-bold">Balance Due:</span>
+                                    <span class="fw-bold">
+                                        ${{ balance_due }}
+                                    </span>
+                                </div>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% endif %}
+            
+            <!-- Timeline -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Booking Timeline</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for event in timeline %}
+                            <div class="list-group-item">
+                                <div class="d-flex">
+                                    <div class="timeline-icon me-3">
+                                        <div class="icon-circle bg-{{ event.type }} text-white">
+                                            <i class="fas {{ event.icon }}"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ event.event_name }}</h6>
+                                        <p class="text-muted mb-0 small">
+                                            {{ event.timestamp|date:"M d, Y" }} at {{ event.timestamp|time:"g:i A" }}
+                                            {% if event.created_by %}
+                                                <span class="text-muted">by {{ event.created_by }}</span>
+                                            {% endif %}
+                                        </p>
+                                        
+                                        {% if event.reason %}
+                                            <div class="mt-2 p-2 card">
+                                                <small class="text-white-50">Reason:</small>
+                                                <p class="mb-0 small text-light">{{ event.reason }}</p>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if event.old_datetime and event.new_datetime %}
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-arrow-right me-1"></i>
+                                                    From: <strong>{{ event.old_datetime }}</strong> → To: <strong>{{ event.new_datetime }}</strong>
+                                                </small>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {% if event.field_values %}
+                                            <div class="mt-2">
+                                                <div class="card">
+                                                    <div class="card-body p-2">
+                                                        <small class="text-muted d-block mb-1"><strong>Additional Details:</strong></small>
+                                                        {% for field in event.field_values %}
+                                                            <div class="mb-1">
+                                                                <small class="text-muted">{{ field.label }}:</small> <br>
+                                                                <small class="ms-1 fw-bold h6">
+                                                                    {% if field.type == 'boolean' or field.type == 'checkbox' %}
+                                                                        <span class="">
+                                                                            {{ field.value }}
+                                                                        </span>
+                                                                    {% elif field.type == 'number' %}
+                                                                        <strong>{{ field.value }}</strong>
+                                                                    {% else %}
+                                                                        {{ field.value }}
+                                                                    {% endif %}
+                                                                </small>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="timeline-icon me-3">
+                                        <div class="icon-circle bg-secondary text-white">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">No events found</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reminders -->
+            {% if booking.reminders.all %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Reminders</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for reminder in booking.reminders.all %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                {% if reminder.reminder_type == 'sms' %}
+                                                    <i class="fas fa-sms me-2 text-primary"></i> SMS Reminder
+                                                {% elif reminder.reminder_type == 'email' %}
+                                                    <i class="fas fa-envelope me-2 text-primary"></i> Email Reminder
+                                                {% elif reminder.reminder_type == 'voice' %}
+                                                    <i class="fas fa-phone me-2 text-primary"></i> Voice Reminder
+                                                {% endif %}
+                                            </h6>
+                                            <p class="text-muted mb-0 small">
+                                                Scheduled: {{ reminder.scheduled_time|date:"M d, Y" }} at {{ reminder.scheduled_time|time:"g:i A" }}
+                                            </p>
+                                        </div>
+                                        <span class="badge {% if reminder.status == 'sent' %}bg-success{% elif reminder.status == 'failed' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                            {{ reminder.status|title }}
+                                        </span>
+                                    </div>
+                                    {% if reminder.error_message %}
+                                        <div class="mt-2">
+                                            <small class="text-danger">{{ reminder.error_message }}</small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            
+            <!-- Business Information -->
+            <div class="card">
+                <div class="card-header text-white">
+                    <h5 class="mb-0">Business Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ booking.business.name }}</h6>
+                    <p class="mb-0">{{ booking.business.phone_number }}</p>
+                    <p class="mb-0"><a href="mailto:{{ booking.business.email }}">{{ booking.business.email }}</a></p>
+                    
+                    {% if booking.business.address %}
+                        <hr>
+                        <span class="text-muted">Address</span>
+                        <p class="mb-0">{{ booking.business.address }}</p>
+                        <p class="mb-0">
+                            {% if booking.business.city %}{{ booking.business.city }}{% endif %}
+                            {% if booking.business.state %}, {{ booking.business.state }}{% endif %}
+                            {% if booking.business.zip_code %} {{ booking.business.zip_code }}{% endif %}
+                        </p>
+                    {% endif %}
+                    
+                    {% if booking.business.website %}
+                        <hr>
+                        <span class="text-muted">Website</span>
+                        <p class="mb-0"><a href="{{ booking.business.website }}" target="_blank">{{ booking.business.website }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admin_dashboard/css/admin-bookings-detail.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

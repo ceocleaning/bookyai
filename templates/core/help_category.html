@@ -1,0 +1,175 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - Help Center{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<style>
+    .help-page-wrapper {
+        padding-top: 80px;
+        padding-bottom: 60px;
+        min-height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-item a {
+        color: #a5b4fc;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+    
+    .breadcrumb-item.active {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: #64748b;
+    }
+
+    .category-header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .category-icon-large {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #4f46e5, #06b6d4);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.75rem;
+        color: white;
+        box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+    }
+
+    .category-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-header p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .article-card {
+        background: rgba(10, 14, 39, 0.4);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(79, 70, 229, 0.15);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 0.75rem;
+    }
+
+    .article-card:hover {
+        background: rgba(10, 14, 39, 0.6);
+        border-color: rgba(79, 70, 229, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .article-title {
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .article-title i {
+        color: #a5b4fc;
+        font-size: 0.875rem;
+    }
+
+    .article-preview {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin-bottom: 0;
+        line-height: 1.5;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 0;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: #64748b;
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-page-wrapper">
+    <div class="container position-relative z-1">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'help_center' %}">Help Center</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="category-header" data-aos="fade-down">
+            <div class="category-icon-large">
+                <i class="{{ category.icon }}"></i>
+            </div>
+            <h1>{{ category.name }}</h1>
+            <p>{{ category.description }}</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% if articles %}
+                    {% for article in articles %}
+                        <a href="{% url 'help_article' category.slug article.slug %}" 
+                           class="article-card" 
+                           data-aos="fade-up" 
+                           data-aos-delay="{{ forloop.counter }}00">
+                            <h3 class="article-title">
+                                <i class="far fa-file-alt"></i>
+                                {{ article.title }}
+                            </h3>
+                            <p class="article-preview">{{ article.content|striptags|truncatewords:20 }}</p>
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state" data-aos="fade-up">
+                        <i class="far fa-folder-open"></i>
+                        <p>No articles found in this category.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

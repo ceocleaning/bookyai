@@ -22,6 +22,7 @@ from ai_website import views as ai_website_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin-dashboard/', include('admin_dashboard.urls')),
     path('ai-agent/', include('ai_agent.urls')),
     path('bookings/', include('bookings.urls')),
     path('invoices/', include('invoices.urls')),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('staff/', include('staff.urls')),
     path('customer/', include('customer.urls')),
     path('ai-website/', include('ai_website.urls')),
+    path('subscription/', include('subscription.urls')),
 
     path('sites/<slug:business_slug>/', ai_website_views.public_website, name='public_website'),
 ]

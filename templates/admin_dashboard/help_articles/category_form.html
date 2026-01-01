@@ -1,0 +1,374 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{% if category %}Edit Category{% else %}Add Category{% endif %}{% endblock %}
+{% block page_title %}{% if category %}Edit Category{% else %}Add Category{% endif %}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard/help-articles.css' %}">
+<style>
+    .form-container {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--admin-text);
+        margin-bottom: 0.375rem;
+        font-size: 0.875rem;
+    }
+
+    .form-label-required::after {
+        content: ' *';
+        color: var(--admin-danger);
+    }
+
+    .form-control-admin {
+        width: 100%;
+        padding: 0.625rem 0.875rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        border-radius: 8px;
+        color: var(--admin-text);
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-admin:focus {
+        outline: none;
+        border-color: var(--admin-primary);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-control-admin::placeholder {
+        color: var(--admin-text-muted);
+    }
+
+    textarea.form-control-admin {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .form-help-text {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--admin-text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--admin-border);
+        margin-top: 1.25rem;
+    }
+
+    .icon-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .icon-preview-box {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, var(--admin-primary), transparent);
+        color: var(--admin-primary);
+        border: 1px solid var(--admin-border);
+        transition: all 0.3s ease;
+    }
+
+    .icon-preview-text {
+        color: var(--admin-text-muted);
+        font-size: 0.8125rem;
+    }
+
+    .stats-compact {
+        padding: 0.875rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        border: 1px solid var(--admin-border);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.875rem;
+    }
+
+    .stat-compact-item {
+        text-align: center;
+    }
+
+    .stat-compact-item small {
+        display: block;
+        color: var(--admin-text-muted);
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-compact-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--admin-primary);
+    }
+
+    .stat-compact-text {
+        font-size: 0.875rem;
+        color: var(--admin-text);
+    }
+
+    @media (max-width: 767.98px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" data-aos="fade-down">
+    <div class="page-header-content">
+        <div class="page-header-text">
+            <h2 class="page-header-title">
+                <i class="fas fa-{% if category %}edit{% else %}folder-plus{% endif %} me-2"></i>
+                {% if category %}Edit Category{% else %}Add New Category{% endif %}
+            </h2>
+            <p class="page-header-subtitle">
+                {% if category %}Update category information{% else %}Create a new help article category{% endif %}
+            </p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'admin_dashboard:help_category_list' %}" class="btn-secondary-admin">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Categories
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Form -->
+<div class="form-container">
+    <div class="dashboard-card" data-aos="fade-up">
+        <form method="post" id="categoryForm">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categoryName" class="form-label form-label-required">Name</label>
+                    <input type="text" 
+                           id="categoryName" 
+                           name="name" 
+                           class="form-control-admin" 
+                           value="{{ category.name|default:'' }}"
+                           placeholder="e.g., Getting Started"
+                           required>
+                    <span class="form-help-text">Category display name</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="categorySlug" class="form-label">Slug</label>
+                    <input type="text" 
+                           id="categorySlug" 
+                           name="slug" 
+                           class="form-control-admin" 
+                           value="{{ category.slug|default:'' }}"
+                           placeholder="getting-started">
+                    <span class="form-help-text">Auto-generated if blank</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="categoryIcon" class="form-label form-label-required">Icon</label>
+                    <input type="text" 
+                           id="categoryIcon" 
+                           name="icon" 
+                           class="form-control-admin" 
+                           value="{{ category.icon|default:'' }}"
+                           placeholder="fas fa-rocket"
+                           required>
+                    <span class="form-help-text">Font Awesome class</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoryOrder" class="form-label">Display Order</label>
+                    <input type="number" 
+                           id="categoryOrder" 
+                           name="order" 
+                           class="form-control-admin" 
+                           value="{{ category.order|default:0 }}"
+                           min="0"
+                           step="1">
+                    <span class="form-help-text">Lower = higher priority</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Icon Preview</label>
+                <div class="icon-preview">
+                    <div class="icon-preview-box" id="iconPreview">
+                        <i class="{{ category.icon|default:'fas fa-folder' }}"></i>
+                    </div>
+                    <span class="icon-preview-text">Preview updates as you type</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="categoryDescription" class="form-label">Description</label>
+                <textarea id="categoryDescription" 
+                          name="description" 
+                          class="form-control-admin" 
+                          placeholder="Brief description of this category">{{ category.description|default:'' }}</textarea>
+                <span class="form-help-text">Short description for users</span>
+            </div>
+
+            {% if category %}
+            <div class="form-group">
+                <label class="form-label">Statistics</label>
+                <div class="stats-compact">
+                    <div class="stat-compact-item">
+                        <small>Articles</small>
+                        <div class="stat-compact-value">{{ category.articles.count }}</div>
+                    </div>
+                    <div class="stat-compact-item">
+                        <small>Created</small>
+                        <div class="stat-compact-text">{{ category.created_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary-admin" style="flex: 1;">
+                    <i class="fas fa-save me-2"></i>
+                    {% if category %}Update{% else %}Create{% endif %}
+                </button>
+                <a href="{% url 'admin_dashboard:help_category_list' %}" class="btn-secondary-admin" style="flex: 1; justify-content: center;">
+                    <i class="fas fa-times me-2"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const categoryName = document.getElementById('categoryName');
+    const categorySlug = document.getElementById('categorySlug');
+    const categoryIcon = document.getElementById('categoryIcon');
+    const iconPreview = document.getElementById('iconPreview');
+    const categoryForm = document.getElementById('categoryForm');
+
+    // Auto-generate slug from name
+    if (categoryName && categorySlug) {
+        categoryName.addEventListener('input', function() {
+            if (!categorySlug.dataset.manuallyEdited) {
+                categorySlug.value = generateSlug(this.value);
+            }
+        });
+
+        categorySlug.addEventListener('input', function() {
+            this.dataset.manuallyEdited = 'true';
+        });
+    }
+
+    function generateSlug(text) {
+        return text
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
+    // Live icon preview
+    if (categoryIcon && iconPreview) {
+        categoryIcon.addEventListener('input', function() {
+            const iconClass = this.value.trim() || 'fas fa-folder';
+            iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
+        });
+    }
+
+    // Form submission
+    if (categoryForm) {
+        categoryForm.addEventListener('submit', function(e) {
+            const name = categoryName.value.trim();
+            const icon = categoryIcon.value.trim();
+
+            if (!name) {
+                e.preventDefault();
+                showNotification('Please enter a category name', 'error');
+                categoryName.focus();
+                return false;
+            }
+
+            if (!icon) {
+                e.preventDefault();
+                showNotification('Please enter an icon class', 'error');
+                categoryIcon.focus();
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = categoryForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            }
+        });
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+            ${message}
+        `;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: ${type === 'success' ? 'var(--admin-success)' : 'var(--admin-danger)'};
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

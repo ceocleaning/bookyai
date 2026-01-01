@@ -36,7 +36,6 @@ ALLOWED_HOSTS = ['*',]
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,8 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_q',
     'corsheaders',  # For CORS support (widget embedding)
-    'django_eventstream',  # For SSE notifications
+
     # Custom apps
+    'admin_dashboard.apps.AdminDashboardConfig',
+    'subscription.apps.SubscriptionConfig',
     'ai_agent.apps.AiAgentConfig',
     'bookings.apps.BookingsConfig',
     'invoices.apps.InvoicesConfig',
@@ -218,7 +219,7 @@ RETELL_API_KEY = os.getenv('RETELL_API_KEY')
 
 
 # Django EventStream Configuration
-EVENTSTREAM_STORAGE_CLASS = 'django_eventstream.storage.DjangoModelStorage'
+
 
 
 

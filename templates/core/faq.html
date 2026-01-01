@@ -1,0 +1,367 @@
+{% extends 'common/base.html' %}
+{% load static %}
+
+{% block title %}FAQ - Booky AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+<link rel="stylesheet" href="{% static 'css/cta_faq.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="status-page-wrapper" style="padding-top: 100px; padding-bottom: 80px; min-height: 100vh; position: relative; overflow: hidden; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1419 100%);">
+    <!-- Animated Background Grid -->
+    <div class="hero-grid-bg"></div>
+    
+    <!-- Floating AI Particles -->
+    <div class="ai-particles">
+        <div class="particle particle-1"></div>
+        <div class="particle particle-2"></div>
+        <div class="particle particle-3"></div>
+        <div class="particle particle-4"></div>
+        <div class="particle particle-5"></div>
+    </div>
+    
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="text-center mb-5" data-aos="fade-up">
+            <div class="ai-badge mb-4">
+                <span class="badge-glow"></span>
+                <i class="fas fa-question-circle me-2"></i>
+                <span>Help Center</span>
+            </div>
+            
+            <h1 class="hero-title mb-4">
+                Frequently Asked <span class="gradient-text">Questions</span>
+            </h1>
+            
+            <p class="hero-subtitle mb-5">
+                Everything you need to know about Booky AI. Can't find the answer you're looking for? 
+                <a href="/contact" class="text-primary">Contact our support team</a>.
+            </p>
+
+            <!-- Search Box -->
+            <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-8">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-transparent border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" placeholder="Search for answers..." id="faqSearch">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Categories -->
+        <section class="mb-5">
+            <div class="row g-4 mb-5" data-aos="fade-up" data-aos-delay="200">
+                <div class="col-md-4">
+                    <div class="glass-card text-center h-100" style="cursor: pointer;" onclick="scrollToCategory('getting-started')">
+                        <div class="mb-3" style="font-size: 2.5rem; color: #a5b4fc;">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4 class="text-white mb-2">Getting Started</h4>
+                        <p class="text-muted mb-0">Setup and onboarding</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card text-center h-100" style="cursor: pointer;" onclick="scrollToCategory('features')">
+                        <div class="mb-3" style="font-size: 2.5rem; color: #06b6d4;">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4 class="text-white mb-2">Features</h4>
+                        <p class="text-muted mb-0">Product capabilities</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-card text-center h-100" style="cursor: pointer;" onclick="scrollToCategory('billing')">
+                        <div class="mb-3" style="font-size: 2.5rem; color: #22c55e;">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h4 class="text-white mb-2">Billing</h4>
+                        <p class="text-muted mb-0">Pricing and payments</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Getting Started FAQs -->
+        <section class="mb-5" id="getting-started">
+            <div class="text-center mb-4" data-aos="fade-up">
+                <h2 class="section-title mb-3">
+                    <span class="gradient-text">Getting Started</span>
+                </h2>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="faq-accordion" data-aos="fade-up" data-aos-delay="100">
+                        <!-- FAQ 1 -->
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-gs-1">
+                                <span>How do I get started with Booky AI?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-gs-1" class="collapse show" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Getting started is simple! Sign up for a free 14-day trial, connect your calendar (Google, Outlook, or iCal), customize your AI assistant's responses, and you're ready to go. The entire setup takes less than 10 minutes, and our onboarding wizard guides you through each step.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 2 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-gs-2">
+                                <span>Do I need technical knowledge to use Booky AI?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-gs-2" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Not at all! Booky AI is designed to be user-friendly and requires zero coding or technical expertise. Our intuitive dashboard and visual workflow builder make it easy for anyone to set up and manage their AI booking assistant.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-gs-3">
+                                <span>How long does implementation take?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-gs-3" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Most businesses are up and running within 10-15 minutes. For more complex setups with custom workflows and integrations, it may take up to an hour. Our support team is available to help with implementation at no extra cost.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-gs-4">
+                                <span>Can I migrate my existing appointments?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-gs-4" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! Booky AI can import your existing appointments from most calendar systems and booking platforms. Simply connect your calendar during setup, and we'll automatically sync all your existing bookings.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features FAQs -->
+        <section class="mb-5" id="features">
+            <div class="text-center mb-4" data-aos="fade-up">
+                <h2 class="section-title mb-3">
+                    <span class="gradient-text">Features & Capabilities</span>
+                </h2>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="faq-accordion" data-aos="fade-up" data-aos-delay="100">
+                        <!-- FAQ 1 -->
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-feat-1">
+                                <span>What integrations does Booky AI support?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-feat-1" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    We integrate with Google Calendar, Outlook, iCal, Zoom, Microsoft Teams, Slack, Salesforce, HubSpot, Stripe, and many more. Our REST API also allows custom integrations with your existing tools. New integrations are added regularly based on customer requests.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 2 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-feat-2">
+                                <span>Can the AI handle phone calls?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-feat-2" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! Our Voice AI feature (available on Professional and Enterprise plans) can answer phone calls, understand natural speech, and book appointments through voice conversations. The AI sounds natural and can handle complex scheduling scenarios.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-feat-3">
+                                <span>How does the AI prevent double-bookings?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-feat-3" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Our AI uses real-time calendar synchronization and conflict detection algorithms to ensure no double-bookings occur. It checks availability across all your connected calendars before confirming any appointment.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-feat-4">
+                                <span>Can I customize the AI's responses?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-feat-4" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Absolutely! You can customize greetings, responses, business hours, service offerings, and even train the AI with industry-specific terminology. Professional and Enterprise plans offer advanced customization options including custom voice models.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 5 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-feat-5">
+                                <span>Does Booky AI work in multiple languages?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-feat-5" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! Booky AI currently supports 15+ languages including English, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, and more. The AI automatically detects the customer's language and responds accordingly.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Billing FAQs -->
+        <section class="mb-5" id="billing">
+            <div class="text-center mb-4" data-aos="fade-up">
+                <h2 class="section-title mb-3">
+                    <span class="gradient-text">Billing & Pricing</span>
+                </h2>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="faq-accordion" data-aos="fade-up" data-aos-delay="100">
+                        <!-- FAQ 1 -->
+                        <div class="faq-item">
+                            <button class="faq-question" type="button" data-bs-toggle="collapse" data-bs-target="#faq-bill-1">
+                                <span>What payment methods do you accept?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-bill-1" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    We accept all major credit cards (Visa, Mastercard, American Express, Discover), PayPal, and ACH bank transfers for annual plans. Enterprise customers can also pay via invoice with NET 30 terms.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- FAQ 2 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-bill-2">
+                                <span>Can I switch plans later?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-bill-2" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! You can upgrade or downgrade your plan at any time from your dashboard. Upgrades take effect immediately, while downgrades take effect at the start of your next billing cycle. We'll prorate any charges accordingly.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-bill-3">
+                                <span>Is there a discount for annual billing?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-bill-3" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! We offer a 20% discount when you choose annual billing. This applies to all plans (Starter, Professional, and Enterprise). You can switch to annual billing at any time.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-bill-4">
+                                <span>What happens if I exceed my appointment limit?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-bill-4" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    We'll notify you when you reach 90% of your limit. If you exceed it, you can either upgrade to a higher plan or pay a small overage fee per additional booking. You can set your preference in your account settings.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 5 -->
+                        <div class="faq-item">
+                            <button class="faq-question collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-bill-5">
+                                <span>Do you offer refunds?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div id="faq-bill-5" class="collapse" data-bs-parent=".faq-accordion">
+                                <div class="faq-answer">
+                                    Yes! We offer a 14-day money-back guarantee on your first subscription. If you're not satisfied within the first 14 days, we'll issue a full refund—no questions asked. See our <a href="/refund-policy" class="text-primary">Refund Policy</a> for details.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="text-center" data-aos="fade-up">
+            <div class="glass-card">
+                <h3 class="text-white mb-3">Still have questions?</h3>
+                <p class="text-muted mb-4">Can't find the answer you're looking for? Our support team is here to help.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/contact" class="btn btn-primary btn-lg px-5 py-3">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contact Support
+                    </a>
+                    <a href="/pricing" class="btn btn-outline-light btn-lg px-5 py-3">
+                        <i class="fas fa-dollar-sign me-2"></i>
+                        View Pricing
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // FAQ Search functionality
+    document.getElementById('faqSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+
+    // Scroll to category
+    function scrollToCategory(categoryId) {
+        const element = document.getElementById(categoryId);
+        const offset = 100;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+        window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+        });
+    }
+</script>
+{% endblock %}

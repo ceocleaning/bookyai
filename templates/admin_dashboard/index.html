@@ -1,0 +1,829 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Dashboard Overview{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .date-range-container {
+        background: var(--admin-card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .date-input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .date-input-group label {
+        color: var(--admin-text);
+        font-weight: 600;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    .date-input-group input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        color: var(--admin-text);
+        padding: 0.625rem 1rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        min-width: 150px;
+    }
+    
+    .date-input-group input:focus {
+        outline: none;
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .date-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+    
+    .date-btn {
+        background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+        color: #ffffff;
+        border: none;
+        padding: 0.625rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .date-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+    
+    .date-btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        color: var(--admin-text);
+    }
+    
+    .date-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+    }
+    
+    /* Compact Stat Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card-compact {
+        background: var(--admin-card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card-compact::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--card-color), transparent);
+    }
+    
+    .stat-card-compact:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+        border-color: var(--card-color);
+    }
+    
+    .stat-card-header-compact {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+    
+    .stat-card-title-compact {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .stat-card-icon-compact {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        background: linear-gradient(135deg, var(--card-color), transparent);
+        color: var(--card-color);
+    }
+    
+    .stat-card-value-compact {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .stat-card-footer-compact {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+    
+    .stat-trend-compact {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    
+    .stat-trend-compact.up {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--admin-success);
+    }
+    
+    .stat-trend-compact.down {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--admin-danger);
+    }
+    
+    .stat-trend-compact.neutral {
+        background: rgba(148, 163, 184, 0.1);
+        color: var(--admin-text-muted);
+    }
+    
+    .stat-trend-label {
+        font-size: 0.7rem;
+        color: var(--admin-text-muted);
+    }
+    
+    .range-selector {
+        display: flex;
+        gap: 0.25rem;
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.25rem;
+        border-radius: 6px;
+    }
+    
+    .range-btn {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        background: transparent;
+        color: var(--admin-text-muted);
+        font-size: 0.7rem;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .range-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--admin-text);
+    }
+    
+    .range-btn.active {
+        background: var(--card-color);
+        color: #ffffff;
+    }
+    
+    .stat-loading {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Date Range Filter -->
+<div class="date-range-container" data-aos="fade-down">
+    <div class="date-input-group">
+        <label for="startDate">
+            <i class="fas fa-calendar-alt me-1"></i>
+            Start Date
+        </label>
+        <input type="text" id="startDate" placeholder="Select start date">
+    </div>
+    
+    <div class="date-input-group">
+        <label for="endDate">
+            <i class="fas fa-calendar-alt me-1"></i>
+            End Date
+        </label>
+        <input type="text" id="endDate" placeholder="Select end date">
+    </div>
+    
+    <div class="date-actions">
+        <button class="date-btn" id="applyDateRange">
+            <i class="fas fa-filter me-1"></i>
+            Apply Filter
+        </button>
+        <button class="date-btn date-btn-secondary" id="resetDateRange">
+            <i class="fas fa-redo me-1"></i>
+            Reset
+        </button>
+    </div>
+</div>
+
+<!-- Compact Stats Grid -->
+<div class="stats-grid" data-aos="fade-up">
+    <!-- Total Users -->
+    <div class="stat-card-compact" style="--card-color: #4f46e5;" id="usersCard" data-metric="users">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-users"></i>
+                Total Users
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalUsers">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="usersTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="usersGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="usersTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Businesses -->
+    <div class="stat-card-compact" style="--card-color: #06b6d4;" id="businessesCard" data-metric="businesses">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-building"></i>
+                Active Businesses
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-building"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalBusinesses">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="businessesTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="businessesGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="businessesTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Bookings -->
+    <div class="stat-card-compact" style="--card-color: #10b981;" id="bookingsCard" data-metric="bookings">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-calendar-check"></i>
+                Total Bookings
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalBookings">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="bookingsTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="bookingsGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="bookingsTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Leads -->
+    <div class="stat-card-compact" style="--card-color: #f59e0b;" id="leadsCard" data-metric="leads">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-user-plus"></i>
+                Total Leads
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-user-plus"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalLeads">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="leadsTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="leadsGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="leadsTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Invoices -->
+    <div class="stat-card-compact" style="--card-color: #8b5cf6;" id="invoicesCard" data-metric="invoices">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-file-invoice"></i>
+                Total Invoices
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalInvoices">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="invoicesTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="invoicesGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="invoicesTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Payments -->
+    <div class="stat-card-compact" style="--card-color: #ec4899;" id="paymentsCard" data-metric="payments">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-credit-card"></i>
+                Payments Made
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-credit-card"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalPayments">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="paymentsTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="paymentsGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="paymentsTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Client Revenue -->
+    <div class="stat-card-compact" style="--card-color: #14b8a6;" id="clientRevenueCard" data-metric="client-revenue">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-dollar-sign"></i>
+                Client Revenue
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="clientRevenue">$0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="clientRevenueTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="clientRevenueGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="clientRevenueTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SaaS Revenue -->
+    <div class="stat-card-compact" style="--card-color: #f97316;" id="saasRevenueCard" data-metric="saas-revenue">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-chart-line"></i>
+                SaaS Revenue
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-chart-line"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="saasRevenue">$0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact neutral" id="saasRevenueTrend">
+                    <i class="fas fa-minus"></i>
+                    <span id="saasRevenueGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="saasRevenueTrendLabel">Coming Soon</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-12" data-aos="fade-up" data-aos-delay="100">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-area me-2" style="color: var(--admin-primary);"></i>
+                    Revenue & Bookings Overview
+                </h3>
+                <div class="dashboard-card-actions">
+                    <button class="card-action-btn" id="refreshChart">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="position: relative; height: 400px;">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Initialize date pickers
+    const startDatePicker = flatpickr("#startDate", {
+        dateFormat: "Y-m-d",
+        maxDate: "today"
+    });
+    
+    const endDatePicker = flatpickr("#endDate", {
+        dateFormat: "Y-m-d",
+        maxDate: "today"
+    });
+    
+    let currentStartDate = null;
+    let currentEndDate = null;
+    let mainChart = null;
+    
+    // Store current range for each metric
+    const metricRanges = {
+        'users': 'monthly',
+        'businesses': 'monthly',
+        'bookings': 'monthly',
+        'leads': 'monthly',
+        'invoices': 'monthly',
+        'payments': 'monthly',
+        'client-revenue': 'monthly',
+        'saas-revenue': 'monthly'
+    };
+    
+    // Format numbers
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Format currency
+    function formatCurrency(amount) {
+        return '$' + parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+    
+    // Update stat card
+    function updateStatCard(cardId, data, valueFormatter = formatNumber) {
+        const card = document.getElementById(cardId);
+        if (!card) return;
+        
+        const valueEl = card.querySelector('.stat-card-value-compact');
+        const trendEl = card.querySelector('.stat-trend-compact');
+        const growthEl = card.querySelector('[id$="Growth"]');
+        const trendLabelEl = card.querySelector('.stat-trend-label');
+        
+        // Update value
+        if (valueEl && data.total !== undefined) {
+            valueEl.textContent = valueFormatter(data.total);
+        } else if (valueEl && data.total_count !== undefined) {
+            valueEl.textContent = valueFormatter(data.total_count);
+        } else if (valueEl && data.total_revenue !== undefined) {
+            valueEl.textContent = formatCurrency(data.total_revenue);
+        } else if (valueEl && data.total_amount !== undefined) {
+            valueEl.textContent = formatCurrency(data.total_amount);
+        }
+        
+        // Update trend
+        if (trendEl && growthEl && data.growth !== undefined) {
+            const growth = parseFloat(data.growth);
+            const trend = data.trend || (growth > 0 ? 'up' : (growth < 0 ? 'down' : 'neutral'));
+            
+            trendEl.className = 'stat-trend-compact ' + trend;
+            
+            const iconClass = trend === 'up' ? 'fa-arrow-up' : (trend === 'down' ? 'fa-arrow-down' : 'fa-minus');
+            trendEl.querySelector('i').className = 'fas ' + iconClass;
+            growthEl.textContent = Math.abs(growth).toFixed(1) + '%';
+        }
+        
+        // Update trend label
+        if (trendLabelEl && data.trend_label) {
+            trendLabelEl.textContent = data.trend_label;
+        }
+        
+        card.classList.remove('stat-loading');
+    }
+    
+    // Load single metric
+    async function loadMetric(metric, range) {
+        const params = new URLSearchParams();
+        if (currentStartDate) params.append('start_date', currentStartDate);
+        if (currentEndDate) params.append('end_date', currentEndDate);
+        params.append('range', range);
+        
+        const endpoints = {
+            'users': 'users',
+            'businesses': 'businesses',
+            'bookings': 'bookings',
+            'leads': 'leads',
+            'invoices': 'invoices',
+            'payments': 'payments',
+            'client-revenue': 'client-revenue',
+            'saas-revenue': 'saas-revenue'
+        };
+        
+        const cardIds = {
+            'users': 'usersCard',
+            'businesses': 'businessesCard',
+            'bookings': 'bookingsCard',
+            'leads': 'leadsCard',
+            'invoices': 'invoicesCard',
+            'payments': 'paymentsCard',
+            'client-revenue': 'clientRevenueCard',
+            'saas-revenue': 'saasRevenueCard'
+        };
+        
+        const formatters = {
+            'client-revenue': formatCurrency,
+            'saas-revenue': formatCurrency
+        };
+        
+        try {
+            const response = await fetch(`/admin-dashboard/api/${endpoints[metric]}/?${params.toString()}`);
+            const data = await response.json();
+            updateStatCard(cardIds[metric], data, formatters[metric] || formatNumber);
+        } catch (error) {
+            console.error(`Error loading ${metric}:`, error);
+        }
+    }
+    
+    // Load all statistics
+    async function loadAllStatistics() {
+        document.querySelectorAll('.stat-card-compact').forEach(card => {
+            card.classList.add('stat-loading');
+        });
+        
+        const promises = Object.keys(metricRanges).map(metric => 
+            loadMetric(metric, metricRanges[metric])
+        );
+        
+        await Promise.all(promises);
+    }
+    
+    // Load chart data
+    async function loadChartData() {
+        const params = new URLSearchParams();
+        if (currentStartDate) params.append('start_date', currentStartDate);
+        if (currentEndDate) params.append('end_date', currentEndDate);
+        
+        try {
+            const response = await fetch(`/admin-dashboard/api/chart-data/?${params.toString()}`);
+            const data = await response.json();
+            
+            if (mainChart) {
+                mainChart.destroy();
+            }
+            
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Revenue ($)',
+                            data: data.revenue,
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Bookings',
+                            data: data.bookings,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 12,
+                                    family: "'Outfit', sans-serif"
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 14, 39, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(79, 70, 229, 0.5)',
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(79, 70, 229, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)',
+                                color: '#94a3b8'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Bookings',
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+        }
+    }
+    
+    // Range button click handlers
+    document.querySelectorAll('.range-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const card = this.closest('.stat-card-compact');
+            const metric = card.dataset.metric;
+            const range = this.dataset.range;
+            
+            // Update active state
+            card.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update metric range and reload
+            metricRanges[metric] = range;
+            loadMetric(metric, range);
+        });
+    });
+    
+    // Date range handlers
+    document.getElementById('applyDateRange').addEventListener('click', () => {
+        currentStartDate = document.getElementById('startDate').value;
+        currentEndDate = document.getElementById('endDate').value;
+        
+        if (currentStartDate && currentEndDate) {
+            loadAllStatistics();
+            loadChartData();
+        } else {
+            alert('Please select both start and end dates');
+        }
+    });
+    
+    document.getElementById('resetDateRange').addEventListener('click', () => {
+        currentStartDate = null;
+        currentEndDate = null;
+        startDatePicker.clear();
+        endDatePicker.clear();
+        loadAllStatistics();
+        loadChartData();
+    });
+    
+    document.getElementById('refreshChart').addEventListener('click', () => {
+        loadChartData();
+    });
+    
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAllStatistics();
+        loadChartData();
+    });
+</script>
+{% endblock %}

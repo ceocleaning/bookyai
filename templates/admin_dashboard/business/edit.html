@@ -1,0 +1,412 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Edit Business: {{ business.name }}{% endblock %}
+{% block page_title %}Edit Business{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-3" data-aos="fade-right">
+    <a href="{% url 'admin_dashboard:business_detail' business.id %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Business Details
+    </a>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+<div data-aos="fade-down">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Edit Form -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-edit me-2" style="color: var(--admin-primary);"></i>
+                    Edit Business Information
+                </h3>
+            </div>
+            
+            <form method="post" action="{% url 'admin_dashboard:business_edit' business.id %}" class="p-4">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    <!-- Business Name -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="name" class="form-label">
+                                <i class="fas fa-building me-2"></i>
+                                Business Name *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="name" 
+                                   name="name" 
+                                   value="{{ business.name }}"
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <!-- Industry -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="industry_id" class="form-label">
+                                <i class="fas fa-industry me-2"></i>
+                                Industry *
+                            </label>
+                            <select class="form-select" id="industry_id" name="industry_id" required>
+                                {% for industry in industries %}
+                                <option value="{{ industry.id }}" {% if industry.id == business.industry.id %}selected{% endif %}>
+                                    {{ industry.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                Business Email
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email"
+                                   value="{{ business.email }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone_number" class="form-label">
+                                <i class="fas fa-phone me-2"></i>
+                                Phone Number
+                            </label>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="phone_number" 
+                                   name="phone_number"
+                                   value="{{ business.phone_number }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Website -->
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="website" class="form-label">
+                                <i class="fas fa-globe me-2"></i>
+                                Website
+                            </label>
+                            <input type="url" 
+                                   class="form-control" 
+                                   id="website" 
+                                   name="website"
+                                   value="{{ business.website }}"
+                                   placeholder="https://example.com">
+                        </div>
+                    </div>
+                    
+                    <!-- Address -->
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="address" class="form-label">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Street Address
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="address" 
+                                   name="address"
+                                   value="{{ business.address }}">
+                        </div>
+                    </div>
+                    
+                    <!-- City -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="city" class="form-label">
+                                <i class="fas fa-city me-2"></i>
+                                City
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="city" 
+                                   name="city"
+                                   value="{{ business.city }}">
+                        </div>
+                    </div>
+                    
+                    <!-- State -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="state" class="form-label">
+                                <i class="fas fa-map me-2"></i>
+                                State
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="state" 
+                                   name="state"
+                                   value="{{ business.state }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Zip Code -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="zip_code" class="form-label">
+                                <i class="fas fa-mail-bulk me-2"></i>
+                                Zip Code
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="zip_code" 
+                                   name="zip_code"
+                                   value="{{ business.zip_code }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Description
+                            </label>
+                            <textarea class="form-control" 
+                                      id="description" 
+                                      name="description" 
+                                      rows="4">{{ business.description }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Active Status -->
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="is_active" 
+                                   name="is_active"
+                                   {% if business.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Active
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                Designates whether this business should be treated as active.
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="col-12">
+                        <hr style="border-color: var(--admin-border); margin: 1.5rem 0;">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                Save Changes
+                            </button>
+                            <a href="{% url 'admin_dashboard:business_detail' business.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Right Column - Info -->
+    <div class="col-lg-4">
+        <div class="dashboard-card" data-aos="fade-up">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-info-circle me-2" style="color: var(--admin-info);"></i>
+                    Business Information
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="info-item">
+                    <div class="info-label">Business ID</div>
+                    <div class="info-value">{{ business.id }}</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Owner</div>
+                    <div class="info-value">
+                        <a href="{% url 'admin_dashboard:user_detail' business.user.id %}" style="color: var(--admin-primary);">
+                            {{ business.user.username }}
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">Created</div>
+                    <div class="info-value">{{ business.created_at|date:"M d, Y" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card mt-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="dashboard-card-header" style="background: rgba(245, 158, 11, 0.1);">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-exclamation-triangle me-2" style="color: var(--admin-warning);"></i>
+                    Important Notes
+                </h3>
+            </div>
+            
+            <div class="p-4">
+                <div class="alert alert-warning mb-3">
+                    <i class="fas fa-user-lock me-2"></i>
+                    <strong>Owner:</strong> The business owner cannot be changed. Contact a developer if needed.
+                </div>
+                
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> Changes will be reflected immediately across the system.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--admin-text);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .form-control, .form-select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        color: var(--admin-text);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--admin-primary);
+        color: var(--admin-text);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--admin-border);
+        cursor: pointer;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--admin-primary);
+        border-color: var(--admin-primary);
+    }
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-check-label {
+        font-weight: 600;
+        color: var(--admin-text);
+        margin-left: 0.5rem;
+    }
+    
+    .form-text {
+        font-size: 0.8125rem;
+        color: var(--admin-text-muted);
+        margin-top: 0.25rem;
+    }
+    
+    .info-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--admin-border);
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+        font-size: 0.9375rem;
+        color: var(--admin-text);
+        font-weight: 500;
+    }
+    
+    .alert {
+        border-radius: 8px;
+        border: 1px solid;
+        font-size: 0.875rem;
+    }
+    
+    .alert-warning {
+        background: rgba(245, 158, 11, 0.1);
+        border-color: rgba(245, 158, 11, 0.3);
+        color: #f59e0b;
+    }
+    
+    .alert-info {
+        background: rgba(6, 182, 212, 0.1);
+        border-color: rgba(6, 182, 212, 0.3);
+        color: #06b6d4;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const name = document.getElementById('name').value.trim();
+        const industryId = document.getElementById('industry_id').value;
+        
+        if (!name) {
+            e.preventDefault();
+            alert('Business name is required');
+            return false;
+        }
+        
+        if (!industryId) {
+            e.preventDefault();
+            alert('Please select an industry');
+            return false;
+        }
+    });
+</script>
+{% endblock %}

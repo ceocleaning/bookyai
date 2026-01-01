@@ -33,6 +33,9 @@
     <link rel="stylesheet" href="{% static 'css/testimonials_pricing.css' %}">
     <link rel="stylesheet" href="{% static 'css/cta_faq.css' %}">
     
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     {% block extra_css %}{% endblock %}
 
     <style>
@@ -71,32 +74,32 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
                             <span>Home</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/features">
+                        <a class="nav-link {% if '/features' in request.path %}active{% endif %}" href="/features">
                             <span>Features</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/use-cases">
+                        <a class="nav-link {% if '/use-cases' in request.path %}active{% endif %}" href="/use-cases">
                             <span>Use Cases</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/pricing">
+                        <a class="nav-link {% if '/pricing' in request.path %}active{% endif %}" href="/pricing">
                             <span>Pricing</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/about">
+                        <a class="nav-link {% if '/about' in request.path %}active{% endif %}" href="/about">
                             <span>About</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/contact">
+                        <a class="nav-link {% if '/contact' in request.path %}active{% endif %}" href="/contact">
                             <span>Contact</span>
                         </a>
                     </li>
@@ -218,9 +221,9 @@
                     <div class="col-6 col-md-2">
                         <h6 class="footer-heading">Legal</h6>
                         <ul class="footer-links">
-                            <li><a href="/terms" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Terms</a></li>
-                            <li><a href="/privacy" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Privacy</a></li>
-                            <li><a href="/cookies" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Cookies</a></li>
+                            <li><a href="/terms-conditions" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Terms & Conditions</a></li>
+                            <li><a href="/privacy-policy" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
+                            <li><a href="/refund-policy" class="footer-link"><i class="fas fa-chevron-right me-2"></i>Refund Policy</a></li>
                             <li><a href="/gdpr" class="footer-link"><i class="fas fa-chevron-right me-2"></i>GDPR</a></li>
                         </ul>
                     </div>
@@ -268,6 +271,17 @@
                     toast.show();
                 });
             }
+        });
+    </script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 80,
+            easing: 'ease-out-cubic',
         });
     </script>
     

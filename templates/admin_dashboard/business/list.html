@@ -1,0 +1,309 @@
+{% extends 'admin_dashboard/base.html' %}
+
+{% block title %}Business Management{% endblock %}
+{% block page_title %}Business Management{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4" data-aos="fade-up">
+    <div class="col-md-4">
+        <div class="stat-card-compact" style="--card-color: #4f46e5;">
+            <div class="stat-card-header-compact">
+                <div class="stat-card-title-compact">
+                    <i class="fas fa-building"></i>
+                    Total Businesses
+                </div>
+            </div>
+            <div class="stat-card-value-compact">{{ total_businesses }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card-compact" style="--card-color: #10b981;">
+            <div class="stat-card-header-compact">
+                <div class="stat-card-title-compact">
+                    <i class="fas fa-check-circle"></i>
+                    Active
+                </div>
+            </div>
+            <div class="stat-card-value-compact">{{ active_businesses }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card-compact" style="--card-color: #ef4444;">
+            <div class="stat-card-header-compact">
+                <div class="stat-card-title-compact">
+                    <i class="fas fa-times-circle"></i>
+                    Inactive
+                </div>
+            </div>
+            <div class="stat-card-value-compact">{{ inactive_businesses }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<div class="dashboard-card mb-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="dashboard-card-header">
+        <h3 class="dashboard-card-title">
+            <i class="fas fa-search me-2" style="color: var(--admin-primary);"></i>
+            Search & Filter
+        </h3>
+        <div class="dashboard-card-actions">
+            <a href="{% url 'admin_dashboard:business_add' %}" class="card-action-btn">
+                <i class="fas fa-plus me-1"></i>
+                Add Business
+            </a>
+        </div>
+    </div>
+    <form method="get" action="{% url 'admin_dashboard:business_list' %}" class="row g-3">
+        <div class="col-md-4">
+            <input type="text" 
+                   name="search" 
+                   class="form-control" 
+                   placeholder="Search by name, email, phone..." 
+                   value="{{ search_query }}">
+        </div>
+        <div class="col-md-3">
+            <select name="filter" class="form-select">
+                <option value="all" {% if filter_type == 'all' %}selected{% endif %}>All Businesses</option>
+                <option value="active" {% if filter_type == 'active' %}selected{% endif %}>Active Only</option>
+                <option value="inactive" {% if filter_type == 'inactive' %}selected{% endif %}>Inactive Only</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="industry" class="form-select">
+                <option value="">All Industries</option>
+                {% for industry in industries %}
+                <option value="{{ industry.id }}" {% if industry_filter == industry.id|stringformat:"s" %}selected{% endif %}>
+                    {{ industry.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search me-1"></i>
+                Search
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Businesses Table -->
+<div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+    <div class="dashboard-card-header">
+        <h3 class="dashboard-card-title">
+            <i class="fas fa-list me-2" style="color: var(--admin-primary);"></i>
+            Businesses List
+        </h3>
+        <div class="dashboard-card-actions">
+            <span class="badge bg-primary">{{ businesses.paginator.count }} businesses</span>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0">
+            <thead>
+                <tr>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Business Name</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Owner</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Industry</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Contact</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Status</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Created</th>
+                    <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for business in businesses %}
+                <tr id="business-row-{{ business.id }}">
+                    <td style="border-color: var(--admin-border); color: var(--admin-text); font-weight: 600;">
+                        <i class="fas fa-building me-2" style="color: var(--admin-primary);"></i>
+                        {{ business.name }}
+                    </td>
+                    <td style="border-color: var(--admin-border); color: var(--admin-text);">
+                        <i class="fas fa-user me-1" style="color: var(--admin-secondary);"></i>
+                        {{ business.user.username }}
+                    </td>
+                    <td style="border-color: var(--admin-border); color: var(--admin-text-muted);">
+                        {{ business.industry.name }}
+                    </td>
+                    <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                        <div>{{ business.email }}</div>
+                        <div>{{ business.phone_number }}</div>
+                    </td>
+                    <td style="border-color: var(--admin-border);">
+                        {% if business.is_active %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>
+                                Active
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times-circle me-1"></i>
+                                Inactive
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                        {{ business.created_at|date:"M d, Y" }}
+                    </td>
+                    <td style="border-color: var(--admin-border);">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'admin_dashboard:business_detail' business.id %}" 
+                               class="btn btn-outline-primary" 
+                               title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'admin_dashboard:business_edit' business.id %}" 
+                               class="btn btn-outline-warning" 
+                               title="Edit Business">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" 
+                                    class="btn btn-outline-danger" 
+                                    onclick="deleteBusiness('{{ business.id }}', '{{ business.name }}')"
+                                    title="Delete Business">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="border-color: var(--admin-border); text-align: center; padding: 3rem; color: var(--admin-text-muted);">
+                        <i class="fas fa-inbox fa-3x mb-3" style="opacity: 0.3;"></i>
+                        <p class="mb-0">No businesses found</p>
+                        {% if search_query %}
+                        <small>Try adjusting your search criteria</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if businesses.has_other_pages %}
+    <div class="d-flex justify-content-between align-items-center p-3" style="border-top: 1px solid var(--admin-border);">
+        <div class="text-muted">
+            Showing {{ businesses.start_index }} to {{ businesses.end_index }} of {{ businesses.paginator.count }} businesses
+        </div>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if businesses.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ businesses.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">Previous</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">{{ businesses.number }}</span>
+                </li>
+                
+                {% if businesses.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ businesses.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ businesses.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if filter_type != 'all' %}&filter={{ filter_type }}{% endif %}{% if industry_filter %}&industry={{ industry_filter }}{% endif %}">Last</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card-compact {
+        background: var(--admin-card-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--admin-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card-compact::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, var(--card-color), transparent);
+    }
+    
+    .stat-card-header-compact {
+        margin-bottom: 0.75rem;
+    }
+    
+    .stat-card-title-compact {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .stat-card-value-compact {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function deleteBusiness(businessId, businessName) {
+        if (!confirm(`Are you sure you want to delete business "${businessName}"? This action cannot be undone and will delete all associated data.`)) {
+            return;
+        }
+        
+        fetch(`/admin-dashboard/businesses/${businessId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const row = document.getElementById(`business-row-${businessId}`);
+                row.style.transition = 'opacity 0.3s ease';
+                row.style.opacity = '0';
+                setTimeout(() => {
+                    row.remove();
+                    alert(data.message);
+                    window.location.reload();
+                }, 300);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the business');
+        });
+    }
+</script>
+{% endblock %}

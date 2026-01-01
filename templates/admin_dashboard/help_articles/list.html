@@ -1,0 +1,455 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Help Articles{% endblock %}
+{% block page_title %}Help Articles{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard/help-articles.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header" data-aos="fade-down">
+    <div class="page-header-content">
+        <div class="page-header-text">
+            <h2 class="page-header-title">
+                <i class="fas fa-question-circle me-2"></i>
+                Help Articles Management
+            </h2>
+            <p class="page-header-subtitle">Manage help center articles and categories</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{% url 'admin_dashboard:help_article_add' %}" class="btn-primary-admin">
+                <i class="fas fa-plus me-2"></i>
+                Add New Article
+            </a>
+            <a href="{% url 'admin_dashboard:help_category_list' %}" class="btn-secondary-admin">
+                <i class="fas fa-folder me-2"></i>
+                Manage Categories
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Compact Stats Cards -->
+<div class="stats-grid-compact" data-aos="fade-up">
+    <div class="stat-card-compact" style="--card-color: var(--admin-primary);">
+        <div class="stat-compact-icon">
+            <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="stat-compact-content">
+            <div class="stat-compact-value" id="totalArticles">{{ total_articles }}</div>
+            <div class="stat-compact-label">Total Articles</div>
+        </div>
+    </div>
+
+    <div class="stat-card-compact" style="--card-color: var(--admin-success);">
+        <div class="stat-compact-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-compact-content">
+            <div class="stat-compact-value" id="publishedArticles">{{ published_articles }}</div>
+            <div class="stat-compact-label">Published</div>
+        </div>
+    </div>
+
+    <div class="stat-card-compact" style="--card-color: var(--admin-warning);">
+        <div class="stat-compact-icon">
+            <i class="fas fa-edit"></i>
+        </div>
+        <div class="stat-compact-content">
+            <div class="stat-compact-value" id="draftArticles">{{ draft_articles }}</div>
+            <div class="stat-compact-label">Draft</div>
+        </div>
+    </div>
+
+    <div class="stat-card-compact" style="--card-color: var(--admin-info);">
+        <div class="stat-compact-icon">
+            <i class="fas fa-eye"></i>
+        </div>
+        <div class="stat-compact-content">
+            <div class="stat-compact-value" id="totalViews">{{ total_views }}</div>
+            <div class="stat-compact-label">Total Views</div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
+    <div class="filters-container">
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchArticles" class="search-input" placeholder="Search articles...">
+        </div>
+        <div class="filter-group">
+            <select id="filterCategory" class="filter-select">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="filterStatus" class="filter-select">
+                <option value="">All Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+            </select>
+            <button class="btn-filter-reset" id="resetFilters">
+                <i class="fas fa-redo me-2"></i>
+                Reset
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Articles Table -->
+<div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
+    <div class="dashboard-card-header">
+        <h3 class="dashboard-card-title">
+            <i class="fas fa-list me-2"></i>
+            All Articles
+        </h3>
+        <div class="dashboard-card-actions">
+            <button class="card-action-btn" id="bulkDeleteBtn" style="display: none;">
+                <i class="fas fa-trash me-2"></i>
+                Delete Selected
+            </button>
+            <button class="card-action-btn" id="exportBtn">
+                <i class="fas fa-download me-2"></i>
+                Export
+            </button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th width="40">
+                        <input type="checkbox" id="selectAll" class="form-check-input">
+                    </th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Views</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th width="150">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="articlesTableBody">
+                {% for article in articles %}
+                <tr data-article-id="{{ article.id }}">
+                    <td>
+                        <input type="checkbox" class="form-check-input article-checkbox" value="{{ article.id }}">
+                    </td>
+                    <td>
+                        <div class="article-title-cell">
+                            <strong>{{ article.title }}</strong>
+                            <small class="d-block text-muted">{{ article.slug }}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge-category" style="--category-color: {{ article.category.color|default:'#4f46e5' }}">
+                            <i class="{{ article.category.icon }} me-1"></i>
+                            {{ article.category.name }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if article.is_published %}
+                        <span class="badge-status status-published">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Published
+                        </span>
+                        {% else %}
+                        <span class="badge-status status-draft">
+                            <i class="fas fa-edit me-1"></i>
+                            Draft
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="views-count">
+                            <i class="fas fa-eye me-1"></i>
+                            {{ article.views|default:0 }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="date-text">{{ article.created_at|date:"M d, Y" }}</span>
+                    </td>
+                    <td>
+                        <span class="date-text">{{ article.updated_at|date:"M d, Y" }}</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'admin_dashboard:help_article_detail' article.id %}" 
+                               class="btn-action btn-action-view" 
+                               title="View">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'admin_dashboard:help_article_edit' article.id %}" 
+                               class="btn-action btn-action-edit" 
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn-action btn-action-delete" 
+                                    data-article-id="{{ article.id }}"
+                                    data-article-title="{{ article.title }}"
+                                    title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="empty-state">
+                            <i class="fas fa-inbox fa-3x mb-3 text-muted"></i>
+                            <p class="text-muted">No articles found. Create your first article!</p>
+                            <a href="{% url 'admin_dashboard:help_article_add' %}" class="btn-primary-admin mt-3">
+                                <i class="fas fa-plus me-2"></i>
+                                Add New Article
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if articles.has_other_pages %}
+    <div class="pagination-container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if articles.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.previous_page_number }}">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in articles.paginator.page_range %}
+                <li class="page-item {% if articles.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if articles.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.next_page_number }}">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Side Panel (No Modal) -->
+<div class="delete-panel" id="deletePanel">
+    <div class="delete-panel-overlay" id="deletePanelOverlay"></div>
+    <div class="delete-panel-content">
+        <div class="delete-panel-header">
+            <div class="delete-panel-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h5 class="delete-panel-title">Confirm Delete</h5>
+            <button type="button" class="delete-panel-close" id="closeDeletePanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="delete-panel-body">
+            <p class="delete-message">Are you sure you want to delete this article?</p>
+            <div class="delete-article-info">
+                <i class="fas fa-file-alt me-2"></i>
+                <strong id="deleteArticleTitle"></strong>
+            </div>
+            <p class="delete-warning">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                This action cannot be undone.
+            </p>
+        </div>
+        
+        <div class="delete-panel-footer">
+            <button type="button" class="btn-secondary-admin" id="cancelDeleteBtn">
+                <i class="fas fa-times me-2"></i>
+                Cancel
+            </button>
+            <button type="button" class="btn-danger-admin" id="confirmDeleteBtn">
+                <i class="fas fa-trash me-2"></i>
+                Delete Article
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Delete Side Panel Styles */
+    .delete-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 99999;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+    
+    .delete-panel.active {
+        pointer-events: all;
+    }
+    
+    .delete-panel-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .delete-panel.active .delete-panel-overlay {
+        opacity: 1;
+    }
+    
+    .delete-panel-content {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 90%;
+        max-width: 450px;
+        height: 100vh;
+        background: var(--admin-card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-left: 1px solid var(--admin-border);
+        box-shadow: -10px 0 50px rgba(0, 0, 0, 0.5);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .delete-panel.active .delete-panel-content {
+        transform: translateX(0);
+    }
+    
+    .delete-panel-header {
+        padding: 2rem;
+        border-bottom: 1px solid var(--admin-border);
+        background: rgba(239, 68, 68, 0.1);
+        position: relative;
+    }
+    
+    .delete-panel-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: rgba(239, 68, 68, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 2rem;
+        color: var(--admin-danger);
+    }
+    
+    .delete-panel-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: center;
+    }
+    
+    .delete-panel-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--admin-text-muted);
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    .delete-panel-close:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    
+    .delete-panel-body {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+    
+    .delete-message {
+        font-size: 1.125rem;
+        color: var(--admin-text);
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .delete-article-info {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--admin-border);
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        color: var(--admin-text);
+        display: flex;
+        align-items: center;
+        word-break: break-word;
+    }
+    
+    .delete-warning {
+        padding: 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        color: var(--admin-danger);
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .delete-panel-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid var(--admin-border);
+        background: rgba(255, 255, 255, 0.02);
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .delete-panel-footer button {
+        flex: 1;
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 767.98px) {
+        .delete-panel-content {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin_dashboard/help-articles-list.js' %}"></script>
+{% endblock %}

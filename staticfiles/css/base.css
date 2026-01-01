@@ -70,12 +70,14 @@
 }
 
 .navbar-modern .nav-link:hover,
-.navbar-modern .nav-link:focus {
+.navbar-modern .nav-link:focus,
+.navbar-modern .nav-link.active {
     color: #ffffff;
     background: rgba(79, 70, 229, 0.1);
 }
 
-.navbar-modern .nav-link:hover i {
+.navbar-modern .nav-link:hover i,
+.navbar-modern .nav-link.active i {
     opacity: 1;
 }
 
