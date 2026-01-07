@@ -1,0 +1,78 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Cancel Subscription - {{ subscription.business.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subscription_plans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="subscription-cancel-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-ban text-warning"></i> Cancel Subscription</h1>
+            <p class="text-muted">{{ subscription.business.name }}</p>
+        </div>
+        <a href="{% url 'admin_dashboard:subscription_detail' subscription.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Warning Card -->
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5><i class="fas fa-exclamation-triangle"></i> Cancel Subscription</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">You are about to cancel the subscription for:</p>
+            
+            <div class="alert alert-light">
+                <h4>{{ subscription.business.name }}</h4>
+                <p class="mb-2"><strong>Plan:</strong> {{ subscription.plan.name|default:"No Plan" }}</p>
+                <p class="mb-2"><strong>Status:</strong> 
+                    <span class="badge {% if subscription.status == 'active' %}badge-success{% else %}badge-secondary{% endif %}">
+                        {{ subscription.get_status_display }}
+                    </span>
+                </p>
+                <p class="mb-2"><strong>Stripe Subscription ID:</strong> <code>{{ subscription.stripe_subscription_id }}</code></p>
+                <p class="mb-0"><strong>Current Period Ends:</strong> {{ subscription.current_period_end|date:"M d, Y"|default:"N/A" }}</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-info-circle"></i> Cancellation Options</h5>
+                <p class="mb-2">Choose how you want to cancel this subscription:</p>
+                <ul class="mb-0">
+                    <li><strong>Cancel at Period End:</strong> Customer retains access until {{ subscription.current_period_end|date:"M d, Y" }}</li>
+                    <li><strong>Cancel Immediately:</strong> Customer loses access immediately (no refund)</li>
+                </ul>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="cancel_immediately" name="cancel_immediately">
+                    <label class="form-check-label" for="cancel_immediately">
+                        <strong>Cancel Immediately</strong> (Customer loses access now)
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-ban"></i> Confirm Cancellation
+                    </button>
+                    <a href="{% url 'admin_dashboard:subscription_detail' subscription.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Go Back
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/subscription_plans.js' %}"></script>
+{% endblock %}

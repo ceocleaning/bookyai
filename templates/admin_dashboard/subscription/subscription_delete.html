@@ -1,0 +1,72 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Delete Subscription Record - {{ subscription.business.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subscription_plans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="subscription-delete-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-trash text-danger"></i> Delete Subscription Record</h1>
+            <p class="text-muted">{{ subscription.business.name }}</p>
+        </div>
+        <a href="{% url 'admin_dashboard:subscription_detail' subscription.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Danger Card -->
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5><i class="fas fa-exclamation-triangle"></i> Danger Zone</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">You are about to delete the local subscription record for:</p>
+            
+            <div class="alert alert-light">
+                <h4>{{ subscription.business.name }}</h4>
+                <p class="mb-2"><strong>Plan:</strong> {{ subscription.plan.name|default:"No Plan" }}</p>
+                <p class="mb-2"><strong>Status:</strong> 
+                    <span class="badge {% if subscription.status == 'active' %}badge-success{% else %}badge-secondary{% endif %}">
+                        {{ subscription.get_status_display }}
+                    </span>
+                </p>
+                <p class="mb-2"><strong>Stripe Customer ID:</strong> <code>{{ subscription.stripe_customer_id|default:"-" }}</code></p>
+                <p class="mb-0"><strong>Stripe Subscription ID:</strong> <code>{{ subscription.stripe_subscription_id|default:"-" }}</code></p>
+            </div>
+
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-circle"></i> Important Warning!</h5>
+                <ul class="mb-0">
+                    <li><strong>This ONLY deletes the local database record</strong></li>
+                    <li>The subscription will <strong>continue to be active in Stripe</strong></li>
+                    <li>The customer will <strong>continue to be billed</strong></li>
+                    <li>To actually cancel the subscription, use the "Cancel Subscription" button instead</li>
+                    <li>This action <strong>cannot be undone</strong></li>
+                </ul>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Yes, Delete Local Record Only
+                    </button>
+                    <a href="{% url 'admin_dashboard:subscription_detail' subscription.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/subscription_plans.js' %}"></script>
+{% endblock %}

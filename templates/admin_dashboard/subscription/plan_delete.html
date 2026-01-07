@@ -1,0 +1,69 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Delete {{ plan.name }} - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subscription_plans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="subscription-plan-delete-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-exclamation-triangle text-danger"></i> Delete Subscription Plan</h1>
+            <p class="text-muted">Confirm deletion of {{ plan.name }}</p>
+        </div>
+        <a href="{% url 'admin_dashboard:subscription_plan_detail' plan.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Warning Card -->
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5><i class="fas fa-exclamation-circle"></i> Warning</h5>
+        </div>
+        <div class="card-body">
+            <p class="mb-3">You are about to delete the following subscription plan:</p>
+            
+            <div class="alert alert-light">
+                <h4>{{ plan.name }}</h4>
+                <p class="mb-2"><strong>Price:</strong> ${{ plan.price }}/{{ plan.get_billing_period_display }}</p>
+                <p class="mb-2"><strong>Stripe Price ID:</strong> <code>{{ plan.stripe_price_id }}</code></p>
+                <p class="mb-0"><strong>Status:</strong> 
+                    <span class="badge {% if plan.is_active %}badge-success{% else %}badge-secondary{% endif %}">
+                        {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </p>
+            </div>
+
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-exclamation-triangle"></i> This action cannot be undone!</h5>
+                <ul class="mb-0">
+                    <li>The plan will be permanently deleted from the database</li>
+                    <li>Historical subscription data will remain intact</li>
+                    <li>This will NOT cancel existing subscriptions in Stripe</li>
+                </ul>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Yes, Delete This Plan
+                    </button>
+                    <a href="{% url 'admin_dashboard:subscription_plan_detail' plan.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/subscription_plans.js' %}"></script>
+{% endblock %}

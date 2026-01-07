@@ -3,7 +3,7 @@ Admin Dashboard URL Configuration
 """
 
 from django.urls import path
-from .views import index_views, users_views, business_views, help_articles_views
+from .views import index_views, users_views, business_views, help_articles_views, subscription_views
 
 app_name = 'admin_dashboard'
 
@@ -58,5 +58,19 @@ urlpatterns = [
     path('help-categories/add/', help_articles_views.help_category_add, name='help_category_add'),
     path('help-categories/<int:category_id>/edit/', help_articles_views.help_category_edit, name='help_category_edit'),
     path('help-categories/<int:category_id>/delete/', help_articles_views.help_category_delete, name='help_category_delete'),
+    
+    # Subscription Plan Management
+    path('subscription-plans/', subscription_views.subscription_plan_list, name='subscription_plan_list'),
+    path('subscription-plans/add/', subscription_views.subscription_plan_add, name='subscription_plan_add'),
+    path('subscription-plans/<int:plan_id>/', subscription_views.subscription_plan_detail, name='subscription_plan_detail'),
+    path('subscription-plans/<int:plan_id>/edit/', subscription_views.subscription_plan_edit, name='subscription_plan_edit'),
+    path('subscription-plans/<int:plan_id>/delete/', subscription_views.subscription_plan_delete, name='subscription_plan_delete'),
+    path('subscription-plans/<int:plan_id>/toggle-status/', subscription_views.subscription_plan_toggle_status, name='subscription_plan_toggle_status'),
+    
+    # Subscription Management
+    path('subscriptions/', subscription_views.subscription_list, name='subscription_list'),
+    path('subscriptions/<int:subscription_id>/', subscription_views.subscription_detail, name='subscription_detail'),
+    path('subscriptions/<int:subscription_id>/cancel/', subscription_views.subscription_cancel, name='subscription_cancel'),
+    path('subscriptions/<int:subscription_id>/delete/', subscription_views.subscription_delete, name='subscription_delete'),
 ]
 

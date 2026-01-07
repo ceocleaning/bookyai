@@ -1,0 +1,119 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Add Subscription Plan - Admin Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subscription_plans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="subscription-plan-form-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-plus-circle"></i> Add New Subscription Plan</h1>
+            <p class="text-muted">Create a new subscription plan</p>
+        </div>
+        <a href="{% url 'admin_dashboard:subscription_plan_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Plans
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="planForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Plan Name -->
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Plan Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required 
+                               placeholder="e.g., Professional">
+                    </div>
+
+                    <!-- Stripe Price ID -->
+                    <div class="col-md-6 mb-3">
+                        <label for="stripe_price_id" class="form-label">Stripe Price ID <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="stripe_price_id" name="stripe_price_id" required 
+                               placeholder="price_xxxxxxxxxxxxx">
+                        <small class="text-muted">Get this from your Stripe Dashboard</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Price -->
+                    <div class="col-md-6 mb-3">
+                        <label for="price" class="form-label">Price (USD) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="price" name="price" 
+                                   step="0.01" min="0" required placeholder="29.99">
+                        </div>
+                    </div>
+
+                    <!-- Billing Period -->
+                    <div class="col-md-6 mb-3">
+                        <label for="billing_period" class="form-label">Billing Period <span class="text-danger">*</span></label>
+                        <select class="form-select" id="billing_period" name="billing_period" required>
+                            {% for value, label in billing_periods %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" 
+                              placeholder="Brief description of this plan"></textarea>
+                </div>
+
+                <!-- Features -->
+                <div class="mb-3">
+                    <label class="form-label">Features</label>
+                    <div id="featuresContainer">
+                        <div class="feature-item mb-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control feature-input" placeholder="Enter feature">
+                                <button type="button" class="btn btn-outline-danger remove-feature">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="addFeature">
+                        <i class="fas fa-plus"></i> Add Feature
+                    </button>
+                    <input type="hidden" name="features" id="featuresJson">
+                </div>
+
+                <!-- Active Status -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="is_active" name="is_active" checked>
+                    <label class="form-check-label" for="is_active">
+                        Active (Plan is available for subscription)
+                    </label>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Plan
+                    </button>
+                    <a href="{% url 'admin_dashboard:subscription_plan_list' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/subscription_plans.js' %}"></script>
+{% endblock %}

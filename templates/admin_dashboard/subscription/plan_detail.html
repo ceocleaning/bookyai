@@ -1,0 +1,200 @@
+{% extends 'admin_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}{{ plan.name }} - Subscription Plan Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/subscription_plans.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="subscription-plan-detail-page">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h1><i class="fas fa-crown"></i> {{ plan.name }}</h1>
+            <p class="text-muted">{{ plan.description }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_dashboard:subscription_plan_edit' plan.id %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit Plan
+            </a>
+            <a href="{% url 'admin_dashboard:subscription_plan_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Plan Info Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>${{ plan.price }}</h3>
+                    <p>{{ plan.get_billing_period_display }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ active_subscribers }}</h3>
+                    <p>Active Subscribers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ total_subscribers }}</h3>
+                    <p>Total Subscribers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>${{ monthly_revenue|floatformat:2 }}</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Plan Details -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle"></i> Plan Details</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-dark table-borderless mb-0">
+                        <tr>
+                            <th width="40%">Plan Name:</th>
+                            <td>{{ plan.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price:</th>
+                            <td><strong>${{ plan.price }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Billing Period:</th>
+                            <td>{{ plan.get_billing_period_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Stripe Price ID:</th>
+                            <td><code>{{ plan.stripe_price_id }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                                <span class="badge {% if plan.is_active %}badge-success{% else %}badge-danger{% endif %}">
+                                    {% if plan.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Created:</th>
+                            <td>{{ plan.created_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Last Updated:</th>
+                            <td>{{ plan.updated_at|date:"M d, Y H:i" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="fas fa-list-check"></i> Features</h5>
+                </div>
+                <div class="card-body">
+                    {% if plan.features %}
+                    <ul class="feature-list">
+                        {% for feature in plan.features %}
+                        <li><i class="fas fa-check text-success"></i> {{ feature }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted">No features defined for this plan.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribers List -->
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="fas fa-users"></i> Recent Subscribers ({{ total_subscribers }} total)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Business</th>
+                            <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Email</th>
+                            <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Status</th>
+                            <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Current Period</th>
+                            <th style="border-color: var(--admin-border); color: var(--admin-text-muted); font-weight: 600; font-size: 0.875rem; text-transform: uppercase;">Subscribed On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in subscribers %}
+                        <tr>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text);">{{ sub.business.name }}</td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">{{ sub.business.email }}</td>
+                            <td style="border-color: var(--admin-border);">
+                                <span class="badge 
+                                    {% if sub.status == 'active' %}badge-success
+                                    {% elif sub.status == 'trialing' %}badge-info
+                                    {% elif sub.status == 'past_due' %}badge-warning
+                                    {% else %}badge-secondary{% endif %}">
+                                    {{ sub.get_status_display }}
+                                </span>
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">
+                                {% if sub.current_period_end %}
+                                    {{ sub.current_period_end|date:"M d, Y" }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td style="border-color: var(--admin-border); color: var(--admin-text-muted); font-size: 0.875rem;">{{ sub.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="border-color: var(--admin-border); text-align: center; padding: 2rem; color: var(--admin-text-muted);">
+                                No subscribers yet for this plan.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/admin/subscription_plans.js' %}"></script>
+{% endblock %}

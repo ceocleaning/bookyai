@@ -14,7 +14,10 @@ def about(request):
 
 def pricing(request):
     """Pricing page"""
-    return render(request, 'core/pricing.html')
+    context = {}
+    if request.user.is_authenticated:
+        context['user_email'] = request.user.email
+    return render(request, 'core/pricing.html', context)
 
 
 def contact(request):

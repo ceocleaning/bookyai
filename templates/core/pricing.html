@@ -28,99 +28,19 @@
                 Choose the plan that fits your growth stage. No hidden fees. Cancel anytime.
             </p>
 
-            <!-- Toggle -->
-            <div class="pricing-toggle-container">
-                <span class="toggle-label active" id="monthly-label">Monthly</span>
-                <div class="toggle-switch" onclick="togglePricing()"></div>
-                <span class="toggle-label" id="annual-label">
-                    Annually <span class="save-badge">Save 20%</span>
-                </span>
-            </div>
+
         </div>
     </section>
 
-    <!-- Pricing Cards -->
+    <!-- Pricing Cards (Stripe Pricing Table) -->
     <section class="container mb-5" style="position: relative; z-index: 2;">
-        <div class="row g-4 align-items-center">
-            
-            <!-- Starter -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="0">
-                <div class="pricing-card">
-                    <div class="card-content">
-                        <h3 class="plan-name">Starter</h3>
-                        <p class="plan-desc">For individuals and solo practitioners.</p>
-                        
-                        <div class="plan-price-wrapper">
-                            <span class="currency">$</span>
-                            <span class="price" data-monthly="29" data-annual="24">29</span>
-                            <span class="period">/mo</span>
-                        </div>
-
-                        <ul class="pricing-features">
-                            <li class="feature-item"><i class="fas fa-check"></i> 100 Appointments/mo</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> SMS & Email Reminders</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> Google Calendar Sync</li>
-                            <li class="feature-item disabled"><i class="fas fa-times"></i> Voice Agents</li>
-                            <li class="feature-item disabled"><i class="fas fa-times"></i> API Access</li>
-                        </ul>
-
-                        <a href="/accounts/signup/?plan=starter" class="btn-pricing">Start Free Trial</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Professional (Popular) -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="pricing-card popular">
-                    <div class="popular-tag">Most Popular</div>
-                    <div class="card-content">
-                        <h3 class="plan-name">Professional</h3>
-                        <p class="plan-desc">For growing clinics and agencies.</p>
-                        
-                        <div class="plan-price-wrapper">
-                            <span class="currency">$</span>
-                            <span class="price" data-monthly="79" data-annual="63">79</span>
-                            <span class="period">/mo</span>
-                        </div>
-
-                        <ul class="pricing-features">
-                            <li class="feature-item"><i class="fas fa-check"></i> 500 Appointments/mo</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> <strong>Voice AI Agents</strong></li>
-                            <li class="feature-item"><i class="fas fa-check"></i> 2-Way Calendar Sync</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> Priority Support</li>
-                            <li class="feature-item disabled"><i class="fas fa-times"></i> Custom Integrations</li>
-                        </ul>
-
-                        <a href="/accounts/signup/?plan=professional" class="btn-pricing">Start Free Trial</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Enterprise -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                <div class="pricing-card">
-                    <div class="card-content">
-                        <h3 class="plan-name">Enterprise</h3>
-                        <p class="plan-desc">For large networks and franchises.</p>
-                        
-                        <div class="plan-price-wrapper">
-                            <span class="price" style="font-size: 2.5rem;">Custom</span>
-                        </div>
-
-                        <ul class="pricing-features">
-                            <li class="feature-item"><i class="fas fa-check"></i> Unlimited Appointments</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> Custom Voice Models</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> Full API & Webhooks</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> Dedicated Success Manager</li>
-                            <li class="feature-item"><i class="fas fa-check"></i> SSO & SOC-2 Compliance</li>
-                        </ul>
-
-                        <a href="/contact" class="btn-pricing">Contact Sales</a>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
+        <stripe-pricing-table 
+            pricing-table-id="prctbl_1Sl8oYQM2KtaeqQJloZjeI6Y"
+            publishable-key="pk_test_51RGb0vQM2KtaeqQJIEGfdnmFLxnjsLEXWrEJAvokdMtz2yaWhfsysuDhSIyZK0Qp36jVVGwHy8lWosDKImGeqk0700hcF3SZAL"
+            {% if user_email %}customer-email="{{ user_email }}"{% endif %}
+        >
+        </stripe-pricing-table>
     </section>
 
     <!-- Comparison Table -->
@@ -228,30 +148,4 @@
 {% block extra_js %}
 
 
-    // Simple Pricing Toggle Logic
-    let isAnnual = false;
-    const toggleSwitch = document.querySelector('.toggle-switch');
-    const monthlyLabel = document.getElementById('monthly-label');
-    const annualLabel = document.getElementById('annual-label');
-    const prices = document.querySelectorAll('.price[data-monthly]');
-
-    function togglePricing() {
-        isAnnual = !isAnnual;
-        toggleSwitch.classList.toggle('annual');
-        
-        if (isAnnual) {
-            monthlyLabel.classList.remove('active');
-            annualLabel.classList.add('active');
-            prices.forEach(el => {
-                el.innerText = el.dataset.annual;
-            });
-        } else {
-            monthlyLabel.classList.add('active');
-            annualLabel.classList.remove('active');
-            prices.forEach(el => {
-                el.innerText = el.dataset.monthly;
-            });
-        }
-    }
-</script>
 {% endblock %}
