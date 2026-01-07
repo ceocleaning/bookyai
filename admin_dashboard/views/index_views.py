@@ -499,9 +499,63 @@ def get_client_revenue(request):
 def get_saas_revenue(request):
     """
     API endpoint to get SaaS subscription revenue
-    TODO: Implement when subscription model is ready
+    Calculates MRR (Monthly Recurring Revenue) from active subscriptions
     """
+    from subscription.models import Subscription
+    
     range_type = request.GET.get('range', 'monthly')
+    
+    # Get all active subscriptions
+    active_subs = Subscription.objects.filter(status__in=['active', 'trialing'])
+    
+    # Calculate total MRR
+    total_mrr = Decimal('0.00')
+    for sub in active_subs:
+        if sub.plan:
+            if sub.plan.billing_period == 'month':
+                total_mrr += sub.plan.price
+            elif sub.plan.billing_period == 'year':
+                # Convert yearly to monthly
+                total_mrr += sub.plan.price / 12
+    
+    # Calculate growth
+    current_start, current_end, previous_start, previous_end = calculate_trend_periods(range_type)
+    
+    # Current period subscriptions
+    current_subs = Subscription.objects.filter(
+        status__in=['active', 'trialing'],
+        created_at__gte=current_start,
+        created_at__lt=current_end
+    )
+    
+    current_revenue = Decimal('0.00')
+    for sub in current_subs:
+        if sub.plan:
+            if sub.plan.billing_period == 'month':
+                current_revenue += sub.plan.price
+            elif sub.plan.billing_period == 'year':
+                current_revenue += sub.plan.price / 12
+    
+    # Previous period subscriptions
+    previous_subs = Subscription.objects.filter(
+        status__in=['active', 'trialing'],
+        created_at__gte=previous_start,
+        created_at__lt=previous_end
+    )
+    
+    previous_revenue = Decimal('0.00')
+    for sub in previous_subs:
+        if sub.plan:
+            if sub.plan.billing_period == 'month':
+                previous_revenue += sub.plan.price
+            elif sub.plan.billing_period == 'year':
+                previous_revenue += sub.plan.price / 12
+    
+    growth = 0
+    if previous_revenue > 0:
+        growth = ((current_revenue - previous_revenue) / previous_revenue) * 100
+    elif current_revenue > 0:
+        growth = 100
     
     trend_labels = {
         'daily': 'vs yesterday',
@@ -510,14 +564,107 @@ def get_saas_revenue(request):
     }
     
     return JsonResponse({
-        'total_revenue': 0.00,
-        'active_subscriptions': 0,
-        'current_period': 0.00,
-        'previous_period': 0.00,
-        'growth': 0.0,
-        'trend': 'neutral',
-        'trend_label': trend_labels.get(range_type, 'vs last month'),
-        'note': 'Subscription model not yet implemented'
+        'total_revenue': float(total_mrr),
+        'active_subscriptions': active_subs.count(),
+        'current_period': float(current_revenue),
+        'previous_period': float(previous_revenue),
+        'growth': round(float(growth), 1),
+        'trend': 'up' if growth > 0 else ('down' if growth < 0 else 'neutral'),
+        'trend_label': trend_labels.get(range_type, 'vs last month')
+    })
+
+
+@staff_member_required
+@login_required
+def get_total_subscriptions(request):
+    """
+    API endpoint to get total subscriptions count with trend calculation
+    """
+    from subscription.models import Subscription
+    
+    range_type = request.GET.get('range', 'monthly')
+    
+    total = Subscription.objects.count()
+    
+    current_start, current_end, previous_start, previous_end = calculate_trend_periods(range_type)
+    
+    current_period = Subscription.objects.filter(
+        created_at__gte=current_start,
+        created_at__lt=current_end
+    ).count()
+    
+    previous_period = Subscription.objects.filter(
+        created_at__gte=previous_start,
+        created_at__lt=previous_end
+    ).count()
+    
+    growth = 0
+    if previous_period > 0:
+        growth = ((current_period - previous_period) / previous_period) * 100
+    elif current_period > 0:
+        growth = 100
+    
+    trend_labels = {
+        'daily': 'vs yesterday',
+        'monthly': 'vs last month',
+        'yearly': 'vs last year'
+    }
+    
+    return JsonResponse({
+        'total': total,
+        'current_period': current_period,
+        'previous_period': previous_period,
+        'growth': round(growth, 1),
+        'trend': 'up' if growth > 0 else ('down' if growth < 0 else 'neutral'),
+        'trend_label': trend_labels.get(range_type, 'vs last month')
+    })
+
+
+@staff_member_required
+@login_required
+def get_active_subscriptions(request):
+    """
+    API endpoint to get active subscriptions count with trend calculation
+    """
+    from subscription.models import Subscription
+    
+    range_type = request.GET.get('range', 'monthly')
+    
+    total = Subscription.objects.filter(status__in=['active', 'trialing']).count()
+    
+    current_start, current_end, previous_start, previous_end = calculate_trend_periods(range_type)
+    
+    current_period = Subscription.objects.filter(
+        status__in=['active', 'trialing'],
+        created_at__gte=current_start,
+        created_at__lt=current_end
+    ).count()
+    
+    previous_period = Subscription.objects.filter(
+        status__in=['active', 'trialing'],
+        created_at__gte=previous_start,
+        created_at__lt=previous_end
+    ).count()
+    
+    growth = 0
+    if previous_period > 0:
+        growth = ((current_period - previous_period) / previous_period) * 100
+    elif current_period > 0:
+        growth = 100
+    
+    trend_labels = {
+        'daily': 'vs yesterday',
+        'monthly': 'vs last month',
+        'yearly': 'vs last year'
+    }
+    
+    return JsonResponse({
+        'total': total,
+        'current_period': current_period,
+        'previous_period': previous_period,
+        'growth': round(growth, 1),
+        'trend': 'up' if growth > 0 else ('down' if growth < 0 else 'neutral'),
+        'trend_label': trend_labels.get(range_type, 'vs last month')
     })
 
 

@@ -727,6 +727,35 @@
             </div>
         </div>
         
+        <!-- Django Messages Toast Container -->
+        <div class="messages-container" id="messagesContainer">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="message-toast message-{{ message.tags }}" data-aos="fade-left" data-aos-duration="300">
+                    <div class="message-icon">
+                        {% if message.tags == 'success' %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif message.tags == 'error' or message.tags == 'danger' %}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% elif message.tags == 'info' %}
+                            <i class="fas fa-info-circle"></i>
+                        {% else %}
+                            <i class="fas fa-bell"></i>
+                        {% endif %}
+                    </div>
+                    <div class="message-content">
+                        <div class="message-text">{{ message }}</div>
+                    </div>
+                    <button class="message-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
         <!-- Content -->
         <div class="admin-content">
             {% block content %}{% endblock %}

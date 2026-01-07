@@ -38,6 +38,105 @@
 
     {% block extra_css %}{% endblock %}
 
+    <!-- Subscription Plan Indicator CSS -->
+    <style>
+        .subscription-indicator {
+            padding: 0 1rem;
+        }
+
+        .plan-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .plan-badge:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-badge-active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.1));
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .plan-badge-active .plan-icon {
+            color: #10b981;
+        }
+
+        .plan-badge-trial {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .plan-badge-trial .plan-icon {
+            color: #3b82f6;
+        }
+
+        .plan-badge-free {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.1));
+            border-color: rgba(245, 158, 11, 0.3);
+            cursor: pointer;
+        }
+
+        .plan-badge-free:hover {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.15));
+            border-color: rgba(245, 158, 11, 0.5);
+        }
+
+        .plan-badge-free .plan-icon {
+            color: #f59e0b;
+        }
+
+        .plan-badge-inactive {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .plan-badge-inactive .plan-icon {
+            color: #ef4444;
+        }
+
+        .plan-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .plan-info {
+            flex: 1;
+        }
+
+        .plan-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .plan-badge-free .plan-status {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+    </style>
+
     <!-- Staff User Full Width CSS -->
     {% if request.user|has_group:"staff" %}
     <style>
@@ -78,6 +177,45 @@
                         <div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
                         <div class="user-business">{{ request.user.business.name }}</div>
                     </div>
+                </div>
+                
+                <!-- Subscription Plan Indicator -->
+                <div class="subscription-indicator mt-3">
+                    {% if request.user.business.active_subscription %}
+                        {% with subscription=request.user.business.subscription %}
+                            <div class="plan-badge plan-badge-{% if subscription.status == 'active' %}active{% elif subscription.status == 'trialing' %}trial{% else %}inactive{% endif %}">
+                                <div class="plan-icon">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="plan-info">
+                                    <div class="plan-name">{{ subscription.plan.name|default:"Subscribed" }}</div>
+                                    <div class="plan-status">
+                                        {% if subscription.status == 'active' %}
+                                            Active
+                                        {% elif subscription.status == 'trialing' %}
+                                            Trial Period
+                                        {% elif subscription.cancel_at_period_end %}
+                                            Cancels {{ subscription.current_period_end|date:"M d" }}
+                                        {% else %}
+                                            {{ subscription.get_status_display }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endwith %}
+                    {% else %}
+                        <a href="{% url 'pricing' %}" class="plan-badge plan-badge-free text-decoration-none">
+                            <div class="plan-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="plan-info">
+                                <div class="plan-name">Free Plan</div>
+                                <div class="plan-status">
+                                    <i class="fas fa-arrow-right me-1"></i>Upgrade Now
+                                </div>
+                            </div>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
 

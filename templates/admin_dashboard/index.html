@@ -474,11 +474,67 @@
         <div class="stat-card-value-compact" id="saasRevenue">$0</div>
         <div class="stat-card-footer-compact">
             <div>
-                <span class="stat-trend-compact neutral" id="saasRevenueTrend">
-                    <i class="fas fa-minus"></i>
+                <span class="stat-trend-compact up" id="saasRevenueTrend">
+                    <i class="fas fa-arrow-up"></i>
                     <span id="saasRevenueGrowth">0%</span>
                 </span>
-                <div class="stat-trend-label" id="saasRevenueTrendLabel">Coming Soon</div>
+                <div class="stat-trend-label" id="saasRevenueTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Subscriptions -->
+    <div class="stat-card-compact" style="--card-color: #a855f7;" id="subscriptionsCard" data-metric="subscriptions">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-crown"></i>
+                Total Subscriptions
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-crown"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="totalSubscriptions">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="subscriptionsTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="subscriptionsGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="subscriptionsTrendLabel">vs last month</div>
+            </div>
+            <div class="range-selector">
+                <button class="range-btn" data-range="daily">D</button>
+                <button class="range-btn active" data-range="monthly">M</button>
+                <button class="range-btn" data-range="yearly">Y</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Active Subscriptions -->
+    <div class="stat-card-compact" style="--card-color: #22c55e;" id="activeSubscriptionsCard" data-metric="active-subscriptions">
+        <div class="stat-card-header-compact">
+            <div class="stat-card-title-compact">
+                <i class="fas fa-check-circle"></i>
+                Active Subscriptions
+            </div>
+            <div class="stat-card-icon-compact">
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+        <div class="stat-card-value-compact" id="activeSubscriptions">0</div>
+        <div class="stat-card-footer-compact">
+            <div>
+                <span class="stat-trend-compact up" id="activeSubscriptionsTrend">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="activeSubscriptionsGrowth">0%</span>
+                </span>
+                <div class="stat-trend-label" id="activeSubscriptionsTrendLabel">vs last month</div>
             </div>
             <div class="range-selector">
                 <button class="range-btn" data-range="daily">D</button>
@@ -506,6 +562,49 @@
             </div>
             <div style="position: relative; height: 400px;">
                 <canvas id="mainChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscription Analytics Charts -->
+<div class="row g-4 mb-4">
+    <!-- Monthly Subscription Revenue Chart -->
+    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-line me-2" style="color: var(--admin-primary);"></i>
+                    Monthly Subscription Revenue (MRR)
+                </h3>
+                <div class="dashboard-card-actions">
+                    <button class="card-action-btn" id="refreshMrrChart">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="position: relative; height: 350px;">
+                <canvas id="mrrChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Plan Distribution Pie Chart -->
+    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h3 class="dashboard-card-title">
+                    <i class="fas fa-chart-pie me-2" style="color: var(--admin-primary);"></i>
+                    Plan Distribution
+                </h3>
+                <div class="dashboard-card-actions">
+                    <button class="card-action-btn" id="refreshPlanChart">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="position: relative; height: 350px; display: flex; align-items: center; justify-content: center;">
+                <canvas id="planChart"></canvas>
             </div>
         </div>
     </div>
@@ -539,7 +638,9 @@
         'invoices': 'monthly',
         'payments': 'monthly',
         'client-revenue': 'monthly',
-        'saas-revenue': 'monthly'
+        'saas-revenue': 'monthly',
+        'subscriptions': 'monthly',
+        'active-subscriptions': 'monthly'
     };
     
     // Format numbers
@@ -608,7 +709,9 @@
             'invoices': 'invoices',
             'payments': 'payments',
             'client-revenue': 'client-revenue',
-            'saas-revenue': 'saas-revenue'
+            'saas-revenue': 'saas-revenue',
+            'subscriptions': 'subscriptions',
+            'active-subscriptions': 'active-subscriptions'
         };
         
         const cardIds = {
@@ -619,7 +722,9 @@
             'invoices': 'invoicesCard',
             'payments': 'paymentsCard',
             'client-revenue': 'clientRevenueCard',
-            'saas-revenue': 'saasRevenueCard'
+            'saas-revenue': 'saasRevenueCard',
+            'subscriptions': 'subscriptionsCard',
+            'active-subscriptions': 'activeSubscriptionsCard'
         };
         
         const formatters = {
@@ -824,6 +929,202 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadAllStatistics();
         loadChartData();
+    });
+    
+    // Subscription charts
+    let mrrChart = null;
+    let planChart = null;
+    
+    // Load MRR Chart
+    async function loadMrrChart() {
+        try {
+            const response = await fetch('/admin-dashboard/api/mrr-chart/');
+            const data = await response.json();
+            
+            if (mrrChart) {
+                mrrChart.destroy();
+            }
+            
+            const ctx = document.getElementById('mrrChart').getContext('2d');
+            mrrChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Monthly Recurring Revenue',
+                        data: data.revenue,
+                        borderColor: '#f97316',
+                        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#f97316',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 12,
+                                    family: "'Outfit', sans-serif"
+                                },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 14, 39, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(249, 115, 22, 0.5)',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return 'MRR: $' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(249, 115, 22, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Revenue ($)',
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error loading MRR chart:', error);
+        }
+    }
+    
+    // Load Plan Distribution Chart
+    async function loadPlanChart() {
+        try {
+            const response = await fetch('/admin-dashboard/api/plan-distribution/');
+            const data = await response.json();
+            
+            if (planChart) {
+                planChart.destroy();
+            }
+            
+            const ctx = document.getElementById('planChart').getContext('2d');
+            planChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.counts,
+                        backgroundColor: [
+                            '#4f46e5',
+                            '#06b6d4',
+                            '#10b981',
+                            '#f59e0b',
+                            '#8b5cf6',
+                            '#ec4899',
+                            '#14b8a6',
+                            '#f97316'
+                        ],
+                        borderColor: '#0a0e27',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11,
+                                    family: "'Outfit', sans-serif"
+                                },
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 14, 39, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(79, 70, 229, 0.5)',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return label + ': ' + value + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error loading plan chart:', error);
+        }
+    }
+    
+    // Refresh button handlers
+    document.getElementById('refreshMrrChart').addEventListener('click', () => {
+        loadMrrChart();
+    });
+    
+    document.getElementById('refreshPlanChart').addEventListener('click', () => {
+        loadPlanChart();
+    });
+    
+    // Initial load - updated to include subscription charts
+    document.addEventListener('DOMContentLoaded', () => {
+        loadAllStatistics();
+        loadChartData();
+        loadMrrChart();
+        loadPlanChart();
     });
 </script>
 {% endblock %}

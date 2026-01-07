@@ -3,7 +3,7 @@ Admin Dashboard URL Configuration
 """
 
 from django.urls import path
-from .views import index_views, users_views, business_views, help_articles_views, subscription_views
+from .views import index_views, users_views, business_views, help_articles_views, subscription_views, subscription_chart_views
 
 app_name = 'admin_dashboard'
 
@@ -20,7 +20,11 @@ urlpatterns = [
     path('api/payments/', index_views.get_total_payments, name='api_payments'),
     path('api/client-revenue/', index_views.get_client_revenue, name='api_client_revenue'),
     path('api/saas-revenue/', index_views.get_saas_revenue, name='api_saas_revenue'),
+    path('api/subscriptions/', index_views.get_total_subscriptions, name='api_subscriptions'),
+    path('api/active-subscriptions/', index_views.get_active_subscriptions, name='api_active_subscriptions'),
     path('api/chart-data/', index_views.get_dashboard_chart_data, name='api_chart_data'),
+    path('api/mrr-chart/', subscription_chart_views.get_mrr_chart_data, name='api_mrr_chart'),
+    path('api/plan-distribution/', subscription_chart_views.get_plan_distribution, name='api_plan_distribution'),
     
     # User Management
     path('users/', users_views.users_list, name='users_list'),
