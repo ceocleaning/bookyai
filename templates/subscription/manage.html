@@ -1,0 +1,337 @@
+{% extends 'common/dashboard_base.html' %} 
+{% load static %} 
+{% block title %}Subscription Management - Booky AI{% endblock %} 
+{% block page_title %}Subscription Management{% endblock %} 
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/subscription_manage.css' %}">
+{% endblock %} 
+
+{% block content %}
+<div class="subscription-page">
+  <!-- Current Subscription Status -->
+  <div class="section-header">
+    <h2><i class="fas fa-crown me-2"></i>Current Subscription</h2>
+    <p>Manage your subscription and billing information</p>
+  </div>
+
+  {% if active_subscription %}
+  <div
+    class="status-card status-card-{% if active_subscription.status == 'active' %}active{% elif active_subscription.status == 'trialing' %}trial{% else %}inactive{% endif %}"
+  >
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div
+            class="status-badge status-badge-{% if active_subscription.status == 'active' %}active{% elif active_subscription.status == 'trialing' %}trial{% else %}inactive{% endif %}"
+          >
+            <i class="fas fa-circle"></i>
+            {{ active_subscription.get_status_display }}
+          </div>
+          {% if active_subscription.plan %}
+          <h3 class="mb-0">{{ active_subscription.plan.name }}</h3>
+          {% endif %}
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-label">Plan Price:</span>
+          <span class="stat-value"
+            >${{ active_subscription.plan.price|default:"0" }} / {{ active_subscription.plan.get_billing_period_display|default:"month" }}</span
+          >
+        </div>
+
+        {% if active_subscription.current_period_start %}
+        <div class="stat-row">
+          <span class="stat-label">Current Period:</span>
+          <span class="stat-value"
+            >{{ active_subscription.current_period_start|date:"M d, Y" }} - 
+            {{ active_subscription.current_period_end|date:"M d, Y" }}</span
+          >
+        </div>
+        {% endif %} {% if active_subscription.days_until_renewal %}
+        <div class="stat-row">
+          <span class="stat-label">Days Until Renewal:</span>
+          <span class="stat-value"
+            >{{ active_subscription.days_until_renewal }} days</span
+          >
+        </div>
+        {% endif %} {% if active_subscription.cancel_at_period_end %}
+        <div class="stat-row">
+          <span class="stat-label text-warning">Cancels On:</span>
+          <span class="stat-value text-warning"
+            >{{ active_subscription.current_period_end|date:"M d, Y" }}</span
+          >
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-md-4 text-end">
+        <div class="d-flex gap-2 justify-content-end">
+          <a
+            href="{% url 'subscription:billing_portal' %}"
+            class="btn btn-manage"
+          >
+            <i class="fas fa-cog me-2"></i>Manage
+          </a>
+          
+          {% if not active_subscription.cancel_at_period_end %}
+          <button
+            type="button"
+            class="btn btn-danger"
+            data-bs-toggle="modal"
+            data-bs-target="#cancelSubscriptionModal"
+          >
+            <i class="fas fa-times-circle me-2"></i>Cancel
+          </button>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="status-card status-card-inactive">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h3 class="mb-3">
+          <i class="fas fa-info-circle me-2"></i>No Active Subscription
+        </h3>
+        <p class="mb-0">
+          You don't have an active subscription. Choose a plan below to get
+          started!
+        </p>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'pricing' %}" class="btn btn-upgrade">
+          <i class="fas fa-rocket me-2"></i>View Plans
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Upcoming Invoice -->
+  {% if upcoming_invoice %}
+  <div class="section-header mt-5">
+    <h2><i class="fas fa-file-invoice me-2"></i>Upcoming Invoice</h2>
+    <p>Your next billing information</p>
+  </div>
+
+  <div class="invoice-card">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="stat-label">Amount Due</div>
+        <h4 class="text-success mb-0">
+          ${{ upcoming_invoice.amount_due|floatformat:2 }}
+        </h4>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-label">Billing Period</div>
+        <div class="stat-value">
+          {{ upcoming_invoice.period_start|date:"M d" }} - 
+          {{ upcoming_invoice.period_end|date:"M d, Y" }}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-label">Next Payment Attempt</div>
+        <div class="stat-value">
+          {{ upcoming_invoice.next_payment_attempt|date:"M d, Y"|default:"N/A" }}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Available Plans -->
+  {% if available_plans %}
+  <div class="section-header mt-5">
+    <h2><i class="fas fa-th-large me-2"></i>Available Plans</h2>
+    <p>Upgrade or change your subscription plan</p>
+  </div>
+
+  <div class="row">
+    {% for plan in available_plans %}
+    <div class="col-md-4 mb-4">
+      <div
+        class="plan-card {% if active_subscription and active_subscription.plan.id == plan.id %}plan-card-current{% endif %}"
+      >
+        {% if active_subscription and active_subscription.plan.id == plan.id %}
+        <div class="status-badge status-badge-active mb-3">
+          <i class="fas fa-check-circle"></i>
+          Current Plan
+        </div>
+        {% endif %}
+
+        <h4 class="mb-3">{{ plan.name }}</h4>
+        <div class="mb-3">
+          <h2 class="text-success mb-0">${{ plan.price }}</h2>
+          <small class="text-muted"
+            >per {{ plan.get_billing_period_display }}</small
+          >
+        </div>
+
+        {% if plan.description %}
+        <p class="text-muted mb-3">{{ plan.description }}</p>
+        {% endif %} 
+        {% if plan.features %}
+        <ul class="list-unstyled mb-4">
+          {% for feature in plan.features %}
+          <li class="mb-2">
+            <i class="fas fa-check text-success me-2"></i>{{ feature }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %} 
+        {% if not active_subscription or active_subscription.plan.id != plan.id %}
+        <a href="{% url 'subscription:checkout' plan.id %}" class="btn btn-upgrade w-100">
+          <i class="fas fa-{% if active_subscription %}arrow-up{% else %}rocket{% endif %} me-2"></i>
+          {% if active_subscription %}Upgrade to{% else %}Subscribe to{% endif %} {{ plan.name }}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Invoice History -->
+  {% if invoices %}
+  <div class="section-header mt-5">
+    <h2><i class="fas fa-history me-2"></i>Invoice History</h2>
+    <p>Your past invoices and payments</p>
+  </div>
+
+  <div class="history-table">
+    <table class="table table-dark table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Invoice Number</th>
+          <th>Date</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>PDF</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for invoice in invoices %}
+        <tr>
+          <td><code>{{ invoice.number|default:invoice.id }}</code></td>
+          <td>{{ invoice.created_datetime|date:"M d, Y" }}</td>
+          <td><strong>${{ invoice.amount_paid|floatformat:2 }}</strong></td>
+          <td>
+            <span
+              class="badge {% if invoice.status == 'paid' %}bg-success{% elif invoice.status == 'open' %}bg-info{% else %}bg-danger{% endif %}"
+            >
+              {{ invoice.status|title }}
+            </span>
+          </td>
+          <td>
+            {% if invoice.invoice_pdf %}
+            <a
+              href="{{ invoice.invoice_pdf }}"
+              target="_blank"
+              class="btn btn-sm btn-outline-primary"
+            >
+              <i class="fas fa-file-pdf me-1"></i>Download
+            </a>
+            {% else %}
+            <span class="text-muted">-</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Subscription History -->
+  {% if subscription_history %}
+  <div class="section-header mt-5">
+    <h2><i class="fas fa-clock-rotate-left me-2"></i>Subscription History</h2>
+    <p>Track all your subscription periods and changes</p>
+  </div>
+
+  <div class="history-table">
+    <table class="table table-dark table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Status</th>
+          <th>Started</th>
+          <th>Ended</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sub in subscription_history %}
+        <tr>
+          <td><strong>{{ sub.plan.name|default:"No Plan" }}</strong></td>
+          <td>
+            <span
+              class="badge {% if sub.status == 'active' %}bg-success{% elif sub.status == 'trialing' %}bg-info{% elif sub.status == 'ended' %}bg-secondary{% else %}bg-danger{% endif %}"
+            >
+              {{ sub.get_status_display }}
+            </span>
+          </td>
+          <td>{{ sub.created_at|date:"M d, Y" }}</td>
+          <td>{{ sub.ended_at|date:"M d, Y"|default:"-" }}</td>
+          <td>
+            {% if sub.current_period_start and sub.current_period_end %} 
+            {{ sub.current_period_start|date:"M d" }} - 
+            {{ sub.current_period_end|date:"M d, Y" }} 
+            {% else %} - {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Cancel Subscription Modal -->
+{% if active_subscription and not active_subscription.cancel_at_period_end %}
+<div class="modal fade" id="cancelSubscriptionModal" tabindex="-1" aria-labelledby="cancelSubscriptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="cancelSubscriptionModalLabel">
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>Cancel Subscription
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to cancel your subscription?</p>
+        <div class="alert alert-warning">
+          <i class="fas fa-info-circle me-2"></i>
+          <strong>Important:</strong> Your subscription will remain active until the end of your current billing period 
+          {% if active_subscription.current_period_end %}
+          (<strong>{{ active_subscription.current_period_end|date:"F d, Y" }}</strong>).
+          {% endif %}
+          You will continue to have access to all features until then.
+        </div>
+        <p class="text-muted mb-0">
+          <small>You can reactivate your subscription at any time before the end of the billing period.</small>
+        </p>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Keep Subscription
+        </button>
+        <form method="POST" action="{% url 'subscription:cancel' %}" style="display: inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-check me-2"></i>Yes, Cancel Subscription
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/subscription_manage.js' %}"></script>
+{% endblock %}

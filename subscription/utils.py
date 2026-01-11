@@ -9,18 +9,15 @@ from .models import Subscription
 
 def get_business_subscription(business):
     """
-    Get the subscription for a business.
+    Get the active subscription for a business.
     
     Args:
         business: Business model instance
         
     Returns:
-        Subscription instance or None if no subscription exists
+        Subscription instance or None if no active subscription exists
     """
-    try:
-        return business.subscription
-    except Subscription.DoesNotExist:
-        return None
+    return Subscription.get_active_subscription(business)
 
 
 def has_active_subscription(business):

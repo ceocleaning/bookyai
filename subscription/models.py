@@ -34,7 +34,8 @@ class SubscriptionPlan(models.Model):
 
 class Subscription(models.Model):
     """
-    Mirrors Stripe subscription state locally for feature gating.
+    Tracks subscription history for each business.
+    Each subscription period (renewal, plan change, etc.) creates a new record.
     Stripe is the single source of truth; this model is updated via webhooks only.
     """
     STATUS_CHOICES = (
@@ -45,14 +46,16 @@ class Subscription(models.Model):
         ('unpaid', 'Unpaid'),
         ('incomplete', 'Incomplete'),
         ('incomplete_expired', 'Incomplete Expired'),
+        ('ended', 'Ended'),  # Added for when a subscription period ends naturally
     )
     
-    business = models.OneToOneField(Business, on_delete=models.CASCADE, related_name='subscription')
-    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True, blank=True, related_name='subscriptions')
+    # Changed from OneToOneField to ForeignKey to allow multiple subscriptions per business
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='subscriptions')
+    plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True, blank=True, related_name='plan_subscriptions')
     
     # Stripe identifiers
-    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True, help_text="Stripe Customer ID")
-    stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True, unique=True, help_text="Stripe Subscription ID")
+    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True, help_text="Stripe Customer ID", db_index=True)
+    stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True, help_text="Stripe Subscription ID", db_index=True)
     
     # Subscription state
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='incomplete')
@@ -60,6 +63,7 @@ class Subscription(models.Model):
     current_period_end = models.DateTimeField(null=True, blank=True)
     cancel_at_period_end = models.BooleanField(default=False)
     canceled_at = models.DateTimeField(null=True, blank=True)
+    ended_at = models.DateTimeField(null=True, blank=True, help_text="When this subscription period ended (for history tracking)")
     trial_start = models.DateTimeField(null=True, blank=True)
     trial_end = models.DateTimeField(null=True, blank=True)
     
@@ -70,29 +74,62 @@ class Subscription(models.Model):
         verbose_name = "Subscription"
         verbose_name_plural = "Subscriptions"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['business', 'status', '-created_at']),
+            models.Index(fields=['stripe_subscription_id']),
+        ]
     
     def __str__(self):
-        return f"{self.business.name} - {self.get_status_display()}"
+        return f"{self.business.name} - {self.get_status_display()} ({self.created_at.strftime('%Y-%m-%d')})"
+    
+    @classmethod
+    def get_active_subscription(cls, business):
+        """
+        Get the currently active subscription for a business.
+        Returns the most recent subscription with active or trialing status.
+        
+        Args:
+            business: Business model instance
+            
+        Returns:
+            Subscription instance or None
+        """
+        return cls.objects.filter(
+            business=business,
+            status__in=['active', 'trialing'],
+            ended_at__isnull=True
+        ).order_by('-created_at').first()
     
     def is_active(self):
         """
-        Returns True if the subscription is active or in trial period.
+        Returns True if the subscription is active or in trial period and not ended.
         This is the primary method for feature gating.
         """
-        return self.status in ['active', 'trialing']
+        return self.status in ['active', 'trialing'] and self.ended_at is None
     
     def is_trial(self):
         """Returns True if subscription is currently in trial period."""
-        if self.status == 'trialing' and self.trial_end:
+        if self.status == 'trialing' and self.trial_end and self.ended_at is None:
             return timezone.now() < self.trial_end
         return False
     
     def days_until_renewal(self):
         """Returns number of days until next billing period."""
-        if self.current_period_end:
+        if self.current_period_end and self.ended_at is None:
             delta = self.current_period_end - timezone.now()
             return max(0, delta.days)
         return None
+    
+    def end_subscription(self):
+        """
+        Mark this subscription as ended.
+        Called when a new subscription starts or when subscription is cancelled.
+        """
+        if self.ended_at is None:
+            self.ended_at = timezone.now()
+            if self.status in ['active', 'trialing']:
+                self.status = 'ended'
+            self.save()
 
 
 class WebhookEvent(models.Model):

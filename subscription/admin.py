@@ -27,11 +27,12 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ('business', 'plan', 'status', 'current_period_end', 'cancel_at_period_end', 'is_active')
-    list_filter = ('status', 'cancel_at_period_end', 'plan')
+    list_display = ('business', 'plan', 'status', 'current_period_start', 'current_period_end', 'ended_at', 'is_active_display')
+    list_filter = ('status', 'cancel_at_period_end', 'plan', 'ended_at')
     search_fields = ('business__name', 'stripe_customer_id', 'stripe_subscription_id')
-    readonly_fields = ('created_at', 'updated_at', 'stripe_customer_id', 'stripe_subscription_id')
+    readonly_fields = ('created_at', 'updated_at', 'stripe_customer_id', 'stripe_subscription_id', 'ended_at')
     raw_id_fields = ('business',)
+    date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Business & Plan', {
@@ -41,7 +42,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
             'fields': ('stripe_customer_id', 'stripe_subscription_id')
         }),
         ('Subscription Status', {
-            'fields': ('status', 'cancel_at_period_end', 'canceled_at')
+            'fields': ('status', 'cancel_at_period_end', 'canceled_at', 'ended_at')
         }),
         ('Billing Period', {
             'fields': ('current_period_start', 'current_period_end')
@@ -56,10 +57,10 @@ class SubscriptionAdmin(admin.ModelAdmin):
         }),
     )
     
-    def is_active(self, obj):
+    def is_active_display(self, obj):
         return obj.is_active()
-    is_active.boolean = True
-    is_active.short_description = 'Active'
+    is_active_display.boolean = True
+    is_active_display.short_description = 'Active'
 
 
 @admin.register(WebhookEvent)
