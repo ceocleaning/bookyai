@@ -1,0 +1,73 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Invoices - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <h1 class="page-heading">Invoices & Payments</h1>
+    <p class="text-secondary mb-0">View your billing history and outstanding payments</p>
+</div>
+
+{% if invoices %}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Invoice #</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td>
+                            <strong>{{ invoice.id|truncatechars:12 }}</strong>
+                        </td>
+                        <td>
+                            {{ invoice.booking.service_offering.name }}
+                            <br>
+                            <small class="text-secondary">{{ invoice.booking.booking_date|date:"M d, Y" }}</small>
+                        </td>
+                        <td>{{ invoice.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <strong class="text-primary">${{ invoice.booking.get_total|floatformat:2 }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ invoice.status }}">
+                                {{ invoice.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'customer:booking_detail' invoice.booking.id %}" class="btn btn-outline-primary" title="View related Booking">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if invoice.status == 'pending' or invoice.status == 'overdue' %}
+                                <a href="{% url 'customer:invoice_pay' invoice.id %}" class="btn btn-success" title="Pay Now">
+                                    <i class="fas fa-credit-card"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-file-invoice"></i>
+    <p>No invoices found</p>
+    <p class="text-secondary small">Invoices will appear here after your bookings are completed</p>
+</div>
+{% endif %}
+{% endblock %}

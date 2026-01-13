@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 from django.db import models
-from business.models import ServiceOffering, BusinessCustomField, ServiceItem, ServiceOfferingItem, Industry, IndustryField
+from business.models import Business, ServiceOffering, BusinessCustomField, ServiceItem, ServiceOfferingItem, Industry, IndustryField
 from .models import Booking, BookingField, BookingServiceItem, BookingStatus, StaffMember, BookingStaffAssignment
 from leads.models import Lead
 from django.utils import timezone
@@ -18,13 +18,32 @@ from business.utils import get_user_business
 # Create your views here.
 @login_required
 def index(request):
-    business = getattr(request.user, 'business', None)
-    if not business:
+    base_template = "common/dashboard_base.html"
+    is_customer = request.user.groups.filter(name="customer").exists()
+    if is_customer:
+        base_template = "customer/base.html"
+
+    business = get_user_business(request.user)
+    
+    # If customer, try to get business from URL if not already set
+    if is_customer and not business:
+        business_id = request.GET.get('business_id')
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+            except (Business.DoesNotExist, ValueError):
+                pass
+
+    # Get all bookings for this business or customer
+    if business and not is_customer:
+        bookings = Booking.objects.filter(business=business).order_by('-created_at')
+    elif is_customer:
+        bookings = Booking.objects.filter(customer__user=request.user).order_by('-created_at')
+        if business:
+            bookings = bookings.filter(business=business)
+    else:
         messages.error(request, 'Please register your business first.')
         return redirect('business:register')
-    
-    # Get all bookings for this business
-    bookings = Booking.objects.filter(business=business).order_by('-created_at')
     
     # Get status filter if provided
     status_filter = request.GET.get('status', '')
@@ -56,22 +75,60 @@ def index(request):
             models.Q(notes__icontains=search_query)
         )
     
+    # Get linked businesses for customer users (for navbar dropdown)
+    linked_businesses = []
+    if is_customer and hasattr(request.user, 'customer_profile'):
+        linked_businesses = request.user.customer_profile.business_links.filter(is_active=True).select_related('business')
+    
     return render(request, 'bookings/index.html', {
         'title': 'Bookings',
+        'base_template': base_template,
+        'business': business,
+        'is_customer': is_customer,
         'bookings': bookings,
         'booking_statuses': BookingStatus.choices,
         'current_status': status_filter,
         'date_from': date_from,
         'date_to': date_to,
-        'search_query': search_query
+        'search_query': search_query,
+        'linked_businesses': linked_businesses
     })
 
 @login_required
 def create_booking(request):
-    business = getattr(request.user, 'business', None)
+    base_template = "common/dashboard_base.html"
+    is_customer = request.user.groups.filter(name="customer").exists()
+    if is_customer:
+        base_template = "customer/base.html"
+
+    business = get_user_business(request.user)
     if not business:
-        messages.error(request, 'Please register your business first.')
-        return redirect('business:register')
+        if is_customer:
+            # For customers, we need a business_id to know who they're booking with
+            business_id = request.GET.get('business_id')
+            if business_id:
+                business = get_object_or_404(Business, id=business_id)
+            else:
+                # If no business_id, check if they are linked to any businesses
+                try:
+                    linked_businesses = request.user.customer_profile.get_linked_businesses()
+                    if linked_businesses.count() == 1:
+                        business = linked_businesses.first()
+                    else:
+                        # For now, if multiple, they must choose (or we handled it in the caller)
+                        # For simplicity, we'll try to get it from the last booking
+                        last_booking = Booking.objects.filter(customer__user=request.user).order_by('-created_at').first()
+                        if last_booking:
+                            business = last_booking.business
+                        else:
+                            messages.error(request, 'Please select a business to book with.')
+                            return redirect('dashboard:index') # Adjust as needed
+                except Exception:
+                    messages.error(request, 'Customer profile not found.')
+                    return redirect('dashboard:index')
+        else:
+            messages.error(request, 'Please register your business first.')
+            return redirect('business:register')
 
     service_offerings = ServiceOffering.objects.filter(business=business, is_active=True).order_by('name')
     custom_fields = BusinessCustomField.objects.filter(business=business, is_active=True).order_by('display_order', 'name')
@@ -102,6 +159,7 @@ def create_booking(request):
         client_email = request.POST.get('client_email')
         client_phone = request.POST.get('client_phone')
         selected_lead_id = request.POST.get('lead_id')
+        selected_customer_id = request.POST.get('customer_id')
 
         # Validation (minimal, expand as needed)
         errors = []
@@ -148,10 +206,40 @@ def create_booking(request):
             except Lead.DoesNotExist:
                 pass
         
+        # Get or create customer
+        from customer.utils import get_or_create_customer
+        from customer.models import Customer, CustomerBusinessLink
+        
+        customer = None
+        # If a customer was selected, use that customer
+        if selected_customer_id:
+            try:
+                customer = Customer.objects.get(id=selected_customer_id)
+                # Verify customer is linked to this business
+                link = CustomerBusinessLink.objects.filter(
+                    customer=customer,
+                    business=business,
+                    is_active=True
+                ).first()
+                if not link:
+                    customer = None  # Customer not linked to this business
+            except Customer.DoesNotExist:
+                customer = None
+        
+        # If no customer was selected or found, create/get one
+        if not customer:
+            customer, created = get_or_create_customer(
+                email=client_email,
+                name=client_name,
+                phone=client_phone,
+                business=business
+            )
+        
         # Create Booking
         booking = Booking.objects.create(
             business=business,
             lead=lead,  # This can be None if no lead was selected
+            customer=customer,  # Link to customer
             service_offering=service_offering,
             booking_date=booking_date,
             start_time=start_time,
@@ -301,6 +389,10 @@ def create_booking(request):
 
     # GET
     return render(request, 'bookings/create_booking.html', {
+        'title': 'Create Booking',
+        'base_template': base_template,
+        'business': business,
+        'is_customer': is_customer,
         'service_offerings': service_offerings,
         'custom_fields': custom_fields,
         'selected_lead': selected_lead,
@@ -309,14 +401,16 @@ def create_booking(request):
 @login_required
 def edit_booking(request, booking_id):
     """Edit an existing booking"""
-    business = getattr(request.user, 'business', None)
-    if not business:
-        messages.error(request, 'Please register your business first.')
-        return redirect('business:register')
+    base_template = "common/dashboard_base.html"
+    is_customer = request.user.groups.filter(name="customer").exists()
+    if is_customer:
+        base_template = "customer/base.html"
+
+    business = get_user_business(request.user)
     
     # Get the booking
     try:
-        booking = Booking.objects.select_related(
+        queryset = Booking.objects.select_related(
             'service_offering', 
             'lead'
         ).prefetch_related(
@@ -326,9 +420,19 @@ def edit_booking(request, booking_id):
             'service_items__service_item',
             'staff_assignments',
             'staff_assignments__staff_member'
-        ).get(id=booking_id, business=business)
+        )
+        
+        if business:
+            booking = queryset.get(id=booking_id, business=business)
+        elif is_customer:
+            booking = queryset.get(id=booking_id, customer__user=request.user)
+            business = booking.business
+        else:
+            messages.error(request, 'Please register your business first.')
+            return redirect('business:register')
+            
     except Booking.DoesNotExist:
-        messages.error(request, 'Booking not found.')
+        messages.error(request, 'Booking not found or access denied.')
         return redirect('bookings:index')
     
     service_offerings = ServiceOffering.objects.filter(business=business, is_active=True).order_by('name')
@@ -393,8 +497,18 @@ def edit_booking(request, booking_id):
             except Lead.DoesNotExist:
                 pass
         
+        # Create or get customer
+        from customer.utils import get_or_create_customer
+        customer, created = get_or_create_customer(
+            email=client_email,
+            name=client_name,
+            phone=client_phone,
+            business=business
+        )
+        
         # Update Booking
         booking.lead = lead
+        booking.customer = customer  # Link to customer
         booking.service_offering = service_offering
         booking.booking_date = booking_date
         booking.start_time = start_time
@@ -565,6 +679,10 @@ def edit_booking(request, booking_id):
     booking_service_items_json = json.dumps(booking_service_items) if booking_service_items else '[]'
     
     return render(request, 'bookings/edit_booking.html', {
+        'title': 'Edit Booking',
+        'base_template': base_template,
+        'business': business,
+        'is_customer': is_customer,
         'booking': booking,
         'service_offerings': service_offerings,
         'custom_fields': custom_fields,
@@ -643,13 +761,10 @@ def should_display_event_button(booking, event_key):
 @login_required
 def booking_detail(request, booking_id):
     """View for displaying detailed information about a booking"""
+    base_template = "common/dashboard_base.html"
+    if request.user.groups.filter(name="customer").exists():
+        base_template = "customer/base.html"
 
-    
-    business = get_user_business(request.user)
-    if not business:
-        messages.error(request, 'Please register your business first.')
-        return redirect('business:register')
-    
     try:
         # Get the booking with all related data
         booking = Booking.objects.select_related(
@@ -665,7 +780,11 @@ def booking_detail(request, booking_id):
             'staff_assignments',
             'staff_assignments__staff_member',
             'reminders'
-        ).get(id=booking_id, business=business)
+        ).get(id=booking_id)
+
+        business = get_user_business(request.user)
+        if not business:
+            business = booking.business
         
         # Get custom fields
         business_fields = BookingField.objects.filter(
@@ -743,16 +862,17 @@ def booking_detail(request, booking_id):
         for event_type in all_event_types:
             # Check the first condition
             display_allowed = should_display_event_button(booking, event_type.event_key)
-            print(display_allowed)
+            print(f"Display allowed for {event_type.event_key}: {display_allowed}")
             
             # Check the second condition
             accessible_by_user = event_type.is_accessible_by_user(request.user)
+            print(f"Accessible by user for {event_type.event_key}: {accessible_by_user}")
             
             # Apply both filters
             if display_allowed and accessible_by_user:
                 enabled_event_types.append(event_type)
 
-        print(enabled_event_types)
+        print(f"Enabled Event Types: {enabled_event_types}")
         
         # Build event configs for JavaScript (including field configurations)
         event_configs_dict = {}
@@ -790,9 +910,17 @@ def booking_detail(request, booking_id):
             total_paid = sum(payment.amount for payment in payments if not payment.is_refunded)
             balance_due = total_price - total_paid
         
+        # Get linked businesses for customer users (for navbar dropdown)
+        linked_businesses = []
+        is_customer = request.user.groups.filter(name="customer").exists()
+        if is_customer and hasattr(request.user, 'customer_profile'):
+            linked_businesses = request.user.customer_profile.business_links.filter(is_active=True).select_related('business')
+        
         return render(request, 'bookings/booking_detail.html', {
             'title': f'Booking: {booking.name}',
+            'base_template': base_template,
             'booking': booking,
+            'business': business,
             'business_fields': business_fields,
             'industry_fields': industry_fields,
             'service_items': service_items,
@@ -809,7 +937,8 @@ def booking_detail(request, booking_id):
             'payments': payments,
             'total_paid': total_paid,
             'balance_due': balance_due,
-            'duration': booking.get_service_duration()
+            'duration': booking.get_service_duration(),
+            'linked_businesses': linked_businesses
         })
        
     except Booking.DoesNotExist:
@@ -819,9 +948,21 @@ def booking_detail(request, booking_id):
 @login_required
 def get_service_items(request, service_id):
     """API endpoint to get service items filtered by service offering"""
-    business = getattr(request.user, 'business', None)
+    business = get_user_business(request.user)
     if not business:
-        return JsonResponse({'error': 'Business not found'}, status=404)
+        # Check if it's a customer and they've provided a business_id
+        is_customer = request.user.groups.filter(name="customer").exists()
+        if is_customer:
+            business_id = request.GET.get('business_id')
+            if business_id:
+                try:
+                    business = Business.objects.get(id=business_id)
+                except (Business.DoesNotExist, ValueError):
+                    return JsonResponse({'error': 'Business not found'}, status=404)
+            else:
+                return JsonResponse({'error': 'Business ID is required for customers'}, status=400)
+        else:
+            return JsonResponse({'error': 'Business not found'}, status=404)
     
     try:
         # Get the service offering for reference
@@ -870,9 +1011,21 @@ def get_service_items(request, service_id):
 @login_required
 def get_leads(request):
     """API endpoint to get leads for the booking form"""
-    business = getattr(request.user, 'business', None)
+    business = get_user_business(request.user)
     if not business:
-        return JsonResponse({'error': 'Business not found'}, status=404)
+        # Check if it's a customer and they've provided a business_id
+        is_customer = request.user.groups.filter(name="customer").exists()
+        if is_customer:
+            business_id = request.GET.get('business_id')
+            if business_id:
+                try:
+                    business = Business.objects.get(id=business_id)
+                except (Business.DoesNotExist, ValueError):
+                    return JsonResponse({'error': 'Business not found'}, status=404)
+            else:
+                return JsonResponse({'error': 'Business ID is required for customers'}, status=400)
+        else:
+            return JsonResponse({'error': 'Business not found'}, status=404)
     
     # Check if a specific lead ID was requested
     lead_id = request.GET.get('lead_id')
@@ -920,9 +1073,22 @@ def check_availability(request):
     - service_offering_id: ID of the service offering
     - staff_member_id: ID of a specific staff member to check
     """
-    business = getattr(request.user, 'business', None)
+    business = get_user_business(request.user)
     if not business:
-        return JsonResponse({'error': 'Business not found'}, status=404)
+        # Check if it's a customer and they've provided a business_id
+        is_customer = request.user.groups.filter(name="customer").exists()
+        if is_customer:
+            business_id = request.GET.get('business_id')
+            if business_id:
+                try:
+                    from business.models import Business
+                    business = Business.objects.get(id=business_id)
+                except (Business.DoesNotExist, ValueError):
+                    return JsonResponse({'error': 'Business not found'}, status=404)
+            else:
+                return JsonResponse({'error': 'Business ID is required for customers'}, status=400)
+        else:
+            return JsonResponse({'error': 'Business not found'}, status=404)
     
     # Get parameters from request
     date_str = request.GET.get('date')
@@ -996,11 +1162,25 @@ def cancel_booking(request, booking_id):
     Cancel a booking with reason
     """
     business = get_user_business(request.user)
+    is_customer = request.user.groups.filter(name="customer").exists()
+
+    if not business and is_customer:
+        business_id = request.GET.get('business_id')
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+            except (Business.DoesNotExist, ValueError):
+                pass
+
     if not business:
         return JsonResponse({'success': False, 'message': 'Business not found'}, status=404)
     
     try:
-        booking = Booking.objects.get(id=booking_id, business=business)
+        if is_customer:
+            # Customers can only cancel their own bookings
+            booking = Booking.objects.get(id=booking_id, business=business, customer__user=request.user)
+        else:
+            booking = Booking.objects.get(id=booking_id, business=business)
         
         # Check if booking can be cancelled (must be at least 24 hours before appointment)
         from datetime import datetime, timedelta
@@ -1061,11 +1241,25 @@ def get_available_timeslots(request, booking_id):
     Get available timeslots for a specific date for rescheduling
     """
     business = get_user_business(request.user)
+    is_customer = request.user.groups.filter(name="customer").exists()
+
+    if not business and is_customer:
+        business_id = request.GET.get('business_id')
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+            except (Business.DoesNotExist, ValueError):
+                pass
+
     if not business:
         return JsonResponse({'success': False, 'message': 'Business not found'}, status=404)
     
     try:
-        booking = Booking.objects.get(id=booking_id, business=business)
+        if is_customer:
+            # Customers can only see timeslots for their own bookings
+            booking = Booking.objects.get(id=booking_id, customer__user=request.user)
+        else:
+            booking = Booking.objects.get(id=booking_id, business=business)
         
         # Get date from request
         date_str = request.GET.get('date')
@@ -1185,11 +1379,25 @@ def reschedule_booking(request, booking_id):
     Reschedule a booking to a new date and time
     """
     business = get_user_business(request.user)
+    is_customer = request.user.groups.filter(name="customer").exists()
+
+    if not business and is_customer:
+        business_id = request.GET.get('business_id')
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+            except (Business.DoesNotExist, ValueError):
+                pass
+
     if not business:
         return JsonResponse({'success': False, 'message': 'Business not found'}, status=404)
     
     try:
-        booking = Booking.objects.get(id=booking_id, business=business)
+        if is_customer:
+            # Customers can only reschedule their own bookings
+            booking = Booking.objects.get(id=booking_id, business=business, customer__user=request.user)
+        else:
+            booking = Booking.objects.get(id=booking_id, business=business)
         
         # Check if booking can be rescheduled (must be at least 24 hours before appointment)
         from datetime import datetime, timedelta
@@ -1280,11 +1488,25 @@ def trigger_booking_event(request, booking_id):
     Routes to specific processors based on event_key
     """
     business = get_user_business(request.user)
+    is_customer = request.user.groups.filter(name="customer").exists()
+
+    if not business and is_customer:
+        business_id = request.GET.get('business_id')
+        if business_id:
+            try:
+                business = Business.objects.get(id=business_id)
+            except (Business.DoesNotExist, ValueError):
+                pass
+
     if not business:
         return JsonResponse({'success': False, 'message': 'Business not found'}, status=404)
     
     try:
-        booking = Booking.objects.get(id=booking_id, business=business)
+        if is_customer:
+            # Customers can only trigger events for their own bookings
+            booking = Booking.objects.get(id=booking_id, business=business, customer__user=request.user)
+        else:
+            booking = Booking.objects.get(id=booking_id, business=business)
         data = json.loads(request.body)
         
         event_type_id = data.get('event_type_id')

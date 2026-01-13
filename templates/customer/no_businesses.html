@@ -1,0 +1,20 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}No Businesses - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="empty-state" style="min-height: 60vh; display: flex; flex-direction: column; justify-content: center;">
+    <i class="fas fa-building fa-4x text-secondary mb-4"></i>
+    <h3 class="mb-3">No Businesses Linked</h3>
+    <p class="text-secondary mb-4">
+        You don't have any businesses linked to your account yet.<br>
+        Once a business creates a booking for you, you'll be able to access their services here.
+    </p>
+    <div>
+        <a href="{% url 'customer:profile' %}" class="btn btn-primary">
+            <i class="fas fa-user me-2"></i>View Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

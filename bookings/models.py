@@ -478,6 +478,7 @@ class Booking(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=255)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='bookings')
     lead = models.ForeignKey(Lead, on_delete=models.CASCADE, related_name='bookings', null=True, blank=True)
+    customer = models.ForeignKey('customer.Customer', on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
     service_offering = models.ForeignKey(ServiceOffering, on_delete=models.SET_NULL, null=True, related_name='bookings')
     staff_members = models.ManyToManyField(StaffMember, through='BookingStaffAssignment', related_name='assigned_bookings')
     
@@ -657,6 +658,54 @@ class Booking(models.Model):
                 available_staff.append(staff)
         
         return available_staff
+    
+    def get_total(self):
+        """
+        Calculate the total cost of the booking including service offering and service items
+        Returns: Decimal - total cost
+        """
+        from decimal import Decimal
+        
+        # Start with service offering base price
+        total = Decimal('0.00')
+        if self.service_offering:
+            total += self.service_offering.price
+        
+        # Add service items costs
+        for booking_item in self.service_items.all():
+            if booking_item.service_item:
+                # Calculate item cost: price * quantity
+                item_cost = booking_item.service_item.price * booking_item.quantity
+                total += item_cost
+        
+        return total
+    
+    def get_subtotal(self):
+        """
+        Get subtotal (same as total for now, can be used for pre-tax calculations)
+        Returns: Decimal - subtotal
+        """
+        return self.get_total()
+    
+    def get_tax(self, tax_rate=Decimal('0.00')):
+        """
+        Calculate tax on the booking
+        Args:
+            tax_rate: Decimal - tax rate as decimal (e.g., 0.08 for 8%)
+        Returns: Decimal - tax amount
+        """
+        from decimal import Decimal
+        return self.get_subtotal() * tax_rate
+    
+    def get_grand_total(self, tax_rate=Decimal('0.00')):
+        """
+        Calculate grand total including tax
+        Args:
+            tax_rate: Decimal - tax rate as decimal (e.g., 0.08 for 8%)
+        Returns: Decimal - grand total
+        """
+        from decimal import Decimal
+        return self.get_subtotal() + self.get_tax(tax_rate)
 
 
 class BookingStaffAssignment(models.Model):

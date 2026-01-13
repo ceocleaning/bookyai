@@ -1,0 +1,53 @@
+{% extends 'common/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Remove Customer - Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Remove Customer
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Warning:</strong> This will unlink the customer from your business. Their account and booking history will be preserved, but they will no longer appear in your customer list.
+                </div>
+                
+                <h5 class="mb-3">Customer Details</h5>
+                <div class="customer-summary p-3 bg-dark rounded mb-4">
+                    <p class="mb-2">
+                        <strong>Name:</strong> {{ customer.user.get_full_name }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Email:</strong> {{ customer.user.email }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Phone:</strong> {{ customer.phone_number|default:"Not provided" }}
+                    </p>
+                    <p class="mb-0">
+                        <strong>Total Bookings:</strong> {{ link.total_bookings }}
+                    </p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger flex-fill">
+                            <i class="fas fa-trash me-2"></i>Confirm Removal
+                        </button>
+                        <a href="{% url 'dashboard:customer_detail' customer.id %}" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

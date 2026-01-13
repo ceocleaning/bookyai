@@ -266,6 +266,14 @@
                             <span>Leads</span>
                         </a>
                     </li>
+                    
+                    <!-- Customers Section -->
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard:customers_list' %}" class="nav-link {% if '/dashboard/customers/' in request.path %}active{% endif %}">
+                            <i class="fas fa-users"></i>
+                            <span>Customers</span>
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a href="/analytics/" class="nav-link {% if '/analytics/' in request.path %}active{% endif %}">

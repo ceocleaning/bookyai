@@ -1,0 +1,91 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}My Bookings - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="page-heading">My Bookings</h1>
+            <p class="text-secondary mb-0">View and manage your appointments</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="btn-group" role="group">
+                <a href="?status=all" class="btn btn-sm {% if status_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    All
+                </a>
+                <a href="?status=pending" class="btn btn-sm {% if status_filter == 'pending' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Pending
+                </a>
+                <a href="?status=confirmed" class="btn btn-sm {% if status_filter == 'confirmed' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Confirmed
+                </a>
+                <a href="?status=completed" class="btn btn-sm {% if status_filter == 'completed' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Completed
+                </a>
+                <a href="?status=cancelled" class="btn btn-sm {% if status_filter == 'cancelled' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                    Cancelled
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if bookings %}
+<div class="row">
+    {% for booking in bookings %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card booking-card status-{{ booking.status }}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">{{ booking.service_offering.name }}</h5>
+                    <span class="badge bg-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                </div>
+                
+                <div class="booking-details">
+                    <p class="mb-2">
+                        <i class="fas fa-calendar text-primary me-2"></i>
+                        <strong>{{ booking.booking_date|date:"l, F d, Y" }}</strong>
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-clock text-primary me-2"></i>
+                        {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        {{ booking.get_location_type_display }}
+                    </p>
+                    {% if booking.notes %}
+                    <p class="mb-2 text-secondary small">
+                        <i class="fas fa-sticky-note me-2"></i>
+                        {{ booking.notes|truncatewords:15 }}
+                    </p>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-3 d-flex gap-2">
+                    <a href="{% url 'bookings:booking_detail' booking.id %}" class="btn btn-sm btn-primary flex-fill">
+                        <i class="fas fa-eye me-1"></i>View Details
+                    </a>
+                    {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                    <a href="{% url 'customer:booking_cancel' booking.id %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-calendar-times"></i>
+    <p>No bookings found</p>
+    {% if status_filter != 'all' %}
+    <a href="?status=all" class="btn btn-primary">View All Bookings</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

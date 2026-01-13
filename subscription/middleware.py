@@ -14,8 +14,7 @@ class SubscriptionRequiredMiddleware:
     RESTRICTED_URL_PATTERNS = [
         'admin_dashboard',  # admin-dashboard/
         'ai_agent',         # ai-agent/
-        'bookings',         # bookings/
-        'invoices',         # invoices/
+        # 'bookings',         # bookings/
         'leads',            # leads/
         'retell_agent',     # voice-agent/
         'business',         # business/
@@ -32,6 +31,7 @@ class SubscriptionRequiredMiddleware:
         'logout',
         'register',
         'password_reset',
+        'bookings',
     ]
     
     def __init__(self, get_response):

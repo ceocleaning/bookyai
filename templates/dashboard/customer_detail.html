@@ -1,0 +1,107 @@
+{% extends 'common/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}{{ customer.user.get_full_name }} - Customer Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'dashboard:customers_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Customers
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; font-weight: 700;">
+                    {{ customer.user.first_name.0|upper }}{{ customer.user.last_name.0|upper }}
+                </div>
+                <h4 class="mb-1">{{ customer.user.get_full_name }}</h4>
+                <p class="text-secondary mb-3">{{ customer.user.email }}</p>
+                
+                <div class="row text-center mb-3">
+                    <div class="col-6">
+                        <h4 class="text-primary mb-0">{{ link.total_bookings }}</h4>
+                        <small class="text-secondary">Bookings</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success mb-0">${{ link.total_spent|floatformat:2 }}</h4>
+                        <small class="text-secondary">Total Spent</small>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-start">
+                    <p class="mb-2">
+                        <i class="fas fa-phone text-primary me-2"></i>
+                        {{ customer.phone_number|default:"Not provided" }}
+                    </p>
+                    <p class="mb-2">
+                        <i class="fas fa-envelope text-primary me-2"></i>
+                        {{ customer.user.email }}
+                    </p>
+                    {% if customer.address_line1 %}
+                    <p class="mb-2">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        {{ customer.address_line1 }}, {{ customer.city }}
+                    </p>
+                    {% endif %}
+                    <p class="mb-0">
+                        <i class="fas fa-calendar text-primary me-2"></i>
+                        Customer since {{ link.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>Booking History
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    <strong>{{ booking.service_offering.name }}</strong>
+                                </td>
+                                <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                                <td>{{ booking.start_time|time:"g:i A" }}</td>
+                                <td>
+                                    <span class="badge bg-{{ booking.status }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center">
+                    <i class="fas fa-calendar-times fa-3x text-secondary mb-3"></i>
+                    <p class="text-secondary mb-0">No bookings yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

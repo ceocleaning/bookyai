@@ -111,6 +111,33 @@
                             <span class="text-muted">Phone</span>
                             <p class="fw-bold"><a class="text-light" href="tel:{{ booking.phone_number }}">{{ booking.phone_number }}</a></p>
                             
+                            {% if booking.customer %}
+                                <span class="text-muted mt-3">Customer Account</span>
+                                <p>
+                                    <a href="{% url 'dashboard:customer_detail' booking.customer.id %}" class="text-light">
+                                        <i class="fas fa-user me-1"></i> View Customer Profile
+                                    </a>
+                                </p>
+                                
+                                {% with link=booking.customer.business_links.filter|first %}
+                                {% if link %}
+                                <div class="mt-2 p-2 bg-dark rounded">
+                                    <small class="text-muted d-block mb-1">Customer Stats:</small>
+                                    <div class="d-flex gap-3">
+                                        <div>
+                                            <i class="fas fa-calendar-check text-primary me-1"></i>
+                                            <strong>{{ link.total_bookings }}</strong> <small class="text-muted">bookings</small>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-dollar-sign text-success me-1"></i>
+                                            <strong>${{ link.total_spent|floatformat:2 }}</strong> <small class="text-muted">spent</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                            
                             {% if booking.lead %}
                                 <span class="text-muted mt-3">Lead Source</span>
                                 <p>

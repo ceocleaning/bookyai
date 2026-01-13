@@ -2,7 +2,11 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get booking ID from URL
-    const bookingId = window.location.pathname.split('/').filter(Boolean).pop();
+    const bookingId = document.getElementById('booking_id')?.textContent?.trim();
+    console.log("Current Booking ID:", bookingId);
+    
+    // Get business ID
+    const businessId = document.getElementById('business_id')?.value;
     
     // Get CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
@@ -75,7 +79,10 @@ document.addEventListener('DOMContentLoaded', function() {
             this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
             
             try {
-                const response = await fetch(`/bookings/${bookingId}/trigger-event/`, {
+                let triggerUrl = `/bookings/${bookingId}/trigger-event/`;
+                if (businessId) triggerUrl += `?business_id=${businessId}`;
+                
+                const response = await fetch(triggerUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -132,7 +139,10 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmCancelBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Cancelling...';
             
             try {
-                const response = await fetch(`/bookings/${bookingId}/cancel/`, {
+                let cancelUrl = `/bookings/${bookingId}/cancel/`;
+                if (businessId) cancelUrl += `?business_id=${businessId}`;
+                
+                const response = await fetch(cancelUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -196,18 +206,35 @@ document.addEventListener('DOMContentLoaded', function() {
             checkAvailabilityBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
             
             try {
-                const response = await fetch(`/bookings/${bookingId}/available-timeslots/?date=${date}`);
+                let availUrl = `/bookings/${bookingId}/available-timeslots/?date=${date}`;
+                if (businessId) availUrl += `&business_id=${businessId}`;
+
+                console.log("Check Slots Url: ", availUrl);
+                
+                
+                const response = await fetch(availUrl);
                 const data = await response.json();
+
+                console.log("Check Slots Data: ", data);
+                
                 
                 if (data.success) {
                     displayTimeslots(data.timeslots, date, data.duration);
-                    document.getElementById('rescheduleStep1').style.display = 'none';
-                    document.getElementById('rescheduleStep2').style.display = 'block';
+                    
+                    const step1 = document.getElementById('rescheduleStep1');
+                    const step2 = document.getElementById('rescheduleStep2');
+
+                    console.log(step1, step2);
+                    
+                    
+                    if (step1) step1.style.display = 'none';
+                    if (step2) step2.style.display = 'block';
                 } else {
-                    showAlert('danger', data.message);
+                    showAlert('danger', data.message || 'Error fetching timeslots');
                 }
             } catch (error) {
-                showAlert('danger', 'An error occurred while fetching available timeslots');
+                console.error("Reschedule Availability Error:", error);
+                showAlert('danger', 'An error occurred while fetching available timeslots: ' + error.message);
             } finally {
                 checkAvailabilityBtn.disabled = false;
                 checkAvailabilityBtn.innerHTML = '<i class="fas fa-search me-2"></i>Check Available Times';
@@ -217,28 +244,61 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function displayTimeslots(timeslots, date, duration) {
         const container = document.getElementById('timeslotsContainer');
-        const noSlotsMsg = document.getElementById('noTimeslotsMessage');
+        const noSlotsMsg = document.getElementById('noTimeslotsMsg');
         const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+        
+  
+        console.log("Container: ", container);
+        console.log("No Slots Msg: ", noSlotsMsg);
+        console.log("Selected Date Display: ", selectedDateDisplay);
+        
+        
+        
+        // Only container is critical - the others are optional UI elements
+        if (!container) {
+            console.error("Critical element missing: timeslotsContainer");
+            throw new Error("Required container element for timeslot display is missing");
+        }
+        
+        // Warn if optional elements are missing but don't fail
+        if (!noSlotsMsg) {
+            console.warn("Optional element 'noTimeslotsMsg' not found - will skip no-slots message display");
+        }
+        if (!selectedDateDisplay) {
+            console.warn("Optional element 'selectedDateDisplay' not found - will skip date display");
+        }
         
         // Format date for display
         const dateObj = new Date(date + 'T00:00:00');
-        selectedDateDisplay.textContent = dateObj.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
+        if (isNaN(dateObj.getTime())) {
+            console.error("Invalid date provided:", date);
+            throw new Error("Invalid date for timeslot display");
+        }
+        
+        // Only update if element exists
+        if (selectedDateDisplay) {
+            selectedDateDisplay.textContent = dateObj.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
         
         container.innerHTML = '';
         
         const availableSlots = timeslots.filter(slot => slot.available);
         
         if (availableSlots.length === 0) {
-            noSlotsMsg.style.display = 'block';
+            if (noSlotsMsg) {
+                noSlotsMsg.style.display = 'block';
+            }
             return;
         }
         
-        noSlotsMsg.style.display = 'none';
+        if (noSlotsMsg) {
+            noSlotsMsg.style.display = 'none';
+        }
         
         availableSlots.forEach(slot => {
             const slotBtn = document.createElement('button');
@@ -246,12 +306,18 @@ document.addEventListener('DOMContentLoaded', function() {
             slotBtn.className = 'timeslot-btn';
             
             // Format end time for display
-            const endTimeObj = new Date(`2000-01-01T${slot.end_time}`);
-            const displayEndTime = endTimeObj.toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit',
-                hour12: true 
-            });
+            // Ensure time format is HH:MM:SS for better browser compatibility
+            const timeStr = slot.end_time.length === 5 ? `${slot.end_time}:00` : slot.end_time;
+            const endTimeObj = new Date(`2000-01-01T${timeStr}`);
+            
+            let displayEndTime = slot.end_time; // Fallback
+            if (!isNaN(endTimeObj.getTime())) {
+                displayEndTime = endTimeObj.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+            }
             
             slotBtn.innerHTML = `
                 <div class="timeslot-time">${slot.display_time}</div>
@@ -330,7 +396,10 @@ document.addEventListener('DOMContentLoaded', function() {
             confirmRescheduleBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Rescheduling...';
             
             try {
-                const response = await fetch(`/bookings/${bookingId}/reschedule/`, {
+                let rescheduleUrl = `/bookings/${bookingId}/reschedule/`;
+                if (businessId) rescheduleUrl += `?business_id=${businessId}`;
+                
+                const response = await fetch(rescheduleUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

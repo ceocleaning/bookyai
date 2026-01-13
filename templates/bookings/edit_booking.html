@@ -1,4 +1,4 @@
-{% extends 'common/dashboard_base.html' %}
+{% extends base_template %}
 {% load static %}
 
 {% block title %}Edit Booking{% endblock %}
@@ -61,11 +61,13 @@
                 <div class="card-body p-4">
                     <form id="create-booking-form" method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
+                        <input type="hidden" id="business_id" name="business_id" value="{{ business.id }}">
                         
                         <!-- Step 1: Client Information -->
                         <div class="form-step active" id="step-1">
                             <h4 class="mb-4"><i class="fas fa-user me-2"></i>Client Information</h4>
                             
+                            {% if not is_customer %}
                             <div class="mb-3">
                                 <label for="lead_id" class="form-label">Select Existing Lead (Optional)</label>
                                 <select name="lead_id" id="lead_id" class="form-select">
@@ -73,22 +75,23 @@
                                 </select>
                                 <div class="form-text">Select an existing lead to auto-fill client information</div>
                             </div>
+                            {% endif %}
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="client_name" class="form-label">Client Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="client_name" id="client_name" class="form-control" value="{{ booking.name }}" required>
+                                    <input type="text" name="client_name" id="client_name" class="form-control" value="{{ booking.name }}" {% if is_customer %}readonly{% endif %} required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="client_email" class="form-label">Client Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="client_email" id="client_email" class="form-control" value="{{ booking.email }}" required>
+                                    <input type="email" name="client_email" id="client_email" class="form-control" value="{{ booking.email }}" {% if is_customer %}readonly{% endif %} required>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="client_phone" class="form-label">Client Phone <span class="text-danger">*</span></label>
-                                    <input type="tel" name="client_phone" id="client_phone" class="form-control" value="{{ booking.phone_number }}" required>
+                                    <input type="tel" name="client_phone" id="client_phone" class="form-control" value="{{ booking.phone_number }}" {% if is_customer %}readonly{% endif %} required>
                                 </div>
                             </div>
                             
@@ -348,6 +351,41 @@
                     </div>
                 </div>
             </div>
+
+            {% if is_customer and business %}
+            <!-- Business Information -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Business Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ business.name }}</h6>
+                    {% if business.phone_number %}
+                    <p class="mb-0 small"><i class="fas fa-phone me-2 text-primary"></i>{{ business.phone_number }}</p>
+                    {% endif %}
+                    {% if business.email %}
+                    <p class="mb-0 small"><i class="fas fa-envelope me-2 text-primary"></i><a href="mailto:{{ business.email }}">{{ business.email }}</a></p>
+                    {% endif %}
+                    
+                    {% if business.address %}
+                        <hr>
+                        <span class="text-muted d-block mb-1 small">Address</span>
+                        <p class="mb-0 small">{{ business.address }}</p>
+                        <p class="mb-0 small">
+                            {% if business.city %}{{ business.city }}{% endif %}
+                            {% if business.state %}, {{ business.state }}{% endif %}
+                            {% if business.zip_code %} {{ business.zip_code }}{% endif %}
+                        </p>
+                    {% endif %}
+                    
+                    {% if business.website %}
+                        <hr>
+                        <span class="text-muted d-block mb-1 small">Website</span>
+                        <p class="mb-0 small"><i class="fas fa-globe me-2 text-primary"></i><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

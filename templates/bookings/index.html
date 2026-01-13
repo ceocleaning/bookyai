@@ -1,4 +1,4 @@
-{% extends 'common/dashboard_base.html' %}
+{% extends base_template %}
 {% load static %}
 
 {% block title %}Bookings{% endblock %}
@@ -7,13 +7,47 @@
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Bookings</h2>
-        <a href="{% url 'bookings:create_booking' %}" class="btn btn-primary">
+        <a href="{% url 'bookings:create_booking' %}{% if is_customer and request.GET.business_id %}?business_id={{ request.GET.business_id }}{% endif %}" class="btn btn-primary">
             <i class="fas fa-plus me-2"></i> New Booking
         </a>
     </div>
 
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-4 {% if is_customer %}order-lg-2{% endif %}">
+            {% if is_customer and business %}
+            <!-- Business Information -->
+            <div class="card mb-4">
+                <div class="card-header custom-card-header text-white">
+                    <h5 class="mb-0">Business Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ business.name }}</h6>
+                    {% if business.phone_number %}
+                    <p class="mb-0"><i class="fas fa-phone me-2 text-primary"></i>{{ business.phone_number }}</p>
+                    {% endif %}
+                    {% if business.email %}
+                    <p class="mb-0"><i class="fas fa-envelope me-2 text-primary"></i><a href="mailto:{{ business.email }}">{{ business.email }}</a></p>
+                    {% endif %}
+                    
+                    {% if business.address %}
+                        <hr>
+                        <span class="text-muted d-block mb-1">Address</span>
+                        <p class="mb-0">{{ business.address }}</p>
+                        <p class="mb-0">
+                            {% if business.city %}{{ business.city }}{% endif %}
+                            {% if business.state %}, {{ business.state }}{% endif %}
+                            {% if business.zip_code %} {{ business.zip_code }}{% endif %}
+                        </p>
+                    {% endif %}
+                    
+                    {% if business.website %}
+                        <hr>
+                        <span class="text-muted d-block mb-1">Website</span>
+                        <p class="mb-0"><i class="fas fa-globe me-2 text-primary"></i><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
             <!-- Filters -->
             <div class="card mb-4 filter-card">
                 <div class="card-body p-4">
@@ -144,7 +178,7 @@
             </div>
         </div>
         <!-- Bookings Display -->
-        <div class="col-lg-8">
+        <div class="col-lg-8 {% if is_customer %}order-lg-1{% endif %}">
             <div class="card" style="padding: 0 !important;">
                 <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">All Bookings</h5>
@@ -317,7 +351,7 @@
                             {% if current_status or date_from or date_to or search_query %}
                                 Try adjusting your filters or <a href="{% url 'bookings:index' %}">view all bookings</a>.
                             {% else %}
-                                <a href="{% url 'bookings:create_booking' %}">Create your first booking</a> to get started.
+                                <a href="{% url 'bookings:create_booking' %}{% if is_customer and request.GET.business_id %}?business_id={{ request.GET.business_id }}{% endif %}">Create your first booking</a> to get started.
                             {% endif %}
                         </div>
                     {% endif %}

@@ -1,4 +1,4 @@
-{% extends 'common/dashboard_base.html' %}
+{% extends base_template %}
 {% load static %}
 
 {% block title %}Create Booking{% endblock %}
@@ -61,34 +61,57 @@
                 <div class="card-body p-4">
                     <form id="create-booking-form" method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
+                        <input type="hidden" id="business_id" name="business_id" value="{{ business.id }}">
                         
                         <!-- Step 1: Client Information -->
                         <div class="form-step active" id="step-1">
                             <h4 class="mb-4"><i class="fas fa-user me-2"></i>Client Information</h4>
                             
-                            <div class="mb-3">
-                                <label for="lead_id" class="form-label">Select Existing Lead (Optional)</label>
-                                <select name="lead_id" id="lead_id" class="form-select">
-                                    <option value="">Create new client or select existing...</option>
-                                </select>
-                                <div class="form-text">Select an existing lead to auto-fill client information</div>
+                            {% if not is_customer %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="customer_id" class="form-label">Select Existing Customer (Optional)</label>
+                                    <select name="customer_id" id="customer_id" class="form-select">
+                                        <option value="">Select a customer...</option>
+                                    </select>
+                                    <div class="form-text">Select an existing customer to auto-fill information</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lead_id" class="form-label">Or Select Existing Lead (Optional)</label>
+                                    <select name="lead_id" id="lead_id" class="form-select">
+                                        <option value="">Select a lead...</option>
+                                    </select>
+                                    <div class="form-text">Select an existing lead to auto-fill information</div>
+                                </div>
                             </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Note:</strong> You can select an existing customer or lead above, or enter new client information below.
+                            </div>
+                            {% endif %}
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="client_name" class="form-label">Client Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="client_name" id="client_name" class="form-control" required>
+                                    <input type="text" name="client_name" id="client_name" class="form-control" 
+                                           value="{% if is_customer %}{{ request.user.get_full_name }}{% endif %}" 
+                                           {% if is_customer %}readonly{% endif %} required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="client_email" class="form-label">Client Email <span class="text-danger">*</span></label>
-                                    <input type="email" name="client_email" id="client_email" class="form-control" required>
+                                    <input type="email" name="client_email" id="client_email" class="form-control" 
+                                           value="{% if is_customer %}{{ request.user.email }}{% endif %}" 
+                                           {% if is_customer %}readonly{% endif %} required>
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="client_phone" class="form-label">Client Phone <span class="text-danger">*</span></label>
-                                    <input type="tel" name="client_phone" id="client_phone" class="form-control" required>
+                                    <input type="tel" name="client_phone" id="client_phone" class="form-control" 
+                                           value="{% if is_customer %}{{ request.user.customer_profile.phone_number }}{% endif %}" 
+                                           {% if is_customer %}readonly{% endif %} required>
                                 </div>
                             </div>
                             
@@ -347,6 +370,41 @@
                     </div>
                 </div>
             </div>
+
+            {% if is_customer and business %}
+            <!-- Business Information -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Business Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold">{{ business.name }}</h6>
+                    {% if business.phone_number %}
+                    <p class="mb-0 small"><i class="fas fa-phone me-2 text-primary"></i>{{ business.phone_number }}</p>
+                    {% endif %}
+                    {% if business.email %}
+                    <p class="mb-0 small"><i class="fas fa-envelope me-2 text-primary"></i><a href="mailto:{{ business.email }}">{{ business.email }}</a></p>
+                    {% endif %}
+                    
+                    {% if business.address %}
+                        <hr>
+                        <span class="text-muted d-block mb-1 small">Address</span>
+                        <p class="mb-0 small">{{ business.address }}</p>
+                        <p class="mb-0 small">
+                            {% if business.city %}{{ business.city }}{% endif %}
+                            {% if business.state %}, {{ business.state }}{% endif %}
+                            {% if business.zip_code %} {{ business.zip_code }}{% endif %}
+                        </p>
+                    {% endif %}
+                    
+                    {% if business.website %}
+                        <hr>
+                        <span class="text-muted d-block mb-1 small">Website</span>
+                        <p class="mb-0 small"><i class="fas fa-globe me-2 text-primary"></i><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -356,12 +414,39 @@
 <script src="{% static 'js/bookings-create-booking.js' %}"></script>
 <script src="{% static 'js/bookings-create-booking-multistep.js' %}"></script>
 <script>
-    // Lead selection functionality
+    // Customer and Lead selection functionality
     document.addEventListener('DOMContentLoaded', function() {
+        const customerSelect = document.getElementById('customer_id');
         const leadSelect = document.getElementById('lead_id');
         const clientNameInput = document.getElementById('client_name');
         const clientEmailInput = document.getElementById('client_email');
         const clientPhoneInput = document.getElementById('client_phone');
+        
+        // Function to fetch customers from the API
+        function fetchCustomers() {
+            fetch('{% url "dashboard:get_customers_api" %}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.customers && data.customers.length > 0) {
+                        // Clear existing options except the default one
+                        while (customerSelect.options.length > 1) {
+                            customerSelect.remove(1);
+                        }
+                        
+                        // Add customer options
+                        data.customers.forEach(customer => {
+                            const option = document.createElement('option');
+                            option.value = customer.id;
+                            option.textContent = `${customer.name} (${customer.email})`;
+                            option.dataset.email = customer.email;
+                            option.dataset.phone = customer.phone_number;
+                            option.dataset.name = customer.name;
+                            customerSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => console.error('Error fetching customers:', error));
+        }
         
         // Function to fetch leads from the API
         function fetchLeads() {
@@ -389,8 +474,22 @@
                 .catch(error => console.error('Error fetching leads:', error));
         }
         
-        // Fetch leads when the page loads
+        // Fetch customers and leads when the page loads
+        fetchCustomers();
         fetchLeads();
+        
+        // Update client fields when a customer is selected
+        customerSelect.addEventListener('change', function() {
+            if (this.value) {
+                const selectedOption = this.options[this.selectedIndex];
+                clientNameInput.value = selectedOption.dataset.name;
+                clientEmailInput.value = selectedOption.dataset.email;
+                clientPhoneInput.value = selectedOption.dataset.phone;
+                
+                // Clear lead selection
+                leadSelect.value = '';
+            }
+        });
         
         // Update client fields when a lead is selected
         leadSelect.addEventListener('change', function() {
@@ -399,12 +498,22 @@
                 clientNameInput.value = selectedOption.dataset.name;
                 clientEmailInput.value = selectedOption.dataset.email;
                 clientPhoneInput.value = selectedOption.dataset.phone;
-            } else {
-                // Clear client fields if no lead is selected
-                clientNameInput.value = '';
-                clientEmailInput.value = '';
-                clientPhoneInput.value = '';
+                
+                // Clear customer selection
+                customerSelect.value = '';
             }
+        });
+        
+        // Clear selections when user manually edits fields
+        [clientNameInput, clientEmailInput, clientPhoneInput].forEach(input => {
+            input.addEventListener('input', function() {
+                // Only clear if user is typing new information
+                if (this.value !== customerSelect.options[customerSelect.selectedIndex]?.dataset[this.id.replace('client_', '')] &&
+                    this.value !== leadSelect.options[leadSelect.selectedIndex]?.dataset[this.id.replace('client_', '')]) {
+                    customerSelect.value = '';
+                    leadSelect.value = '';
+                }
+            });
         });
     });
 </script>

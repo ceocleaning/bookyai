@@ -168,6 +168,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 BASE_URL = 'https://bookyai.up.railway.app'
+SITE_URL = 'https://bookyai.up.railway.app'
 # OPENAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 

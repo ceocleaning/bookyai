@@ -124,10 +124,28 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <div class="public-logo">Booky AI</div>
+                    <a href="/" class="text-decoration-none text-white">
+                        <div class="public-logo">Booky AI</div>
+                    </a>
                 </div>
                 <div class="col-md-6 text-end">
-                    <p class="mb-0">Secure Payment Portal</p>
+                    {% if user.is_authenticated %}
+                        <div class="d-inline-flex align-items-center">
+                            <span class="d-none d-md-inline me-3">Welcome, {{ user.first_name|default:user.username }}</span>
+                            
+                            {% if user.customer_profile %}
+                                <a href="{% url 'customer:dashboard' %}" class="btn btn-light btn-sm text-primary fw-bold">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
+                            {% else %}
+                                <a href="/dashboard/" class="btn btn-light btn-sm text-primary fw-bold">
+                                    <i class="fas fa-tachometer-alt me-1"></i> Dashboard
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="mb-0">Secure Payment Portal</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -214,7 +214,17 @@ document.addEventListener('DOMContentLoaded', function() {
         // Service items section is always visible now
         
         // Make the actual API call to the correct endpoint
-        fetch(`/bookings/api/service-items/${serviceId}/`)
+        let url = `/bookings/api/service-items/${serviceId}/`;
+        const urlParams = new URLSearchParams(window.location.search);
+        const businessId = document.getElementById('business_id')?.value || urlParams.get('business_id');
+        
+        if (businessId) {
+            url += `?business_id=${businessId}`;
+        }
+
+        console.log('Fetching service items for service ID:', serviceId, 'URL:', url);
+        
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 serviceItems = data.items || [];
@@ -255,7 +265,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const duration = totalDuration || 60; // Use totalDuration which includes service items
             
             // Make API call to check availability
-            const url = `/bookings/api/check-availability/?date=${date}&time=${startTime}&duration_minutes=${duration}&service_offering_id=${selectedServiceId}`;
+            let url = `/bookings/api/check-availability/?date=${date}&time=${startTime}&duration_minutes=${duration}&service_offering_id=${selectedServiceId}`;
+            
+            // Add business_id if it exists (for customers)
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessId = document.getElementById('business_id')?.value || urlParams.get('business_id');
+            
+            if (businessId) {
+                url += `&business_id=${businessId}`;
+            }
             
             console.log("Checking availability with URL:", url);
             

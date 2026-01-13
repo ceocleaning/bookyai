@@ -124,7 +124,15 @@
                             Logout
                         </a>
                     {% else %}
-                        <a href="/accounts/login/" class="btn btn-nav-outline me-2">Login</a>
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-nav-outline dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Login
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/accounts/login/"><i class="fas fa-briefcase me-2"></i>Business Login</a></li>
+                                <li><a class="dropdown-item" href="{% url 'customer:login' %}"><i class="fas fa-user me-2"></i>Customer Login</a></li>
+                            </ul>
+                        </div>
                         <a href="/accounts/signup/" class="btn btn-nav-primary">
                             <i class="fas fa-rocket me-1"></i>
                             Get Started

@@ -1,0 +1,77 @@
+{% extends 'customer/base.html' %}
+{% load static %}
+
+{% block title %}Notification Preferences - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'customer:profile' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Profile
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-bell me-2"></i>Notification Preferences
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary mb-4">
+                    Choose how you'd like to receive updates about your bookings and account.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            {{ form.email_notifications }}
+                            <label class="form-check-label" for="{{ form.email_notifications.id_for_label }}">
+                                <strong>Email Notifications</strong>
+                                <br>
+                                <small class="text-secondary">Receive booking confirmations, reminders, and updates via email</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            {{ form.sms_notifications }}
+                            <label class="form-check-label" for="{{ form.sms_notifications.id_for_label }}">
+                                <strong>SMS Notifications</strong>
+                                <br>
+                                <small class="text-secondary">Receive text message reminders for upcoming bookings</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            {{ form.marketing_emails }}
+                            <label class="form-check-label" for="{{ form.marketing_emails.id_for_label }}">
+                                <strong>Marketing Emails</strong>
+                                <br>
+                                <small class="text-secondary">Receive promotional offers, news, and special deals</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> Important account and booking-related emails will still be sent regardless of these settings.
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Preferences
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

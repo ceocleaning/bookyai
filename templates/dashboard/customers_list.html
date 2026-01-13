@@ -1,0 +1,125 @@
+{% extends 'common/dashboard_base.html' %}
+{% load static %}
+
+{% block title %}Customers - Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="page-heading">Customers</h1>
+            <p class="text-secondary mb-0">Manage your customer database</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a href="{% url 'dashboard:customer_add' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>Add Customer
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" class="form-control" name="search" placeholder="Search by name, email, or phone..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-users me-2"></i>Total Customers: <span class="text-primary">{{ total_customers }}</span>
+                </h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customers List -->
+{% if customer_links %}
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Total Bookings</th>
+                        <th>Total Spent</th>
+                        <th>Last Booking</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in customer_links %}
+                    <tr>
+                        <td>
+                            <strong>{{ link.customer.user.get_full_name }}</strong>
+                        </td>
+                        <td>{{ link.customer.user.email }}</td>
+                        <td>{{ link.customer.phone_number|default:"-" }}</td>
+                        <td>
+                            <span class="badge bg-primary">{{ link.total_bookings }}</span>
+                        </td>
+                        <td>
+                            <strong class="text-success">${{ link.total_spent|floatformat:2 }}</strong>
+                        </td>
+                        <td>
+                            {% if link.last_booking_date %}
+                                {{ link.last_booking_date|date:"M d, Y" }}
+                            {% else %}
+                                <span class="text-secondary">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'dashboard:customer_detail' link.customer.id %}" class="btn btn-outline-primary" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'dashboard:customer_delete' link.customer.id %}" class="btn btn-outline-danger" title="Remove">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="fas fa-users fa-4x text-secondary mb-3"></i>
+        <h4>No Customers Found</h4>
+        <p class="text-secondary mb-4">
+            {% if search_query %}
+                No customers match your search criteria.
+            {% else %}
+                You don't have any customers yet. Add your first customer to get started.
+            {% endif %}
+        </p>
+        {% if not search_query %}
+        <a href="{% url 'dashboard:customer_add' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Add Customer
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

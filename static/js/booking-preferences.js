@@ -6,8 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
                      document.querySelector('meta[name="csrf-token"]')?.content;
     
     // Initialize modals
-    const editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
-    const editReminderModal = new bootstrap.Modal(document.getElementById('editReminderModal'));
+    const editEventModalEl = document.getElementById('editEventModal');
+    const editReminderModalEl = document.getElementById('editReminderModal');
+    
+    const editEventModal = editEventModalEl ? new bootstrap.Modal(editEventModalEl) : null;
+    const editReminderModal = editReminderModalEl ? new bootstrap.Modal(editReminderModalEl) : null;
     
     // Initialize drag-and-drop for event types
     const eventTypesTable = document.getElementById('eventTypesTable');
@@ -115,67 +118,84 @@ document.addEventListener('DOMContentLoaded', function() {
                     const allowedRoles = result.event_type.allowed_roles || [];
                     
                     // Uncheck all role checkboxes first
-                    document.getElementById('roleBusinessOwner').checked = false;
-                    document.getElementById('roleStaff').checked = false;
-                    document.getElementById('roleCustomer').checked = false;
+                    const roleBusinessOwner = document.getElementById('roleBusinessOwner');
+                    const roleStaff = document.getElementById('roleStaff');
+                    const roleCustomer = document.getElementById('roleCustomer');
+
+                    if (roleBusinessOwner) roleBusinessOwner.checked = false;
+                    if (roleStaff) roleStaff.checked = false;
+                    if (roleCustomer) roleCustomer.checked = false;
                     
                     // Check the roles that are allowed
-                    if (allowedRoles.includes('business')) {
-                        document.getElementById('roleBusinessOwner').checked = true;
+                    if (allowedRoles.includes('business') && roleBusinessOwner) {
+                        roleBusinessOwner.checked = true;
                     }
-                    if (allowedRoles.includes('staff')) {
-                        document.getElementById('roleStaff').checked = true;
+                    if (allowedRoles.includes('staff') && roleStaff) {
+                        roleStaff.checked = true;
                     }
-                    if (allowedRoles.includes('customer')) {
-                        document.getElementById('roleCustomer').checked = true;
+                    if (allowedRoles.includes('customer') && roleCustomer) {
+                        roleCustomer.checked = true;
                     }
                 }
             } catch (error) {
                 console.error('Error fetching event type details:', error);
             }
             
-            editEventModal.show();
+            if (editEventModal) editEventModal.show();
         });
     });
     
     // Save Event Type Changes
-    document.getElementById('saveEventBtn').addEventListener('click', async function() {
-        const eventId = document.getElementById('editEventId').value;
-        const name = document.getElementById('editEventName').value;
-        const icon = document.getElementById('editEventIcon').value;
-        const color = document.getElementById('editEventColor').value;
-        
-        // Collect selected roles
-        const allowedRoles = [];
-        if (document.getElementById('roleBusinessOwner').checked) {
-            allowedRoles.push('business');
-        }
-        if (document.getElementById('roleStaff').checked) {
-            allowedRoles.push('staff');
-        }
-        if (document.getElementById('roleCustomer').checked) {
-            allowedRoles.push('customer');
-        }
-        
-        if (!name || !icon || !color) {
-            showAlert('danger', 'Please fill in all fields');
-            return;
-        }
-        
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-        
-        console.log(allowedRoles)
-        const success = await updateEventType(eventId, { name, icon, color, allowed_roles: allowedRoles });
-        
-        if (success) {
-            editEventModal.hide();
-            setTimeout(() => window.location.reload(), 1000);
-        }
-        
-        this.disabled = false;
-        this.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
-    });
+    const saveEventBtn = document.getElementById('saveEventBtn');
+    if (saveEventBtn) {
+        saveEventBtn.addEventListener('click', async function() {
+            const editEventId = document.getElementById('editEventId');
+            const editEventName = document.getElementById('editEventName');
+            const editEventIcon = document.getElementById('editEventIcon');
+            const editEventColor = document.getElementById('editEventColor');
+
+            if (!editEventId || !editEventName || !editEventIcon || !editEventColor) return;
+
+            const eventId = editEventId.value;
+            const name = editEventName.value;
+            const icon = editEventIcon.value;
+            const color = editEventColor.value;
+            
+            // Collect selected roles
+            const allowedRoles = [];
+            const roleBusinessOwner = document.getElementById('roleBusinessOwner');
+            const roleStaff = document.getElementById('roleStaff');
+            const roleCustomer = document.getElementById('roleCustomer');
+
+            if (roleBusinessOwner?.checked) {
+                allowedRoles.push('business');
+            }
+            if (roleStaff?.checked) {
+                allowedRoles.push('staff');
+            }
+            if (roleCustomer?.checked) {
+                allowedRoles.push('customer');
+            }
+            
+            if (!name || !icon || !color) {
+                showAlert('danger', 'Please fill in all fields');
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            
+            const success = await updateEventType(eventId, { name, icon, color, allowed_roles: allowedRoles });
+            
+            if (success) {
+                if (editEventModal) editEventModal.hide();
+                setTimeout(() => window.location.reload(), 1000);
+            }
+            
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+        });
+    }
     
     // Reminder Type Toggle Handlers
     document.querySelectorAll('.reminder-enabled-toggle').forEach(toggle => {
@@ -222,34 +242,37 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('editReminderName').value = reminderName;
             document.getElementById('editReminderIcon').value = reminderIcon;
             
-            editReminderModal.show();
+            if (editReminderModal) editReminderModal.show();
         });
     });
     
     // Save Reminder Type Changes
-    document.getElementById('saveReminderBtn').addEventListener('click', async function() {
-        const reminderId = document.getElementById('editReminderId').value;
-        const name = document.getElementById('editReminderName').value;
-        const icon = document.getElementById('editReminderIcon').value;
-        
-        if (!name || !icon) {
-            showAlert('danger', 'Please fill in all fields');
-            return;
-        }
-        
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-        
-        const success = await updateReminderType(reminderId, { name, icon });
-        
-        if (success) {
-            editReminderModal.hide();
-            setTimeout(() => window.location.reload(), 1000);
-        }
-        
-        this.disabled = false;
-        this.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
-    });
+    const saveReminderBtn = document.getElementById('saveReminderBtn');
+    if (saveReminderBtn) {
+        saveReminderBtn.addEventListener('click', async function() {
+            const reminderId = document.getElementById('editReminderId').value;
+            const name = document.getElementById('editReminderName').value;
+            const icon = document.getElementById('editReminderIcon').value;
+            
+            if (!name || !icon) {
+                showAlert('danger', 'Please fill in all fields');
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            
+            const success = await updateReminderType(reminderId, { name, icon });
+            
+            if (success) {
+                if (editReminderModal) editReminderModal.hide();
+                setTimeout(() => window.location.reload(), 1000);
+            }
+            
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+        });
+    }
     
     // Helper Functions
     async function updateEventType(eventId, data) {
