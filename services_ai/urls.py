@@ -30,7 +30,7 @@ urlpatterns = [
     path('leads/', include('leads.urls')),
     path('invoices/', include('invoices.urls')),
     path('ai-agent/', include('ai_agent.urls')),
-    path('retell-agent/', include('retell_agent.urls')),
+    path('calling-agent/', include('retell_agent.urls')),
     path('subscription/', include('subscription.urls')),
     path('admin-dashboard/', include('admin_dashboard.urls')),
     path('integration/', include('integration.urls')),

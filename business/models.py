@@ -100,6 +100,15 @@ class Business(models.Model):
         except:
             pass
         return None
+    
+    @property
+    def active_subscription(self):
+        """
+        Returns the currently active subscription for this business.
+        Uses the Subscription model's get_active_subscription class method.
+        """
+        from subscription.models import Subscription
+        return Subscription.get_active_subscription(self)
 
 
 FIELD_TYPES = (

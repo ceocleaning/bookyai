@@ -182,22 +182,22 @@
                 <!-- Subscription Plan Indicator -->
                 <div class="subscription-indicator mt-3">
                     {% if request.user.business.active_subscription %}
-                        {% with subscription=request.user.business.subscription %}
-                            <div class="plan-badge plan-badge-{% if subscription.status == 'active' %}active{% elif subscription.status == 'trialing' %}trial{% else %}inactive{% endif %}">
+                        {% with active_subscription=request.user.business.active_subscription %}
+                            <div class="plan-badge plan-badge-{% if active_subscription.status == 'active' %}active{% elif active_subscription.status == 'trialing' %}trial{% else %}inactive{% endif %}">
                                 <div class="plan-icon">
                                     <i class="fas fa-crown"></i>
                                 </div>
                                 <div class="plan-info">
-                                    <div class="plan-name">{{ subscription.plan.name|default:"Subscribed" }}</div>
+                                    <div class="plan-name">{{ active_subscription.plan.name|default:"Subscribed" }}</div>
                                     <div class="plan-status">
-                                        {% if subscription.status == 'active' %}
+                                        {% if active_subscription.status == 'active' %}
                                             Active
-                                        {% elif subscription.status == 'trialing' %}
+                                        {% elif active_subscription.status == 'trialing' %}
                                             Trial Period
-                                        {% elif subscription.cancel_at_period_end %}
-                                            Cancels {{ subscription.current_period_end|date:"M d" }}
+                                        {% elif active_subscription.cancel_at_period_end %}
+                                            Cancels {{ active_subscription.current_period_end|date:"M d" }}
                                         {% else %}
-                                            {{ subscription.get_status_display }}
+                                            {{ active_subscription.get_status_display }}
                                         {% endif %}
                                     </div>
                                 </div>
@@ -309,10 +309,10 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a href="/voice-agent/"
-                            class="nav-link {% if '/voice-agent/' in request.path %}active{% endif %}">
+                        <a href="{% url 'retell_agent:list_retell_agents' %}"
+                            class="nav-link {% if '/calling-agent/' in request.path %}active{% endif %}">
                             <i class="fas fa-phone-alt"></i>
-                            <span>Voice Agent</span>
+                            <span>Calling Agent</span>
                         </a>
                     </li>
                     <li class="nav-item">

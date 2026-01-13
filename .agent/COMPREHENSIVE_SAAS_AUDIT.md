@@ -139,44 +139,6 @@ Deployment: Railway (Gunicorn + WhiteNoise)
 
 ## 🚨 CRITICAL MISSING FEATURES
 
-### 1. **Analytics & Reporting** ❌ (CRITICAL)
-
-**Impact:** High - Users can't measure ROI or business performance
-
-**Missing:**
-
-- Dashboard analytics (revenue, bookings, leads over time)
-- Conversion funnel tracking
-- Lead source attribution
-- Staff performance metrics
-- Service popularity analysis
-- Customer lifetime value
-- Churn prediction
-- Export capabilities (CSV, PDF reports)
-
-**Recommendation:** Build a comprehensive analytics module
-
-### 2. **Customer Portal** ❌ (HIGH PRIORITY)
-
-**Impact:** High - Customers can't self-serve
-
-**Missing:**
-
-- Customer login/registration
-- View booking history
-- Reschedule/cancel bookings
-- View invoices
-- Make payments
-- Update contact info
-- Communication preferences
-
-**Recommendation:** Create a `customer` app with:
-
-- Customer authentication
-- Self-service booking management
-- Payment history
-- Loyalty program integration
-
 ### 3. **Email Marketing & Automation** ❌ (HIGH PRIORITY)
 
 **Impact:** High - No customer retention tools

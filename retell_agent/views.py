@@ -6,9 +6,7 @@ from django.contrib import messages
 from django.db import transaction
 from .models import RetellAgent, RetellLLM
 import requests
-import json
-import os
-import logging
+from .retell_service import RetellAPIService
 from django.urls import reverse
 from retell import Retell
 
@@ -806,7 +804,7 @@ def voice_conversations(request):
     """
     View to display voice call transcripts in a messaging platform style.
     """
-    business = request.user.business_set.first()
+    business = request.user.business
     
     # Get date range from request parameters or use default (last 30 days)
     from datetime import datetime, timedelta
@@ -820,7 +818,7 @@ def voice_conversations(request):
     end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1) - timedelta(seconds=1)  # End of the day
     
     # Get call data from Retell API
-    from usage_analytics.services.retell_api_service import RetellAPIService
+
     calls = RetellAPIService.list_calls(business, start_date=start_date_obj, end_date=end_date_obj)
     call_details = RetellAPIService.get_call_details(calls)
     
