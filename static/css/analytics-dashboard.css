@@ -1,0 +1,218 @@
+/* Analytics Dashboard Styles */
+
+/* Page Header */
+.analytics-header {
+  background-color: var(--bg-card);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+.page-heading {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+/* Metric Cards */
+.metric-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+}
+
+/* Chart Containers */
+.chart-container {
+  position: relative;
+  height: 350px;
+  padding: 1rem 0;
+}
+
+/* Performance Tables */
+.performance-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: white;
+}
+
+/* Status Metrics */
+.status-metric {
+  padding: 1rem;
+}
+
+.status-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: white;
+  margin: 0 auto;
+}
+
+.status-metric h4 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.status-metric p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Table Enhancements */
+.table thead th {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+  .chart-container {
+    height: 250px;
+  }
+
+  .analytics-header {
+    text-align: center;
+  }
+
+  .analytics-header .btn {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .page-heading {
+    font-size: 1.5rem;
+  }
+
+  .status-metric {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Loading State */
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  color: var(--text-secondary);
+}
+
+.chart-loading i {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Date Range Form */
+.date-range-form .form-control {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+    color: var(--text-light);
+}
+
+.date-range-form .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    color: var(--text-light);
+}
+
+.date-range-form .form-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Analytics Dropdown Menu */
+.analytics-dropdown-menu {
+    min-width: 280px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+.analytics-dropdown-menu .dropdown-header {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.analytics-dropdown-menu .form-control {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+.analytics-dropdown-menu .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary);
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.2rem rgba(17, 72, 191, 0.25);
+}
+
+.analytics-dropdown-menu .form-label {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.analytics-dropdown-menu .dropdown-item {
+    color: var(--text-light);
+    padding: 0.75rem 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.analytics-dropdown-menu .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-light);
+}
+
+.analytics-dropdown-menu .dropdown-item i {
+    width: 20px;
+    text-align: center;
+}
+
+.analytics-dropdown-menu .dropdown-divider {
+    border-color: var(--border-color);
+    margin: 0;
+}

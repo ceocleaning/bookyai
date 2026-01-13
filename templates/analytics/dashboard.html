@@ -1,0 +1,538 @@
+{% extends 'common/dashboard_base.html' %} 
+{% load static %} 
+{% block title %}Analytics - Booky AI{% endblock %} 
+{% block page_title %}Analytics Dashboard{% endblock %} 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/analytics-dashboard.css' %}" />
+{% endblock %} 
+{% block content %}
+<!-- Page Header -->
+<div class="analytics-header mb-4">
+  <div class="row align-items-center">
+    <div class="col-md-10">
+      <h2 class="page-heading mb-2">Business Analytics</h2>
+      <p class="text-secondary mb-0">
+        Track your performance and growth metrics
+        {% if start_date and end_date %}
+          <span class="badge bg-primary ms-2">
+            <i class="fas fa-calendar me-1"></i>
+            {{ start_date|date:'M d, Y' }} - {{ end_date|date:'M d, Y' }}
+          </span>
+        {% endif %}
+      </p>
+    </div>
+    <div class="col-md-2 text-end">
+      <!-- Three Dots Menu -->
+      <div class="dropdown">
+        <button class="btn btn-secondary" type="button" id="analyticsMenuButton" 
+                data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end analytics-dropdown-menu" aria-labelledby="analyticsMenuButton">
+          <div class="dropdown-header">
+            <i class="fas fa-filter me-2"></i>Date Range Filter
+          </div>
+          <div class="px-3 py-2">
+            <form method="GET" action="{% url 'analytics:dashboard' %}" id="dateRangeForm">
+              <div class="mb-2">
+                <label for="start_date" class="form-label small text-secondary mb-1">Start Date</label>
+                <input type="date" class="form-control form-control-sm" id="start_date" name="start_date" 
+                       value="{{ start_date|date:'Y-m-d' }}" required>
+              </div>
+              <div class="mb-2">
+                <label for="end_date" class="form-label small text-secondary mb-1">End Date</label>
+                <input type="date" class="form-control form-control-sm" id="end_date" name="end_date" 
+                       value="{{ end_date|date:'Y-m-d' }}" required>
+              </div>
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">
+                  <i class="fas fa-filter me-1"></i>Apply Filter
+                </button>
+                <a href="{% url 'analytics:dashboard' %}" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-redo me-1"></i>Reset
+                </a>
+              </div>
+            </form>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'analytics:export' %}?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}">
+            <i class="fas fa-download me-2"></i>Export CSV
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Key Metrics Row -->
+<div class="row mb-4">
+  <!-- Total Revenue Card -->
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="stat-details">
+            <p class="stat-label mb-2">Total Revenue</p>
+            <h3 class="stat-value mb-2">
+              ${{ this_month_revenue|floatformat:2 }}
+            </h3>
+            <div
+              class="stat-change {% if revenue_growth >= 0 %}increase{% else %}decrease{% endif %}"
+            >
+              <i
+                class="fas fa-arrow-{% if revenue_growth >= 0 %}up{% else %}down{% endif %} me-1"
+              ></i>
+              {% if revenue_growth < 0 %}{{ revenue_growth|cut:"-" }}
+              {% else %}{{ revenue_growth|floatformat:1 }}{% endif %}% from last month
+            </div>
+          </div>
+          <div class="metric-card-icon">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Bookings Card -->
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="stat-details">
+            <p class="stat-label mb-2">Total Bookings</p>
+            <h3 class="stat-value mb-2">{{ this_month_bookings }}</h3>
+            <div
+              class="stat-change {% if bookings_growth >= 0 %}increase{% else %}decrease{% endif %}"
+            >
+              <i
+                class="fas fa-arrow-{% if bookings_growth >= 0 %}up{% else %}down{% endif %} me-1"
+              ></i>
+              {% if bookings_growth < 0 %}{{ bookings_growth|cut:"-" }}{% else %}{{ bookings_growth }}{% endif %}% from last month
+            </div>
+          </div>
+          <div class="metric-card-icon">
+            <i class="fas fa-calendar-check"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conversion Rate Card -->
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="stat-details">
+            <p class="stat-label mb-2">Lead Conversion Rate</p>
+            <h3 class="stat-value mb-2">
+              {{ conversion_rate|floatformat:1 }}%
+            </h3>
+            <div
+              class="stat-change {% if leads_growth >= 0 %}increase{% else %}decrease{% endif %}"
+            >
+              <i
+                class="fas fa-arrow-{% if leads_growth >= 0 %}up{% else %}down{% endif %} me-1"
+              ></i>
+              {% if leads_growth < 0 %}{{ leads_growth|cut:"-" }}{% else %}{{ leads_growth }}{% endif %}% leads this month
+            </div>
+          </div>
+          <div class="metric-card-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Average Booking Value Card -->
+  <div class="col-md-6 col-xl-3 mb-4">
+    <div class="card stat-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="stat-details">
+            <p class="stat-label mb-2">Avg Booking Value</p>
+            <h3 class="stat-value mb-2">
+              ${{ avg_booking_value|floatformat:2 }}
+            </h3>
+            <div class="stat-change text-secondary">
+              <i class="fas fa-calculator me-1"></i>
+              Based on {{ total_bookings }} bookings
+            </div>
+          </div>
+          <div class="metric-card-icon">
+            <i class="fas fa-receipt"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+  <!-- Revenue Trend Chart -->
+  <div class="col-lg-8 mb-4">
+    <div class="card h-100">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="card-title mb-0">
+          <i class="fas fa-chart-area me-2"></i>Revenue Trend
+        </h5>
+        <span class="badge bg-primary">Last 12 Months</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lead Sources Chart -->
+  <div class="col-lg-4 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-pie-chart me-2"></i>Lead Sources
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="chart-container">
+          <canvas id="leadSourceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Tables Row -->
+<div class="row mb-4">
+  <!-- Top Services -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-star me-2"></i>Top Services by Revenue
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Service</th>
+                <th>Bookings</th>
+                <th class="text-end">Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if top_services %} {% for service in top_services %}
+              <tr>
+                <td>
+                  <div
+                    class="performance-rank {% if forloop.counter == 1 %}bg-warning{% elif forloop.counter == 2 %}bg-secondary{% elif forloop.counter == 3 %}bg-info{% else %}bg-dark{% endif %}"
+                  >
+                    {{ forloop.counter }}
+                  </div>
+                </td>
+                <td>
+                  <strong>{{ service.name }}</strong>
+                </td>
+                <td>
+                  <span class="badge bg-secondary"
+                    >{{ service.total_bookings }}</span
+                  >
+                </td>
+                <td class="text-end">
+                  <strong>${{ service.total_revenue|floatformat:2 }}</strong>
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="4" class="text-center py-4">
+                  <p class="text-muted mb-0">No service data available</p>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Staff Performance -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-users me-2"></i>Staff Performance
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Staff Member</th>
+                <th>Bookings</th>
+                <th>Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if staff_performance %} {% for staff in staff_performance %}
+              <tr>
+                <td>
+                  <div
+                    class="performance-rank {% if forloop.counter == 1 %}bg-warning{% elif forloop.counter == 2 %}bg-secondary{% elif forloop.counter == 3 %}bg-info{% else %}bg-dark{% endif %}"
+                  >
+                    {{ forloop.counter }}
+                  </div>
+                </td>
+                <td>
+                  <strong>{{ staff.get_full_name }}</strong>
+                </td>
+                <td>
+                  <span class="badge bg-secondary"
+                    >{{ staff.total_bookings }}</span
+                  >
+                </td>
+                <td>
+                  <span class="badge bg-success"
+                    >{{ staff.completed_bookings }}</span
+                  >
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="4" class="text-center py-4">
+                  <p class="text-muted mb-0">No staff data available</p>
+                </td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Status Breakdown -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-tasks me-2"></i>Booking Status Overview
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="status-metric">
+              <div class="status-icon bg-success mb-2">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <h4 class="mb-1">{{ completed_bookings }}</h4>
+              <p class="text-secondary mb-0">Completed</p>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="status-metric">
+              <div class="status-icon bg-primary mb-2">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h4 class="mb-1">{{ confirmed_bookings }}</h4>
+              <p class="text-secondary mb-0">Confirmed</p>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3 mb-md-0">
+            <div class="status-metric">
+              <div class="status-icon bg-warning mb-2">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <h4 class="mb-1">{{ this_month_bookings }}</h4>
+              <p class="text-secondary mb-0">This Month</p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="status-metric">
+              <div class="status-icon bg-danger mb-2">
+                <i class="fas fa-times-circle"></i>
+              </div>
+              <h4 class="mb-1">{{ cancelled_bookings }}</h4>
+              <p class="text-secondary mb-0">Cancelled</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lead Status Breakdown -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="card-title mb-0">
+          <i class="fas fa-user-plus me-2"></i>Lead Status Breakdown
+        </h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Count</th>
+                <th>Percentage</th>
+                <th class="text-end">This Month</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if total_leads > 0 %}
+                <tr>
+                  <td>
+                    <span class="badge bg-primary">
+                      <i class="fas fa-star me-1"></i>New
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{{ lead_status_new }}</strong>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px; width: 150px;">
+                      <div class="progress-bar bg-primary" role="progressbar" 
+                           style="width: {{ lead_status_new|floatformat:0 }}{{ total_leads|floatformat:0 }}%;" 
+                           aria-valuenow="{{ lead_status_new }}" 
+                           aria-valuemin="0" 
+                           aria-valuemax="{{ total_leads }}">
+                        {% widthratio lead_status_new total_leads 100 %}%
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge bg-secondary">{{ lead_status_new_month }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="badge bg-info">
+                      <i class="fas fa-phone me-1"></i>Contacted
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{{ lead_status_contacted }}</strong>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px; width: 150px;">
+                      <div class="progress-bar bg-info" role="progressbar" 
+                           style="width: {% widthratio lead_status_contacted total_leads 100 %}%;" 
+                           aria-valuenow="{{ lead_status_contacted }}" 
+                           aria-valuemin="0" 
+                           aria-valuemax="{{ total_leads }}">
+                        {% widthratio lead_status_contacted total_leads 100 %}%
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge bg-secondary">{{ lead_status_contacted_month }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="badge bg-warning">
+                      <i class="fas fa-check-circle me-1"></i>Qualified
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{{ lead_status_qualified }}</strong>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px; width: 150px;">
+                      <div class="progress-bar bg-warning" role="progressbar" 
+                           style="width: {% widthratio lead_status_qualified total_leads 100 %}%;" 
+                           aria-valuenow="{{ lead_status_qualified }}" 
+                           aria-valuemin="0" 
+                           aria-valuemax="{{ total_leads }}">
+                        {% widthratio lead_status_qualified total_leads 100 %}%
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge bg-secondary">{{ lead_status_qualified_month }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="badge bg-success">
+                      <i class="fas fa-trophy me-1"></i>Converted
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{{ lead_status_converted }}</strong>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px; width: 150px;">
+                      <div class="progress-bar bg-success" role="progressbar" 
+                           style="width: {% widthratio lead_status_converted total_leads 100 %}%;" 
+                           aria-valuenow="{{ lead_status_converted }}" 
+                           aria-valuemin="0" 
+                           aria-valuemax="{{ total_leads }}">
+                        {% widthratio lead_status_converted total_leads 100 %}%
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge bg-secondary">{{ lead_status_converted_month }}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="badge bg-danger">
+                      <i class="fas fa-times-circle me-1"></i>Lost
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{{ lead_status_lost }}</strong>
+                  </td>
+                  <td>
+                    <div class="progress" style="height: 20px; width: 150px;">
+                      <div class="progress-bar bg-danger" role="progressbar" 
+                           style="width: {% widthratio lead_status_lost total_leads 100 %}%;" 
+                           aria-valuenow="{{ lead_status_lost }}" 
+                           aria-valuemin="0" 
+                           aria-valuemax="{{ total_leads }}">
+                        {% widthratio lead_status_lost total_leads 100 %}%
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="badge bg-secondary">{{ lead_status_lost_month }}</span>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="4" class="text-center py-4">
+                    <p class="text-muted mb-0">No lead data available</p>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/analytics-dashboard.js' %}"></script>
+{% endblock %}

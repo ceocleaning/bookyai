@@ -34,6 +34,7 @@ urlpatterns = [
     path('integration/', include('integration.urls')),
     path('dashboard/', include('dashboard.urls')),
     path('notifications/', include('notifications.urls')),
+    path('analytics/', include('analytics.urls')),
     path('staff/', include('staff.urls')),
     path('customer/', include('customer.urls')),
     path('ai-website/', include('ai_website.urls')),
