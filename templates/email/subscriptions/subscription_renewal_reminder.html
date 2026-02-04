@@ -1,0 +1,23 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Subscription Renewal Reminder</h2>
+
+<p>Hello,</p>
+
+<p>This is a reminder that your subscription will renew soon.</p>
+
+<div class="info-box">
+    <p><strong>Plan:</strong> {{ plan_name }}</p>
+    <p><strong>Amount:</strong> ${{ plan_price }}</p>
+    <p><strong>Renewal Date:</strong> {{ renewal_date|date:"F d, Y" }}</p>
+    <p><strong>Days Until Renewal:</strong> {{ days_until_renewal }}</p>
+</div>
+
+<p>Your subscription will automatically renew on the date shown above. Please ensure your payment method is up to date.</p>
+
+<p>If you'd like to make any changes to your subscription, please visit your account settings.</p>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

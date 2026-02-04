@@ -1,0 +1,25 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Payment Received</h2>
+
+<p>Hello,</p>
+
+<p>Payment has been received for the following invoice:</p>
+
+<div class="info-box">
+    <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+    <p><strong>Customer:</strong> {{ customer_name }}</p>
+    {% if amount_paid %}
+    <p><strong>Amount Paid:</strong> ${{ amount_paid }}</p>
+    {% endif %}
+    <p><strong>Status:</strong> {{ invoice.get_status_display }}</p>
+</div>
+
+<p>The payment has been processed successfully.</p>
+
+<a href="{{ invoice_url }}" class="button">View Invoice Details</a>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

@@ -50,7 +50,7 @@ def send_email(from_email, to_email, subject, reply_to=None, text_content='', at
         "from": from_email,
         "to": to_email,
         "subject": subject,
-        "text": text_content
+        "text": str(text_content) if text_content else str(html_content)
     }
 
     if html_content:

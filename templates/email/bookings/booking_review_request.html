@@ -1,0 +1,25 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>How Was Your Experience?</h2>
+
+<p>Dear {{ customer_name }},</p>
+
+<p>Thank you for choosing {{ business_name }}! We hope you had a great experience with our {{ service_name }} service.</p>
+
+<p>We'd love to hear your feedback! Your review helps us improve our services and helps other customers make informed decisions.</p>
+
+<div class="info-box">
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    <p><strong>Date:</strong> {{ booking_date|date:"F d, Y" }}</p>
+</div>
+
+<p>Would you mind taking a moment to share your experience?</p>
+
+<a href="{{ review_url }}" class="button">Leave a Review</a>
+
+<p>Thank you for your time and for choosing {{ business_name }}!</p>
+
+<p>Best regards,<br>
+{{ business_name }}</p>
+{% endblock %}

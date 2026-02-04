@@ -1,0 +1,28 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Welcome to {{ plan_name }}!</h2>
+
+<p>Hello,</p>
+
+<p>Congratulations! Your subscription has been activated successfully.</p>
+
+<div class="info-box">
+    <p><strong>Plan:</strong> {{ plan_name }}</p>
+    <p><strong>Price:</strong> ${{ plan_price }}/{{ billing_period }}</p>
+    {% if is_trial %}
+    <p><strong>Trial Period:</strong> Until {{ trial_end|date:"F d, Y" }}</p>
+    {% endif %}
+</div>
+
+<p>You now have access to all the features included in your plan. We're excited to have you on board!</p>
+
+{% if is_trial %}
+<p><strong>Note:</strong> You're currently in a trial period. Your subscription will automatically begin after the trial ends unless you cancel.</p>
+{% endif %}
+
+<p>If you have any questions or need assistance, our support team is here to help.</p>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

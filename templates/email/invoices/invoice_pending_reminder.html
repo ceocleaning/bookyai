@@ -1,0 +1,24 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Payment Reminder</h2>
+
+<p>Dear {{ customer_name }},</p>
+
+<p>This is a friendly reminder that your invoice is due soon.</p>
+
+<div class="info-box">
+    <p><strong>Invoice Number:</strong> {{ invoice_number }}</p>
+    <p><strong>Amount Due:</strong> ${{ total_amount }}</p>
+    <p><strong>Due Date:</strong> {{ due_date|date:"F d, Y" }}</p>
+</div>
+
+<p>Please make your payment by the due date to avoid any late fees. If you've already paid, please disregard this message.</p>
+
+<a href="{{ invoice_url }}" class="button">View & Pay Invoice</a>
+
+<p>If you have any questions or concerns, please don't hesitate to contact us.</p>
+
+<p>Best regards,<br>
+{{ business_name }}</p>
+{% endblock %}

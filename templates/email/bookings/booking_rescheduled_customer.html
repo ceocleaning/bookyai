@@ -1,0 +1,28 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Booking Rescheduled</h2>
+
+<p>Dear {{ customer_name }},</p>
+
+<p>Your booking with {{ business_name }} has been rescheduled.</p>
+
+<div class="info-box">
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    {% if old_date %}
+    <p><strong>Previous Date:</strong> {{ old_date|date:"F d, Y" }} at {{ old_time|time:"g:i A" }}</p>
+    {% endif %}
+    <p><strong>New Date:</strong> {{ new_date|date:"F d, Y" }}</p>
+    <p><strong>New Time:</strong> {{ new_time|time:"g:i A" }}</p>
+    {% if booking.location_details %}
+    <p><strong>Location:</strong> {{ booking.location_details }}</p>
+    {% endif %}
+</div>
+
+<p>We look forward to seeing you at the new time! If you have any questions, please contact us.</p>
+
+<a href="{{ booking_url }}" class="button">View Your Booking</a>
+
+<p>Best regards,<br>
+{{ business_name }}</p>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>New Booking Received</h2>
+
+<p>Hello,</p>
+
+<p>You have received a new booking. Here are the details:</p>
+
+<div class="info-box">
+    <p><strong>Customer:</strong> {{ customer_name }}</p>
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    <p><strong>Date:</strong> {{ booking_date|date:"F d, Y" }}</p>
+    <p><strong>Time:</strong> {{ booking_time|time:"g:i A" }}</p>
+    {% if booking.location_details %}
+    <p><strong>Location:</strong> {{ booking.location_details }}</p>
+    {% endif %}
+    {% if booking.notes %}
+    <p><strong>Notes:</strong> {{ booking.notes }}</p>
+    {% endif %}
+</div>
+
+<p>Please confirm this booking and prepare for the appointment.</p>
+
+<a href="{{ booking_url }}" class="button">View Booking Details</a>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

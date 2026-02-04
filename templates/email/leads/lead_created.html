@@ -1,0 +1,26 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>New Lead Received</h2>
+
+<p>Hello,</p>
+
+<p>A new lead has been submitted to your business. Here are the details:</p>
+
+<div class="info-box">
+    <p><strong>Name:</strong> {{ lead_name }}</p>
+    <p><strong>Email:</strong> {{ lead_email }}</p>
+    <p><strong>Phone:</strong> {{ lead_phone }}</p>
+    <p><strong>Source:</strong> {{ lead_source }}</p>
+    {% if lead.notes %}
+    <p><strong>Notes:</strong> {{ lead.notes }}</p>
+    {% endif %}
+</div>
+
+<p>Please follow up with this lead as soon as possible to increase your chances of conversion.</p>
+
+<a href="{{ lead_url }}" class="button">View Lead Details</a>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

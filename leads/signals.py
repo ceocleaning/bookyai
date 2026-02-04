@@ -1,38 +1,23 @@
-
+"""
+Signals for Lead notifications
+"""
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
-from .models import Lead
-from core.email_notifications import send_lead_notification
-from .tasks import make_call_to_lead
-from django_q.tasks import schedule
-from django_q.models import Schedule
-from django.utils import timezone
-import datetime
+from leads.models import Lead
+from notifications.services.leads.lead_created import notify_lead_created
 
 
 @receiver(post_save, sender=Lead)
-def lead_post_save(sender, instance, created, **kwargs):
+def lead_created_handler(sender, instance, created, **kwargs):
+    """
+    Send notification when a new lead is created.
+    
+    Args:
+        sender: The model class (Lead)
+        instance: The actual Lead instance
+        created: Boolean indicating if this is a new record
+        **kwargs: Additional keyword arguments
+    """
     if created:
-        try:
-            from django_q.tasks import async_task
-            async_task('core.email_notifications.send_lead_notification', instance.id)
-
-            business_config = instance.business.configuration
-
-            if business_config.voice_enabled and business_config.initial_response_delay > 0:
-
-                schedule(
-                    'leads.tasks.make_call_to_lead',  
-                    instance.id,  
-                    schedule_type='O',
-                    next_run=timezone.now() + datetime.timedelta(minutes=business_config.initial_response_delay),
-                )
-                print(f"Call scheduled for lead {instance.id} in {business_config.initial_response_delay} minutes")
-
-          
-        except ImportError:
-            business_email_sent, lead_email_sent = send_lead_notification(instance.id)
-           
-
-
+        # Only send notification for newly created leads
+        notify_lead_created(instance)

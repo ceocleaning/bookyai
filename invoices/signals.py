@@ -1,25 +1,74 @@
-from django.db.models.signals import post_save
+"""
+Signals for Invoice and Payment notifications
+"""
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from django.db.models import Sum, F
-from decimal import Decimal
-from .models import Invoice, Payment, InvoiceStatus
-from bookings.models import Booking, BookingStatus, BookingServiceItem
-from core.email_notifications import send_invoice_notification
+from invoices.models import Invoice, Payment, InvoiceStatus
+from notifications.services.invoices.payment_completed import notify_invoice_paid
+
+
+# Store previous invoice state
+_invoice_previous_state = {}
+
+
+@receiver(post_save, sender=Payment)
+def payment_created_handler(sender, instance, created, **kwargs):
+    """
+    Send notification when a payment is received.
+    
+    Args:
+        sender: The model class (Payment)
+        instance: The actual Payment instance
+        created: Boolean indicating if this is a new record
+        **kwargs: Additional keyword arguments
+    """
+    if created:
+        invoice = instance.invoice
+        notify_invoice_paid(invoice, payment=instance)
+
+
+@receiver(pre_save, sender=Invoice)
+def invoice_pre_save_handler(sender, instance, **kwargs):
+    """
+    Store previous invoice state before save for comparison.
+    
+    Args:
+        sender: The model class (Invoice)
+        instance: The actual Invoice instance being saved
+        **kwargs: Additional keyword arguments
+    """
+    if instance.pk:
+        try:
+            old_invoice = Invoice.objects.get(pk=instance.pk)
+            _invoice_previous_state[instance.pk] = {
+                'status': old_invoice.status,
+            }
+        except Invoice.DoesNotExist:
+            pass
 
 
 @receiver(post_save, sender=Invoice)
-def invoice_post_save(sender, instance, created, **kwargs):
-    # Send email notification for new invoices
-    if created:
-        try:
-            from django_q.tasks import async_task
-            async_task('core.email_notifications.send_invoice_notification', instance.id)
-        except ImportError:
-            send_invoice_notification(instance.id)
+def invoice_post_save_handler(sender, instance, created, **kwargs):
+    """
+    Handle invoice status changes, particularly when marked as paid.
     
-    # Mark booking as confirmed if invoice is paid
-    if instance.status == InvoiceStatus.PAID and instance.booking.status == BookingStatus.PENDING:
-        booking = instance.booking
-        booking.status = BookingStatus.CONFIRMED
-        booking.save(update_fields=['status'])
-
+    Args:
+        sender: The model class (Invoice)
+        instance: The actual Invoice instance
+        created: Boolean indicating if this is a new record
+        **kwargs: Additional keyword arguments
+    """
+    
+    if not created:
+        previous_state = _invoice_previous_state.get(instance.pk, {})
+        old_status = previous_state.get('status')
+        
+        # Invoice marked as paid
+        if old_status and old_status != InvoiceStatus.PAID and instance.status == InvoiceStatus.PAID:
+            # Get the most recent payment for this invoice
+            payment = instance.payments.order_by('-created_at').first()
+            notify_invoice_paid(instance, payment=payment)
+        
+        # Clean up previous state to avoid memory leaks
+        if instance.pk in _invoice_previous_state:
+            del _invoice_previous_state[instance.pk]

@@ -1,185 +1,87 @@
-from django.db.models.signals import post_save
+"""
+Signals for Booking notifications
+"""
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-from django.utils import timezone
-from datetime import timedelta, date, datetime
-from decimal import Decimal
-import json
-from .models import Booking, BookingStatus
-from invoices.models import Invoice, InvoiceStatus
-
-# Import for integration
-from integration.views import send_booking_data_to_integration
-from integration.models import PlatformIntegration
+from bookings.models import Booking, BookingStatus
+from notifications.services.bookings.booking_created import notify_booking_created
+from notifications.services.bookings.booking_rescheduled import notify_booking_rescheduled
+from notifications.services.bookings.booking_cancelled import notify_booking_cancelled
+from notifications.services.bookings.booking_completion_reminder import notify_booking_completed
+from notifications.services.bookings.booking_hour_before_reminder import notify_request_review
 
 
-@receiver(post_save, sender=Booking)
-def create_invoice_for_booking(sender, instance, created, **kwargs):
-    if created:
-        if isinstance(instance.booking_date, date):
-            due_date = instance.booking_date + timedelta(days=7)
-        else:
-            due_date = timezone.now().date() + timedelta(days=7)
-        
-        if not instance.business.configuration.invoice_enabled:
-            print("Invoice not enabled for this business")
-            return
-        
-        Invoice.objects.create(
-            booking=instance,
-            status=InvoiceStatus.PENDING,
-            due_date=due_date,
-        )
-
-        instance.status = BookingStatus.PENDING
-        instance.save(update_fields=['status'])
+# Store previous booking state for comparison
+_booking_previous_state = {}
 
 
-@receiver(post_save, sender=Booking)
-def send_booking_to_integrations(sender, instance, created, **kwargs):
+@receiver(pre_save, sender=Booking)
+def booking_pre_save_handler(sender, instance, **kwargs):
     """
-    Send booking data to active platform integrations when a new booking is created
+    Store previous booking state before save for comparison.
+    This allows us to detect changes in status, date, or time.
+    
+    Args:
+        sender: The model class (Booking)
+        instance: The actual Booking instance being saved
+        **kwargs: Additional keyword arguments
     """
-    if created:
+    if instance.pk:
         try:
-            # Get all active integrations for the business
-            integrations = PlatformIntegration.objects.filter(
-                business=instance.business,
-                is_active=True
-            )
-            print(f"integrations.count(): {integrations.count()}")
-            if not integrations.exists():
-                return
-
-            # Create the same data structure as used in test_integration
-            # This is a nested structure with booking data under 'booking' key
-            test_data = {}
-            
-            # Prepare booking data
-            booking_data = {}
-            
-            # Add booking fields without prefixing (matching test_integration)
-            for field in instance._meta.get_fields():
-                if hasattr(field, 'attname') and not field.is_relation:
-                    field_name = field.attname
-                    value = getattr(instance, field.attname, None)
-                    
-                    # Handle special types for proper serialization
-                    if isinstance(value, Decimal):
-                        booking_data[field_name] = float(value)
-                    elif isinstance(value, datetime):
-                        booking_data[field_name] = value.strftime('%Y-%m-%d %H:%M:%S')
-                    elif isinstance(value, date):
-                        booking_data[field_name] = value.strftime('%Y-%m-%d')
-                    else:
-                        booking_data[field_name] = value
-            
-            # Add essential relationship fields (matching test_integration)
-            if instance.service_offering:
-                booking_data['service_offering_id'] = instance.service_offering.id
-                booking_data['service_offering_name'] = instance.service_offering.name
-            else:
-                booking_data['service_offering_id'] = None
-                booking_data['service_offering_name'] = None
-                
-            # Business
-            if instance.business:
-                booking_data['business_id'] = instance.business.id
-                booking_data['business_name'] = instance.business.name
-            else:
-                booking_data['business_id'] = None
-                booking_data['business_name'] = None
-                
-            # Lead
-            if instance.lead:
-                booking_data['lead_id'] = instance.lead.id
-                booking_data['lead_name'] = instance.lead.get_full_name()
-            else:
-                booking_data['lead_id'] = None
-                booking_data['lead_name'] = None
-            
-            # Add the booking data to the test_data
-            test_data['booking'] = booking_data
-            
-            # Add service items if they exist (matching test_integration)
-            from business.models import ServiceItem
-            
-            # Get all service items for this business
-            all_service_items = ServiceItem.objects.filter(business=instance.business, is_active=True)
-            
-            # Get booked service items
-            booked_items = {}
-            if hasattr(instance, 'service_items'):
-                for item in instance.service_items.all():
-                    if item.service_item:
-                        booked_items[item.service_item.id] = {
-                            'quantity': item.quantity,
-                            'price': float(item.price) if isinstance(item.price, Decimal) else item.price,
-                            'selected': True
-                        }
-            
-            # Add all service items to test_data
-            for item in all_service_items:
-                identifier = item.identifier or f"item_{item.id}"
-                
-                # If this item was booked, use the booking data
-                if item.id in booked_items:
-                    test_data[identifier] = {
-                        'quantity': booked_items[item.id]['quantity'],
-                        'price': booked_items[item.id]['price'],
-                        'selected': True,
-                        'name': item.name
-                    }
-                else:
-                    # Otherwise use default values
-                    test_data[identifier] = {
-                        'quantity': 0,
-                        'price': float(item.price_value) if isinstance(item.price_value, Decimal) else item.price_value,
-                        'selected': False,
-                        'name': item.name
-                    }
-            
-            # Process each integration
-            for integration in integrations:
-                try:
-                    # Use the existing send_booking_data_to_integration function with test_data
-                    # This matches the structure used in test_integration
-                    result = send_booking_data_to_integration(test_data, integration)
-                    print(f"Integration result for {integration.name}: {result}")
-                except Exception as e:
-                    print(f"Error sending booking to integration {integration.name}: {str(e)}")
-                    # Silently continue if one integration fails
-                    continue
-        except Exception as e:
-            print(f"Error in send_booking_to_integrations: {str(e)}")
-            # Don't raise exceptions that would interrupt the normal booking flow
+            old_booking = Booking.objects.get(pk=instance.pk)
+            _booking_previous_state[instance.pk] = {
+                'status': old_booking.status,
+                'booking_date': old_booking.booking_date,
+                'start_time': old_booking.start_time,
+            }
+        except Booking.DoesNotExist:
             pass
 
 
 @receiver(post_save, sender=Booking)
-def notify_plugins_booking_created(sender, instance, created, **kwargs):
+def booking_post_save_handler(sender, instance, created, **kwargs):
     """
-    Notify plugins when a booking is created
+    Handle booking notifications based on creation or status changes.
     
-    This signal handler triggers plugin notifications when a new booking is created.
-    It uses the plugin event system to notify all active plugins that have registered
-    for the 'booking_created' event.
+    This signal handler:
+    - Sends creation notification for new bookings
+    - Detects rescheduling (date/time changes)
+    - Detects cancellations
+    - Detects completions and triggers review requests
+    
+    Args:
+        sender: The model class (Booking)
+        instance: The actual Booking instance
+        created: Boolean indicating if this is a new record
+        **kwargs: Additional keyword arguments
     """
-    if created:  # Only trigger for new bookings
-        try:
-            # Import here to avoid circular imports
-            from plugins.events import notify_booking_created
-            
-            # Use Django Q for asynchronous processing if available
-            try:
-                from django_q.tasks import async_task
-                async_task('plugins.events.notify_booking_created', instance)
-                print(f"Scheduled async notification for booking {instance.id} creation")
-            except ImportError:
-                # Fall back to synchronous processing if Django Q is not available
-                results = notify_booking_created(instance)
-                print(f"Notified plugins about booking {instance.id} creation: {results}")
-        except Exception as e:
-            # Log the error but don't interrupt the normal flow
-            print(f"Error notifying plugins about booking creation: {str(e)}")
-            import traceback
-            print(traceback.format_exc())
+    
+    if created:
+        # New booking created - notify all parties
+        notify_booking_created(instance)
+    
+    else:
+        # Booking updated - check for status or schedule changes
+        previous_state = _booking_previous_state.get(instance.pk, {})
+        old_status = previous_state.get('status')
+        old_date = previous_state.get('booking_date')
+        old_time = previous_state.get('start_time')
+        
+        # Check if booking was rescheduled (date or time changed)
+        if (old_date and old_time and 
+            (old_date != instance.booking_date or old_time != instance.start_time)):
+            notify_booking_rescheduled(instance, old_date=old_date, old_time=old_time)
+        
+        # Check if booking was cancelled
+        if old_status and old_status != BookingStatus.CANCELLED and instance.status == BookingStatus.CANCELLED:
+            notify_booking_cancelled(instance)
+        
+        # Check if booking was completed
+        if old_status and old_status != BookingStatus.COMPLETED and instance.status == BookingStatus.COMPLETED:
+            notify_booking_completed(instance)
+            # Also send review request after completion
+            notify_request_review(instance)
+        
+        # Clean up previous state to avoid memory leaks
+        if instance.pk in _booking_previous_state:
+            del _booking_previous_state[instance.pk]

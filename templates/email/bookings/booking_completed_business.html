@@ -1,0 +1,23 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Booking Completed</h2>
+
+<p>Hello,</p>
+
+<p>A booking has been marked as completed. Here are the details:</p>
+
+<div class="info-box">
+    <p><strong>Customer:</strong> {{ customer_name }}</p>
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    <p><strong>Date:</strong> {{ booking_date|date:"F d, Y" }}</p>
+    <p><strong>Time:</strong> {{ booking_time|time:"g:i A" }}</p>
+</div>
+
+<p>Great job completing this service!</p>
+
+<a href="{{ booking_url }}" class="button">View Booking Details</a>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

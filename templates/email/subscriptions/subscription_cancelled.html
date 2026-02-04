@@ -1,0 +1,28 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Subscription Cancelled</h2>
+
+<p>Hello,</p>
+
+<p>We're sorry to see you go. Your subscription has been cancelled as requested.</p>
+
+<div class="info-box">
+    <p><strong>Plan:</strong> {{ plan_name }}</p>
+    {% if cancel_at_period_end %}
+    <p><strong>Access Until:</strong> {{ end_date|date:"F d, Y" }}</p>
+    <p>You'll continue to have access to your subscription features until the end of your current billing period.</p>
+    {% else %}
+    <p><strong>Cancelled:</strong> Immediately</p>
+    {% endif %}
+</div>
+
+<p>If you cancelled by mistake or would like to reactivate your subscription, you can do so at any time from your account settings.</p>
+
+<p>We'd love to hear your feedback about why you cancelled. Your input helps us improve our service.</p>
+
+<p>Thank you for being a part of BookyAI. We hope to see you again in the future!</p>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

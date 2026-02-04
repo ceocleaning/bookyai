@@ -1,21 +1,20 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
 
+
+User = get_user_model()
+
 class Notification(models.Model):
-    NOTIFICATION_TYPES = (
-        ('lead_created', 'Lead Created'),
-        ('booking_created', 'Booking Created'),
-        ('booking_status_changed', 'Booking Status Changed'),
-        ('invoice_paid', 'Invoice Paid'),
-        ('staff_added', 'Staff Added'),
-        ('staff_availability_changed', 'Staff Availability Changed'),
-    )
-    
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
-    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    '''
+    This model is used to store in-App notifications only for users.
+    '''
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    business = models.ForeignKey('business.Business', on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    notification_type = models.CharField(max_length=200, null=True, blank=True)
+
     title = models.CharField(max_length=255)
     message = models.TextField()
     related_object_id = models.CharField(max_length=50, null=True, blank=True)

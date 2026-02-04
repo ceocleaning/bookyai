@@ -1,0 +1,31 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Action Required: Payment Failed</h2>
+
+<p>Hello,</p>
+
+<p>We were unable to process your subscription payment. Your subscription may be interrupted if we don't receive payment soon.</p>
+
+<div class="info-box">
+    <p><strong>Plan:</strong> {{ plan_name }}</p>
+    <p><strong>Status:</strong> Payment Failed</p>
+    {% if retry_date %}
+    <p><strong>Next Retry:</strong> {{ retry_date|date:"F d, Y" }}</p>
+    {% endif %}
+</div>
+
+<p><strong>What you need to do:</strong></p>
+<ul>
+    <li>Check that your payment method is valid and has sufficient funds</li>
+    <li>Update your payment information in your account settings</li>
+    <li>Contact your bank if you believe this is an error</li>
+</ul>
+
+<p>If you don't update your payment method, your subscription may be cancelled and you'll lose access to your features.</p>
+
+<p>If you have any questions or need assistance, please contact our support team immediately.</p>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

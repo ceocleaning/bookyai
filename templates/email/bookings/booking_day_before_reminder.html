@@ -1,0 +1,23 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Reminder: Appointment Tomorrow</h2>
+
+<p>Dear {{ customer_name }},</p>
+
+<p>This is a friendly reminder about your upcoming appointment with {{ business_name }} tomorrow.</p>
+
+<div class="info-box">
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    <p><strong>Date:</strong> {{ booking_date|date:"F d, Y" }}</p>
+    <p><strong>Time:</strong> {{ booking_time|time:"g:i A" }}</p>
+    {% if location_details %}
+    <p><strong>Location:</strong> {{ location_details }}</p>
+    {% endif %}
+</div>
+
+<p>We look forward to seeing you tomorrow! If you need to reschedule or have any questions, please contact us as soon as possible.</p>
+
+<p>Best regards,<br>
+{{ business_name }}</p>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Thank You for Choosing Us!</h2>
+
+<p>Dear {{ customer_name }},</p>
+
+<p>Thank you for choosing {{ business_name }}! We hope you enjoyed your experience with us.</p>
+
+<div class="info-box">
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    <p><strong>Date:</strong> {{ booking_date|date:"F d, Y" }}</p>
+</div>
+
+<p>Your satisfaction is our top priority. If you have any feedback or concerns, please don't hesitate to reach out to us.</p>
+
+<p>We look forward to serving you again in the future!</p>
+
+<p>Best regards,<br>
+{{ business_name }}</p>
+{% endblock %}

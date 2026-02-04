@@ -1,0 +1,22 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Subscription Renewed</h2>
+
+<p>Hello,</p>
+
+<p>Your subscription has been renewed successfully!</p>
+
+<div class="info-box">
+    <p><strong>Plan:</strong> {{ plan_name }}</p>
+    <p><strong>Amount:</strong> ${{ plan_price }}</p>
+    <p><strong>Next Billing Date:</strong> {{ next_billing_date|date:"F d, Y" }}</p>
+</div>
+
+<p>Thank you for continuing with us! Your subscription will remain active until the next billing date.</p>
+
+<p>If you have any questions about your subscription, please don't hesitate to contact us.</p>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}

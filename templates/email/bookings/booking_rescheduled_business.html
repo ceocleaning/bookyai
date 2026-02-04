@@ -1,0 +1,26 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+<h2>Booking Rescheduled</h2>
+
+<p>Hello,</p>
+
+<p>A booking has been rescheduled. Here are the updated details:</p>
+
+<div class="info-box">
+    <p><strong>Customer:</strong> {{ customer_name }}</p>
+    <p><strong>Service:</strong> {{ service_name }}</p>
+    {% if old_date %}
+    <p><strong>Previous Date:</strong> {{ old_date|date:"F d, Y" }} at {{ old_time|time:"g:i A" }}</p>
+    {% endif %}
+    <p><strong>New Date:</strong> {{ new_date|date:"F d, Y" }}</p>
+    <p><strong>New Time:</strong> {{ new_time|time:"g:i A" }}</p>
+</div>
+
+<p>Please update your schedule accordingly.</p>
+
+<a href="{{ booking_url }}" class="button">View Booking Details</a>
+
+<p>Best regards,<br>
+The BookyAI Team</p>
+{% endblock %}
