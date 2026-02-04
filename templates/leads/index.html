@@ -1,279 +1,293 @@
 {% extends 'common/dashboard_base.html' %}
 {% load static %}
 
-{% block title %}Leads{% endblock %}
+{% block title %}Leads Management{% endblock %}
+
+{% block extra_css %}
+<!-- Standard project colors and utilities are assumed to be loaded via dashboard_base.html -->
+<link rel="stylesheet" href="{% static 'css/leads-index.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Leads</h2>
-        <a href="{% url 'leads:create_lead' %}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i> New Lead
-        </a>
-    </div>
-
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-header custom-card-header">
-            <h5 class="mb-0">Filters</h5>
-        </div>
-        <div class="card-body">
-            <form method="get" id="lead-filter-form" class="row g-3">
-                <!-- Status Filter -->
-                <div class="col-md-3">
-                    <label for="status" class="form-label">Status</label>
-                    <select name="status" id="status" class="form-select">
-                        <option value="">All Statuses</option>
-                        {% for status_code, status_label in lead_statuses %}
-                            <option value="{{ status_code }}" {% if current_status == status_code %}selected{% endif %}>{{ status_label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <!-- Source Filter -->
-                <div class="col-md-3">
-                    <label for="source" class="form-label">Source</label>
-                    <select name="source" id="source" class="form-select">
-                        <option value="">All Sources</option>
-                        {% for source_code, source_label in lead_sources %}
-                            <option value="{{ source_code }}" {% if current_source == source_code %}selected{% endif %}>{{ source_label }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <!-- Date Range Filter -->
-                <div class="col-md-3">
-                    <label for="date_from" class="form-label">From Date</label>
-                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ date_from }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="date_to" class="form-label">To Date</label>
-                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ date_to }}">
-                </div>
-                
-                <!-- Search -->
-                <div class="col-md-6">
-                    <label for="search" class="form-label">Search</label>
-                    <div class="input-group">
-                        <input type="text" name="search" id="search" class="form-control" placeholder="Search leads..." value="{{ search_query }}">
-                        <button type="submit" class="btn btn-outline-primary">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Filter Actions -->
-                <div class="col-12 d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
-                    <a href="{% url 'leads:index' %}" class="btn btn-outline-secondary">Reset</a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Leads Display -->
-    <div class="card">
-        <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">All Leads</h5>
-            <div class="btn-group" role="group" aria-label="View toggle">
-                <button type="button" class="btn btn-sm btn-outline-light active" id="listViewBtn" onclick="toggleView('list')">
-                    <i class="fas fa-list me-1"></i> List
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-light" id="cardViewBtn" onclick="toggleView('card')">
-                    <i class="fas fa-th-large me-1"></i> Cards
-                </button>
+<div class="dark-theme-leads pb-5">
+    <!-- Top Management Bar -->
+    <div class="container-fluid pt-4 pb-3">
+        <div class="row align-items-center">
+            <div class="col-md-6 col-12 mb-3 mb-md-0">
+                <h1 class="h3 text-white fw-bold mb-1">Leads Pipeline</h1>
+                <p class="text-muted small mb-0">Manage and track your incoming leads and prospects.</p>
+            </div>
+            <div class="col-md-6 col-12 text-md-end">
+                <a href="{% url 'leads:create_lead' %}" class="btn btn-primary px-4">
+                    <i class="fas fa-plus me-2"></i> New Lead
+                </a>
             </div>
         </div>
-        <div class="card-body">
-            {% if leads %}
-                <!-- List View -->
-                <div id="listView" class="view-container">
-                    <div class="table">
-                        <table class="table custom-table-bg table-hover">
-                            <thead class="custom-card-header">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Status</th>
-                                    <th>Source</th>
-                                    <th>Last Contacted</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for lead in leads %}
-                                    <tr>
-                                        <td>
-                                            <div class="fw-bold">{{ lead.get_full_name }}</div>
-                                        </td>
-                                        <td>
-                                            <div>{{ lead.email }}</div>
-                                            <div class="small text-muted">{{ lead.phone }}</div>
-                                        </td>
-                                        <td>
-                                            {% if lead.status == 'new' %}
-                                                <span class="badge">New</span>
-                                            {% elif lead.status == 'contacted' %}
-                                                <span class="badge">Contacted</span>
-                                            {% elif lead.status == 'responded' %}
-                                                <span class="badge">Responded</span>
-                                            {% elif lead.status == 'qualified' %}
-                                                <span class="badge">Qualified</span>
-                                            {% elif lead.status == 'appointment_scheduled' %}
-                                                <span class="badge">Appointment Scheduled</span>
-                                            {% elif lead.status == 'appointment_completed' %}
-                                                <span class="badge">Appointment Completed</span>
-                                            {% elif lead.status == 'converted' %}
-                                                <span class="badge">Converted</span>
-                                            {% elif lead.status == 'lost' %}
-                                                <span class="badge">Lost</span>
-                                            {% elif lead.status == 'junk' %}
-                                                <span class="badge">Junk</span>
-                                            {% else %}
-                                                <span class="badge">{{ lead.get_status_display }}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="badge">{{ lead.get_source_display }}</span>
-                                        </td>
-                                        <td>
-                                            {% if lead.last_contacted %}
-                                                <div>{{ lead.last_contacted|date:"M d, Y" }}</div>
-                                                <div class="small text-muted">{{ lead.last_contacted|time:"g:i A" }}</div>
-                                            {% else %}
-                                                <span class="text-muted">Never</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <div>{{ lead.created_at|date:"M d, Y" }}</div>
-                                            <div class="small text-muted">{{ lead.created_at|time:"g:i A" }}</div>
-                                        </td>
-                                        <td>
-                                            <a href="{% url 'leads:lead_detail' lead.id %}"><i class="fas fa-eye me-2"></i> View Details</a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container-fluid leads-content">
+        <!-- Toolbar & Quick Filters Card -->
+        <div class="card toolbar-card mb-4">
+            <div class="card-body p-3">
+                <div class="row align-items-center g-3">
+                    <!-- Search Box -->
+                    <div class="col-lg-3 col-md-12">
+                        <form action="" method="GET" id="lead-search-form">
+                            <div class="input-group input-group-merge bg-dark-soft border-0 rounded-3">
+                                <span class="input-group-text bg-transparent border-0 text-muted ps-3">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" name="search" class="form-control bg-transparent border-0 text-white py-2" 
+                                       placeholder="Search leads..." value="{{ search_query }}">
+                                {% if search_query %}
+                                    <a href="{% url 'leads:index' %}" class="input-group-text bg-transparent border-0 text-muted pe-3">
+                                        <i class="fas fa-times-circle"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Horizontal Quick Filters (Status) -->
+                    <div class="col-lg-7 col-md-12">
+                        <div class="d-flex align-items-center gap-2 overflow-auto pb-1 status-pills">
+                            <button class="pill-filter {% if not current_status %}active{% endif %}" data-status="">All Leads</button>
+                            {% for status_code, status_label in lead_statuses %}
+                                <button class="pill-filter {% if current_status == status_code %}active{% endif %}" data-status="{{ status_code }}">
+                                    {{ status_label }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- View Toggles & Advanced Filter Button -->
+                    <div class="col-lg-2 col-md-12 d-flex justify-content-md-end align-items-center gap-2">
+                        <button id="bulkDeleteBtn" class="btn btn-icon-soft text-danger d-none" type="button" title="Delete Selected">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        <button class="btn btn-icon-soft" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-controls="filterDrawer" title="Advanced Filters">
+                            <i class="fas fa-sliders-h"></i>
+                            {% if current_source or date_from or date_to %}
+                                <span class="badge-dot"></span>
+                            {% endif %}
+                        </button>
+                        <div class="view-toggle d-flex bg-dark-accent rounded-3 p-1 ms-1">
+                            <button class="btn btn-icon-soft btn-sm border-0 {% if not request.session.lead_view or request.session.lead_view == 'list' %}active{% endif %}" 
+                                    id="listViewBtn" onclick="toggleView('list')" title="List View">
+                                <i class="fas fa-list-ul"></i>
+                            </button>
+                            <button class="btn btn-icon-soft btn-sm border-0 {% if request.session.lead_view == 'card' %}active{% endif %}" 
+                                    id="cardViewBtn" onclick="toggleView('card')" title="Grid View">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Card View -->
-                <div id="cardView" class="view-container" style="display: none;">
-                    <div class="row g-3">
-                        {% for lead in leads %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="card lead-card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <h6 class="card-title mb-1">{{ lead.get_full_name }}</h6>
-                                                <p class="text-muted small mb-0">{{ lead.email }}</p>
-                                                <p class="text-muted small mb-0">{{ lead.phone }}</p>
+        {% if leads %}
+            <!-- List View -->
+            <div id="listView" class="card overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 custom-table">
+                        <thead>
+                            <tr>
+                                <th class="ps-4" style="width: 40px;">
+                                    <div class="form-check custom-checkbox">
+                                        <input class="form-check-input" type="checkbox" id="selectAllLeads">
+                                    </div>
+                                </th>
+                                <th>Name</th>
+                                <th>Contact Method</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lead in leads %}
+                                <tr data-lead-id="{{ lead.id }}">
+                                    <td class="ps-4">
+                                        <div class="form-check custom-checkbox">
+                                            <input class="form-check-input lead-checkbox" type="checkbox" value="{{ lead.id }}">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3">
+                                                {{ lead.first_name|slice:":1"|upper }}
                                             </div>
                                             <div>
-                                                {% if lead.status == 'new' %}
-                                                    <span class="badge">New</span>
-                                                {% elif lead.status == 'contacted' %}
-                                                    <span class="badge">Contacted</span>
-                                                {% elif lead.status == 'responded' %}
-                                                    <span class="badge">Responded</span>
-                                                {% elif lead.status == 'qualified' %}
-                                                    <span class="badge">Qualified</span>
-                                                {% elif lead.status == 'appointment_scheduled' %}
-                                                    <span class="badge">Appointment Scheduled</span>
-                                                {% elif lead.status == 'appointment_completed' %}
-                                                    <span class="badge">Appointment Completed</span>
-                                                {% elif lead.status == 'converted' %}
-                                                    <span class="badge">Converted</span>
-                                                {% elif lead.status == 'lost' %}
-                                                    <span class="badge">Lost</span>
-                                                {% elif lead.status == 'junk' %}
-                                                    <span class="badge">Junk</span>
-                                                {% else %}
-                                                    <span class="badge">{{ lead.get_status_display }}</span>
-                                                {% endif %}
+                                                <div class="text-white fw-bold">{{ lead.get_full_name }}</div>
+                                                <div class="text-muted small">ID: #{{ lead.id|slice:":8" }}</div>
                                             </div>
                                         </div>
-                                        
-                                        <div class="mb-2">
-                                            <i class="fas fa-tag text-primary me-2"></i>
-                                            <span class="badge bg-light text-dark">{{ lead.get_source_display }}</span>
+                                    </td>
+                                    <td data-label="Contact">
+                                        <div class="text-light-soft"><i class="far fa-envelope me-2"></i>{{ lead.email }}</div>
+                                        <div class="text-muted small"><i class="fas fa-phone-alt me-2"></i>{{ lead.phone }}</div>
+                                    </td>
+                                    <td data-label="Source">
+                                        <span class="text-light-soft">{{ lead.get_source_display }}</span>
+                                    </td>
+                                    <td data-label="Status">
+                                        <span class="badge-status {{ lead.status }}">
+                                            <span class="badge-dot-indicator"></span>
+                                            {{ lead.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td data-label="Created">
+                                        <div class="text-light-soft">{{ lead.created_at|date:"M d, Y" }}</div>
+                                        <div class="text-muted small">{{ lead.created_at|time:"g:i A" }}</div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a href="{% url 'leads:lead_detail' lead.id %}" class="btn-icon-action" title="View Details">
+                                                <i class="far fa-eye"></i>
+                                            </a>
+                                            <a href="{% url 'leads:edit_lead' lead.id %}" class="btn-icon-action" title="Edit">
+                                                <i class="far fa-edit"></i>
+                                            </a>
                                         </div>
-                                        
-                                        <div class="mb-2">
-                                            <i class="fas fa-phone-alt text-primary me-2"></i>
-                                            <span class="small">
-                                                {% if lead.last_contacted %}
-                                                    Last contacted: {{ lead.last_contacted|date:"M d, Y" }}
-                                                {% else %}
-                                                    <span class="text-muted">Never contacted</span>
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <i class="fas fa-calendar-plus text-primary me-2"></i>
-                                            <span class="small">Created: {{ lead.created_at|date:"M d, Y" }}</span>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-end">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="cardDropdown{{ lead.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu" aria-labelledby="cardDropdown{{ lead.id }}">
-                                                    <li><a class="dropdown-item" href="{% url 'leads:lead_detail' lead.id %}"><i class="fas fa-eye me-2"></i> View Details</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Edit</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    {% if lead.status == 'new' %}
-                                                        <li><a class="dropdown-item text-primary" href="#"><i class="fas fa-phone me-2"></i> Mark Contacted</a></li>
-                                                    {% endif %}
-                                                    {% if lead.status != 'converted' and lead.status != 'lost' and lead.status != 'junk' %}
-                                                        <li><a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i> Mark Converted</a></li>
-                                                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-times me-2"></i> Mark Lost</a></li>
-                                                    {% endif %}
-                                                    {% if lead.status != 'appointment_scheduled' and lead.status != 'appointment_completed' %}
-                                                        <li><a class="dropdown-item text-info" href="#"><i class="fas fa-calendar-alt me-2"></i> Schedule Appointment</a></li>
-                                                    {% endif %}
-                                                </ul>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Grid Card View -->
+            <div id="cardView" style="display: none;">
+                <div class="row g-4">
+                    {% for lead in leads %}
+                        <div class="col-xl-3 col-lg-4 col-md-6 lead-card-item" data-lead-id="{{ lead.id }}">
+                            <div class="card lead-card-modern h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-4">
+                                        <div class="avatar-group d-flex align-items-center">
+                                            <div class="avatar-circle-lg position-relative">
+                                                {{ lead.first_name|slice:":1"|upper }}
+                                                <span class="status-indicator-dot {{ lead.status }}"></span>
                                             </div>
+                                            <div class="ms-3">
+                                                <h5 class="text-white fw-bold mb-0">{{ lead.get_full_name }}</h5>
+                                                <span class="text-muted small">Added {{ lead.created_at|date:"M d, Y" }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-ellipsis" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 bg-dark-theme py-2">
+                                                <li><a class="dropdown-item py-2 px-3 text-white" href="{% url 'leads:lead_detail' lead.id %}"><i class="far fa-eye me-2 opacity-50"></i> View Details</a></li>
+                                                <li><a class="dropdown-item py-2 px-3 text-white" href="{% url 'leads:edit_lead' lead.id %}"><i class="far fa-edit me-2 opacity-50"></i> Edit Lead</a></li>
+                                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                                                <li><button class="dropdown-item py-2 px-3 text-danger delete-lead-single" data-id="{{ lead.id }}"><i class="far fa-trash-alt me-2 opacity-50"></i> Delete Lead</button></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="lead-info-chips d-flex flex-wrap gap-2 mb-4">
+                                        <span class="badge-status-pill {{ lead.status }}">
+                                            {{ lead.get_status_display }}
+                                        </span>
+                                        <span class="badge-source-pill">
+                                            <i class="fas fa-bullhorn me-1"></i> {{ lead.get_source_display }}
+                                        </span>
+                                    </div>
+
+                                    <div class="contact-details-box p-3 rounded-3 mb-2">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="far fa-envelope text-primary me-2 f-14"></i>
+                                            <div class="text-light-soft small text-truncate">{{ lead.email }}</div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-phone-alt text-primary me-2 f-14"></i>
+                                            <div class="text-light-soft small">{{ lead.phone }}</div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card-footer bg-transparent border-0 p-4 pt-0">
+                                    <a href="{% url 'leads:lead_detail' lead.id %}" class="btn btn-outline-primary btn-sm w-100 rounded-pill py-2">
+                                        View Pipeline Details
+                                    </a>
+                                </div>
                             </div>
-                        {% endfor %}
-                    </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% else %}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i> No leads found. 
-                    {% if current_status or current_source or date_from or date_to or search_query %}
-                        Try adjusting your filters or <a href="{% url 'leads:index' %}">view all leads</a>.
-                    {% else %}
-                        <a href="#">Create your first lead</a> to get started.
-                    {% endif %}
+            </div>
+        {% else %}
+            <!-- Enhanced Empty State -->
+            <div class="text-center py-5">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-users-slash fa-4x text-muted opacity-25"></i>
                 </div>
-            {% endif %}
-        </div>
+                <h3 class="text-white">No leads found</h3>
+                <p class="text-muted mx-auto" style="max-width: 400px;">
+                    It looks like you don't have any leads matching your current filters. 
+                    Try adjusting your criteria or adding a new lead.
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'leads:index' %}" class="btn btn-outline-secondary me-2">Clear all filters</a>
+                    <a href="{% url 'leads:create_lead' %}" class="btn btn-primary">Add New Lead</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
-{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/leads-index.css' %}">
-<style>
-    /* Custom badge colors */
-    .bg-purple {
-        background-color: #8e44ad;
-        color: white;
-    }
-    .bg-teal {
-        background-color: #16a085;
-        color: white;
-    }
-</style>
+<!-- Advanced Filter Drawer (Offcanvas) -->
+<div class="offcanvas offcanvas-end bg-dark-theme text-white" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="filterDrawerLabel"><i class="fas fa-filter me-2 text-primary"></i> Advanced Filters</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="GET" action="" id="advanced-filter-form">
+            <!-- Hidden Status (Synced with quick pills) -->
+            <input type="hidden" name="status" id="hidden-status" value="{{ current_status }}">
+
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold text-uppercase">Lead Source</label>
+                <select name="source" class="form-select bg-dark-soft border-secondary text-white">
+                    <option value="">All Sources</option>
+                    {% for source_code, source_label in lead_sources %}
+                        <option value="{{ source_code }}" {% if current_source == source_code %}selected{% endif %}>{{ source_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-muted small fw-bold text-uppercase">Creation Period</label>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="today">Today</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_week">This Week</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_month">This Month</button>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="small text-muted mb-1">From</label>
+                        <input type="date" name="date_from" id="date_from" class="form-control bg-dark-soft border-secondary text-white" value="{{ date_from }}">
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-muted mb-1">To</label>
+                        <input type="date" name="date_to" id="date_to" class="form-control bg-dark-soft border-secondary text-white" value="{{ date_to }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 mt-5">
+                <button type="submit" class="btn btn-primary py-2 fw-bold">Apply Filters</button>
+                <a href="{% url 'leads:index' %}" class="btn btn-outline-secondary py-2">Reset All</a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

@@ -268,3 +268,30 @@ def webhook_receiver(request, lead_source, business_id):
             'status': 'error',
             'message': f'Error processing webhook: {str(e)}'
         }, status=500)
+@login_required
+@require_POST
+def bulk_delete_leads(request):
+    """Delete multiple leads at once"""
+    try:
+        data = json.loads(request.body)
+        lead_ids = data.get('lead_ids', [])
+        
+        if not lead_ids:
+            return JsonResponse({'status': 'error', 'message': 'No leads selected.'}, status=400)
+            
+        business = request.user.business
+        
+        # Filter leads to ensure they belong to the user's business
+        leads = Lead.objects.filter(id__in=lead_ids, business=business)
+        
+        deleted_count = leads.count()
+        leads.delete()
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'Successfully deleted {deleted_count} lead(s).',
+            'deleted_count': deleted_count
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

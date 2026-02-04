@@ -4,362 +4,271 @@
 {% block title %}Bookings{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Bookings</h2>
-        <a href="{% url 'bookings:create_booking' %}{% if is_customer and request.GET.business_id %}?business_id={{ request.GET.business_id }}{% endif %}" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i> New Booking
-        </a>
+<div class="container-fluid py-4 dark-theme-bookings">
+    <!-- Page Header & Main Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="h3 mb-1 fw-bold text-white">Booking Management</h2>
+            <p class="text-muted small mb-0">Manage and track all your service appointments in one place.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'bookings:create_booking' %}{% if is_customer and request.GET.business_id %}?business_id={{ request.GET.business_id }}{% endif %}" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                <i class="fas fa-plus"></i>
+                <span>New Booking</span>
+            </a>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-4 {% if is_customer %}order-lg-2{% endif %}">
-            {% if is_customer and business %}
-            <!-- Business Information -->
-            <div class="card mb-4">
-                <div class="card-header custom-card-header text-white">
-                    <h5 class="mb-0">Business Information</h5>
+    <!-- Toolbar: Search, Quick Filters & View Toggle -->
+    <div class="card toolbar-card mb-4 border-0 shadow-sm">
+        <div class="card-body p-3">
+            <div class="row g-3 align-items-center">
+                <!-- Search -->
+                <div class="col-lg-4 col-md-6">
+                    <form method="get" id="booking-search-form" class="position-relative">
+                        <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                        <input type="text" name="search" id="search" class="form-control ps-5 py-2 border-0 bg-dark-soft" placeholder="Search bookings..." value="{{ search_query }}">
+                        {% if search_query %}
+                            <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 text-muted p-0" onclick="document.getElementById('search').value=''; this.form.submit();">
+                                <i class="fas fa-times-circle"></i>
+                            </button>
+                        {% endif %}
+                        <!-- Preserve other filters when searching -->
+                        <input type="hidden" name="status" value="{{ current_status }}">
+                        <input type="hidden" name="date_from" value="{{ date_from }}">
+                        <input type="hidden" name="date_to" value="{{ date_to }}">
+                    </form>
                 </div>
-                <div class="card-body">
-                    <h6 class="fw-bold">{{ business.name }}</h6>
-                    {% if business.phone_number %}
-                    <p class="mb-0"><i class="fas fa-phone me-2 text-primary"></i>{{ business.phone_number }}</p>
-                    {% endif %}
-                    {% if business.email %}
-                    <p class="mb-0"><i class="fas fa-envelope me-2 text-primary"></i><a href="mailto:{{ business.email }}">{{ business.email }}</a></p>
-                    {% endif %}
-                    
-                    {% if business.address %}
-                        <hr>
-                        <span class="text-muted d-block mb-1">Address</span>
-                        <p class="mb-0">{{ business.address }}</p>
-                        <p class="mb-0">
-                            {% if business.city %}{{ business.city }}{% endif %}
-                            {% if business.state %}, {{ business.state }}{% endif %}
-                            {% if business.zip_code %} {{ business.zip_code }}{% endif %}
-                        </p>
-                    {% endif %}
-                    
-                    {% if business.website %}
-                        <hr>
-                        <span class="text-muted d-block mb-1">Website</span>
-                        <p class="mb-0"><i class="fas fa-globe me-2 text-primary"></i><a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-            <!-- Filters -->
-            <div class="card mb-4 filter-card">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-filter text-primary me-2"></i>
-                        <h5 class="mb-0">Filter Bookings</h5>
-                    </div>
-                    
-                    <div>
-                        <form method="get" id="booking-filter-form">
-                            <div class="row g-3">
-                                <!-- Search - Full Width for Prominence -->
-                                <div class="col-12">
-                                    <div class="search-wrapper">
-                                    
-                                        <input type="text" name="search" id="search" class="form-control search-input" placeholder="Search by client name, email, phone, or service..." value="{{ search_query }}">
-                                        {% if search_query %}
-                                            <button type="button" class="btn btn-link search-clear" onclick="document.getElementById('search').value=''; document.getElementById('booking-filter-form').submit();">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                
-                                <!-- Quick Filters Row -->
-                                <div class="col-12">
-                                    <div class="quick-filters">
-                                        <label class="form-label fw-semibold mb-2">
-                                            <i class="fas fa-bolt text-warning me-1"></i> Quick Filters
-                                        </label>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <button type="button" class="btn btn-sm btn-secondary quick-filter-btn" data-filter="status" data-value="">
-                                                <i class="fas fa-list me-1"></i> All
-                                            </button>
-                                            {% for status_code, status_label in booking_statuses %}
-          
-                                                <button type="button" class="btn btn-sm quick-filter-btn {% if current_status == status_code %}active{% endif %} btn-secondary" data-filter="status" data-value="{{ status_code }}">
-                                                    {% if status_code == 'pending' %}
-                                                        <i class="fas fa-clock me-1"></i>
-                                                    {% elif status_code == 'confirmed' %}
-                                                        <i class="fas fa-check-circle me-1"></i>
-                                                    {% elif status_code == 'completed' %}
-                                                        <i class="fas fa-check-double me-1"></i>
-                                                    {% elif status_code == 'cancelled' %}
-                                                        <i class="fas fa-times-circle me-1"></i>
-                                                    {% elif status_code == 'rescheduled' %}
-                                                        <i class="fas fa-calendar-alt me-1"></i>
-                                                    {% elif status_code == 'no_show' %}
-                                                        <i class="fas fa-user-slash me-1"></i>
-                                                    {% endif %}
-                                                    {{ status_label }}
-                                                </button>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Advanced Filters -->
-                                <div class="col-12">
-                                    <div class="advanced-filters">
-                                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0 mb-2" id="toggleAdvanced">
-                                            <i class="fas fa-sliders-h me-1"></i> Advanced Filters
-                                            <i class="fas fa-chevron-down ms-1" id="advancedToggleIcon"></i>
-                                        </button>
-                                        
-                                        <div id="advancedContent" style="display: none;">
-                                            <div class="row g-3 mt-1">
-                                                <!-- Status Dropdown (Hidden, controlled by quick filters) -->
-                                                <input type="hidden" name="status" id="status" value="{{ current_status }}">
-                                                
-                                                <!-- Date Range Filter -->
-                                                <div class="col-md-6">
-                                                    <label for="date_from" class="form-label">
-                                                        <i class="fas fa-calendar-day text-primary me-1"></i> From Date
-                                                    </label>
-                                                    <input type="date" name="date_from" id="date_from" class="form-control" value="{{ date_from }}">
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <label for="date_to" class="form-label">
-                                                        <i class="fas fa-calendar-day text-primary me-1"></i> To Date
-                                                    </label>
-                                                    <input type="date" name="date_to" id="date_to" class="form-control" value="{{ date_to }}">
-                                                </div>
-                                                
-                                                <!-- Date Presets -->
-                                                <div class="col-12">
-                                                    <label class="form-label fw-semibold">
-                                                        <i class="fas fa-history text-info me-1"></i> Quick Date Range
-                                                    </label>
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="today">Today</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="tomorrow">Tomorrow</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_week">This Week</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="next_week">Next Week</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_month">This Month</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="clear">Clear Dates</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Filter Actions -->
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                                        <div class="filter-info">
-                                            {% if current_status or date_from or date_to or search_query %}
-                                                <span class="badge">
-                                                    <i class="fas fa-filter me-1"></i> Filters Active
-                                                </span>
-                                            {% endif %}
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'bookings:index' %}" class="btn btn-outline-secondary">
-                                                <i class="fas fa-redo me-1"></i> Reset All
-                                            </a>
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-search me-1"></i> Apply Filters
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Bookings Display -->
-        <div class="col-lg-8 {% if is_customer %}order-lg-1{% endif %}">
-            <div class="card" style="padding: 0 !important;">
-                <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">All Bookings</h5>
-                    <div class="btn-group" role="group" aria-label="View toggle">
-                        <button type="button" class="btn btn-sm btn-outline-light active" id="listViewBtn" onclick="toggleView('list')">
-                            <i class="fas fa-list me-1"></i> List
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-light" id="cardViewBtn" onclick="toggleView('card')">
-                            <i class="fas fa-th-large me-1"></i> Cards
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body" style="padding: 0 !important;">
-                    {% if bookings %}
-                        <!-- List View -->
-                        <div id="listView" class="view-container">
-                            <div class="table">
-                                <table class="table custom-table-bg table-hover">
-                                    <thead class="custom-card-header">
-                                        <tr>
-                                            <th>Client</th>
-                                            <th>Service</th>
-                                            <th>Date & Time</th>
-                                            <th>Status</th>
-                                            <th>Created</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for booking in bookings %}
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-bold">{{ booking.name }}</div>
-                                                    <div class="small text-muted">{{ booking.email }}</div>
-                                                    <div class="small text-muted">{{ booking.phone_number }}</div>
-                                                </td>
-                                                <td>
-                                                    {% if booking.service_offering %}
-                                                        {{ booking.service_offering.name }}
-                                                    {% else %}
-                                                        <span class="text-muted">N/A</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <div>{{ booking.booking_date|date:"M d, Y" }}</div>
-                                                    <div class="small text-muted">{{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</div>
-                                                </td>
-                                                <td>
-                                                    {% if booking.status == 'pending' %}
-                                                        <span class="badge text-dark">Pending</span>
-                                                    {% elif booking.status == 'confirmed' %}
-                                                        <span class="badge bg-success">Confirmed</span>
-                                                    {% elif booking.status == 'completed' %}
-                                                        <span class="badge">Completed</span>
-                                                    {% elif booking.status == 'cancelled' %}
-                                                        <span class="badge">Cancelled</span>
-                                                    {% elif booking.status == 'rescheduled' %}
-                                                        <span class="badge">Rescheduled</span>
-                                                    {% elif booking.status == 'no_show' %}
-                                                        <span class="badge bg-dark">No Show</span>
-                                                    {% else %}
-                                                        <span class="badge">{{ booking.status }}</span>
-                                                    {% endif %}
-                                                </td>
-                 
-                                                <td>
-                                                    <div>{{ booking.created_at|date:"M d, Y" }}</div>
-                                                    <div class="small text-muted">{{ booking.created_at|time:"g:i A" }}</div>
-                                                </td>
-                                                <td>
-                                                  <a class="btn btn-sm btn-outline-primary" href="{% url 'bookings:booking_detail' booking.id %}"><i class="fas fa-eye"></i></a>
-                                                 
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
 
-                        <!-- Card View -->
-                        <div id="cardView" class="view-container" style="display: none;">
-                            <div class="row g-3 p-3">
-                                {% for booking in bookings %}
-                                    <div class="col-md-6 col-lg-6">
-                                        <div class="card h-100">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                                    <div>
-                                                        <h6 class="card-title text-white mb-1">{{ booking.name }}</h6>
-                                                        <p class="text-muted small mb-0">{{ booking.email }}</p>
-                                                        <p class="text-muted small mb-0">{{ booking.phone_number }}</p>
-                                                    </div>
-                                                    <div>
-                                                        {% if booking.status == 'pending' %}
-                                                            <span class="badge text-dark">Pending</span>
-                                                        {% elif booking.status == 'confirmed' %}
-                                                            <span class="badge bg-success">Confirmed</span>
-                                                        {% elif booking.status == 'completed' %}
-                                                            <span class="badge">Completed</span>
-                                                        {% elif booking.status == 'cancelled' %}
-                                                            <span class="badge">Cancelled</span>
-                                                        {% elif booking.status == 'rescheduled' %}
-                                                            <span class="badge">Rescheduled</span>
-                                                        {% elif booking.status == 'no_show' %}
-                                                            <span class="badge bg-dark">No Show</span>
-                                                        {% else %}
-                                                            <span class="badge">{{ booking.status }}</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="mb-2">
-                                                    <i class="fas fa-concierge-bell text-primary me-2"></i>
-                                                    <span class="small">
-                                                        {% if booking.service_offering %}
-                                                            {{ booking.service_offering.name }}
-                                                        {% else %}
-                                                            <span class="text-muted">N/A</span>
-                                                        {% endif %}
-                                                    </span>
-                                                </div>
-                                                
-                                                <div class="mb-2">
-                                                    <i class="fas fa-calendar text-primary me-2"></i>
-                                                    <span class="small">{{ booking.booking_date|date:"M d, Y" }}</span>
-                                                </div>
-                                                
-                                                <div class="mb-2">
-                                                    <i class="fas fa-clock text-primary me-2"></i>
-                                                    <span class="small">{{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}</span>
-                                                </div>
-                                                
-                                                <div class="mb-3">
-                                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
-                                                    <span class="small">
-                                                        {% if booking.location_type == 'business' %}
-                                                            Business Location
-                                                        {% elif booking.location_type == 'onsite' %}
-                                                            On-site
-                                                            {% if booking.location_details %}
-                                                                - {{ booking.location_details|truncatewords:5 }}
-                                                            {% endif %}
-                                                        {% elif booking.location_type == 'virtual' %}
-                                                            Virtual
-                                                            {% if booking.location_details %}
-                                                                - {{ booking.location_details|truncatewords:5 }}
-                                                            {% endif %}
-                                                        {% endif %}
-                                                    </span>
-                                                </div>
-                                                
-                                                <div class="d-flex justify-content-start flex-column align-items-start">
-                                                    <small class="text-muted">Created: {{ booking.created_at|date:"M d, Y" }}</small>
-                                                    <div class="d-flex justify-content-start align-items-center gap-3 mt-3">
-                                                        <a class="btn btn-primary" href="{% url 'bookings:booking_detail' booking.id %}"><i class="fas fa-eye me-2"></i> View</a>
-                                                        <a class="btn btn-secondary" href="{% url 'bookings:edit_booking' booking.id %}"><i class="fas fa-edit me-2"></i> Edit</a>  
-                                                    </div>
-                                                   
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="alert alert-info m-3">
-                            <i class="fas fa-info-circle me-2"></i> No bookings found. 
-                            {% if current_status or date_from or date_to or search_query %}
-                                Try adjusting your filters or <a href="{% url 'bookings:index' %}">view all bookings</a>.
-                            {% else %}
-                                <a href="{% url 'bookings:create_booking' %}{% if is_customer and request.GET.business_id %}?business_id={{ request.GET.business_id }}{% endif %}">Create your first booking</a> to get started.
-                            {% endif %}
-                        </div>
-                    {% endif %}
+                <!-- Status Pills (Horizontal Scrollable on mobile) -->
+                <div class="col-lg-6 col-md-6">
+                    <div class="d-flex gap-2 overflow-auto no-scrollbar pb-1 status-pills">
+                        <button type="button" class="btn btn-sm pill-filter {% if not current_status %}active{% endif %}" data-status="">All</button>
+                        {% for status_code, status_label in booking_statuses %}
+                            <button type="button" class="btn btn-sm pill-filter {% if current_status == status_code %}active{% endif %} status-{{ status_code }}" data-status="{{ status_code }}">
+                                {{ status_label }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- View Toggles & Advanced Filter Button -->
+                <div class="col-lg-2 col-md-12 d-flex justify-content-md-end align-items-center gap-2">
+                    <button id="bulkDeleteBtn" class="btn btn-icon-soft text-danger d-none" type="button" title="Delete Selected">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="btn btn-icon-soft" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-controls="filterDrawer" title="Advanced Filters">
+                        <i class="fas fa-sliders-h"></i>
+                        {% if date_from or date_to %}
+                            <span class="badge-dot"></span>
+                        {% endif %}
+                    </button>
+                    <div class="btn-group view-toggle">
+                        <button type="button" class="btn btn-icon-soft active" id="listViewBtn" onclick="toggleView('list')" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button type="button" class="btn btn-icon-soft" id="cardViewBtn" onclick="toggleView('card')" title="Grid View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Main Bookings Area -->
+    <div class="bookings-content">
+        {% if bookings %}
+            <!-- List View -->
+            <div id="listView" class="view-container">
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 custom-table">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4" style="width: 40px;">
+                                        <div class="form-check custom-checkbox">
+                                            <input class="form-check-input" type="checkbox" id="selectAllBookings">
+                                        </div>
+                                    </th>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Schedule</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                    <tr data-booking-id="{{ booking.id }}">
+                                        <td class="ps-4">
+                                            <div class="form-check custom-checkbox">
+                                                <input class="form-check-input booking-checkbox" type="checkbox" value="{{ booking.id }}">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-circle me-3">
+                                                    {{ booking.name|slice:":1"|upper }}
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-white mb-0">{{ booking.name }}</div>
+                                                    <div class="text-muted small">{{ booking.email|default:booking.phone_number }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="text-light-soft">
+                                                {% if booking.service_offering %}
+                                                    {{ booking.service_offering.name }}
+                                                {% else %}
+                                                    <span class="text-muted opacity-50">Custom Service</span>
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="text-white small fw-medium">{{ booking.booking_date|date:"M d, Y" }}</div>
+                                            <div class="text-muted small">{{ booking.start_time|time:"g:i A" }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge-status {{ booking.status }}">
+                                                <span class="badge-dot-indicator"></span>
+                                                {{ booking.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="text-muted small">{{ booking.created_at|date:"M d" }}</div>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <div class="action-group">
+                                                <a class="btn btn-icon-action" href="{% url 'bookings:booking_detail' booking.id %}" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a class="btn btn-icon-action" href="{% url 'bookings:edit_booking' booking.id %}" title="Edit Booking">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card View -->
+            <div id="cardView" class="view-container" style="display: none;">
+                <div class="row g-4">
+                    {% for booking in bookings %}
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="card booking-card-modern h-100 border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="badge-status {{ booking.status }} small">
+                                            {{ booking.status|title }}
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end bg-dark-soft border-secondary">
+                                                <li><a class="dropdown-item text-white" href="{% url 'bookings:booking_detail' booking.id %}"><i class="fas fa-eye me-2"></i>View</a></li>
+                                                <li><a class="dropdown-item text-white" href="{% url 'bookings:edit_booking' booking.id %}"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    
+                                    <h5 class="text-white mb-1">{{ booking.name }}</h5>
+                                    <p class="text-muted small mb-4">{{ booking.service_offering.name|default:"Custom Service" }}</p>
+                                    
+                                    <div class="schedule-info mb-4">
+                                        <div class="d-flex align-items-center mb-2 text-light-soft small">
+                                            <i class="far fa-calendar-alt me-2"></i>
+                                            {{ booking.booking_date|date:"l, M d" }}
+                                        </div>
+                                        <div class="d-flex align-items-center text-light-soft small">
+                                            <i class="far fa-clock me-2"></i>
+                                            {{ booking.start_time|time:"g:i A" }}
+                                        </div>
+                                    </div>
+
+                                    <div class="pt-3 border-top border-secondary-soft">
+                                        <a href="{% url 'bookings:booking_detail' booking.id %}" class="btn btn-outline-primary btn-sm w-100">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="card border-0 shadow-sm text-center py-5">
+                <div class="card-body py-5">
+                    <div class="empty-state-icon mb-4">
+                        <i class="far fa-calendar-times fa-4x opacity-20"></i>
+                    </div>
+                    <h4 class="text-white">No bookings found</h4>
+                    <p class="text-muted mx-auto" style="max-width: 400px;">
+                        {% if search_query or current_status or date_from %}
+                            We couldn't find any bookings matching your active filters. Try clearing them or adjusting your criteria.
+                        {% else %}
+                            You haven't received any bookings yet. Once a client schedules a service, they will appear here.
+                        {% endif %}
+                    </p>
+                    {% if search_query or current_status or date_from %}
+                        <a href="{% url 'bookings:index' %}" class="btn btn-secondary mt-2">Clear All Filters</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
+
+<!-- Advanced Filter Drawer (Offcanvas) -->
+<div class="offcanvas offcanvas-end bg-dark-theme text-white border-start border-secondary" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
+    <div class="offcanvas-header border-bottom border-secondary-soft">
+        <h5 class="offcanvas-title fw-bold" id="filterDrawerLabel">Advanced Filters</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form method="get" id="advanced-filter-form">
+            <!-- Retain current status/search when using advanced filters -->
+            <input type="hidden" name="status" id="hidden-status" value="{{ current_status }}">
+            <input type="hidden" name="search" value="{{ search_query }}">
+
+            <div class="mb-4">
+                <label class="form-label text-muted small text-uppercase fw-bold">Date Range</label>
+                <div class="mb-3">
+                    <label for="date_from" class="form-label small text-light-soft">From</label>
+                    <input type="date" name="date_from" id="date_from" class="form-control bg-dark-soft border-secondary text-white" value="{{ date_from }}">
+                </div>
+                <div>
+                    <label for="date_to" class="form-label small text-light-soft">To</label>
+                    <input type="date" name="date_to" id="date_to" class="form-control bg-dark-soft border-secondary text-white" value="{{ date_to }}">
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label text-muted small text-uppercase fw-bold">Quick Presets</label>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="today">Today</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="tomorrow">Tomorrow</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_week">This Week</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary date-preset" data-preset="this_month">This Month</button>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-top border-secondary-soft">
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-2">Apply Filters</button>
+                <a href="{% url 'bookings:index' %}" class="btn btn-link text-muted w-100 text-decoration-none small">Reset All Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_css %}

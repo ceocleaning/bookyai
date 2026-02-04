@@ -19,7 +19,7 @@ class SubscriptionRequiredMiddleware:
         'retell_agent',     # voice-agent/
         'business',         # business/
         'integration',      # integration/
-        'staff',            # staff/
+        # 'staff',          # staff/ - REMOVED: Staff users should have access
         'ai_website',       # ai-website/
     ]
     
@@ -32,6 +32,7 @@ class SubscriptionRequiredMiddleware:
         'register',
         'password_reset',
         'bookings',
+        'staff',            # Staff portal - always accessible for staff users
     ]
     
     def __init__(self, get_response):
@@ -61,8 +62,16 @@ class SubscriptionRequiredMiddleware:
         if not request.user.is_authenticated:
             return False
         
-        # Skip check for staff and superusers
+        # Skip check for Django staff and superusers
         if request.user.is_staff or request.user.is_superuser:
+            return False
+        
+        # Skip check for staff group users (cleaners/staff members)
+        if request.user.groups.filter(name='staff').exists():
+            return False
+        
+        # Skip check for users with staff_profile (alternative check)
+        if hasattr(request.user, 'staff_profile') and request.user.staff_profile:
             return False
         
         # Get the URL pattern name

@@ -1545,3 +1545,36 @@ def trigger_booking_event(request, booking_id):
         return JsonResponse({'success': False, 'message': 'Event type not found or disabled'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+@login_required
+@require_http_methods(["POST"])
+def bulk_delete_bookings(request):
+    """Delete multiple bookings at once"""
+    try:
+        data = json.loads(request.body)
+        booking_ids = data.get('booking_ids', [])
+        
+        if not booking_ids:
+            return JsonResponse({'status': 'error', 'message': 'No bookings selected.'}, status=400)
+            
+        business = get_user_business(request.user)
+        is_customer = request.user.groups.filter(name="customer").exists()
+        
+        # Filter bookings to ensure they belong to the user's business/account
+        if business and not is_customer:
+            bookings = Booking.objects.filter(id__in=booking_ids, business=business)
+        elif is_customer:
+            bookings = Booking.objects.filter(id__in=booking_ids, customer__user=request.user)
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Unauthorized.'}, status=403)
+            
+        deleted_count = bookings.count()
+        bookings.delete()
+        
+        return JsonResponse({
+            'status': 'success', 
+            'message': f'Successfully deleted {deleted_count} booking(s).',
+            'deleted_count': deleted_count
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

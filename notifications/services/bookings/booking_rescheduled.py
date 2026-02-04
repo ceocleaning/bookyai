@@ -8,7 +8,7 @@ from notifications.services.NotificationService import NotificationService
 def notify_booking_rescheduled(booking, old_date=None, old_time=None):
     """
     Send notifications when a booking is rescheduled.
-    Notifies business users, customers (in-app + email), and staff (email only).
+    Notifies business users, customers, and staff (all with in-app + email if they have accounts).
     
     Args:
         booking: Booking instance that was rescheduled
@@ -78,13 +78,30 @@ def notify_booking_rescheduled(booking, old_date=None, old_time=None):
             context=customer_context
         )
     
-    # 3. Notify assigned staff members (email only - staff don't have user accounts)
+    # 3. Notify assigned staff members (in-app + email if they have user account, email only otherwise)
     for staff_assignment in booking.staff_assignments.all():
         staff_member = staff_assignment.staff_member
-        if staff_member.email:
-            staff_context = email_context.copy()
-            staff_context['staff_name'] = staff_member.get_full_name()
-            
+        staff_context = email_context.copy()
+        staff_context['staff_name'] = staff_member.get_full_name()
+        
+        # Check if staff member has a user account (via StaffProfile)
+        if hasattr(staff_member, 'profile') and staff_member.profile and staff_member.profile.user:
+            # Staff has user account - send both in-app and email notification
+            NotificationService.send_notification(
+                user=staff_member.profile.user,
+                title=f"Booking Rescheduled",
+                message=f"Your booking assignment has been rescheduled to {booking.booking_date} at {booking.start_time}",
+                notification_type='booking_rescheduled',
+                business=business,
+                related_object_id=booking.id,
+                related_object_type='booking',
+                send_email_flag=True,
+                email_subject=f"Booking Rescheduled - {booking.booking_date}",
+                email_template='email/bookings/booking_rescheduled_staff.html',
+                email_context=staff_context
+            )
+        elif staff_member.email:
+            # Staff doesn't have user account - send email only
             NotificationService.send_email_notification(
                 to_email=staff_member.email,
                 subject=f"Booking Rescheduled - {booking.booking_date}",

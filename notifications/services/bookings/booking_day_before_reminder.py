@@ -32,7 +32,7 @@ def send_day_before_reminders():
 def notify_booking_day_before(booking):
     """
     Send reminder notification 1 day before a booking.
-    Sends in-app notifications to customers with accounts, email to all.
+    Sends in-app notifications to customers and staff with accounts, email to all.
     
     Args:
         booking: Booking instance
@@ -82,13 +82,30 @@ def notify_booking_day_before(booking):
             context=customer_context
         )
     
-    # 2. Notify assigned staff members (email only - staff don't have user accounts)
+    # 2. Notify assigned staff members (in-app + email if they have user account, email only otherwise)
     for staff_assignment in booking.staff_assignments.all():
         staff_member = staff_assignment.staff_member
-        if staff_member.email:
-            staff_context = email_context.copy()
-            staff_context['staff_name'] = staff_member.get_full_name()
-            
+        staff_context = email_context.copy()
+        staff_context['staff_name'] = staff_member.get_full_name()
+        
+        # Check if staff member has a user account (via StaffProfile)
+        if hasattr(staff_member, 'profile') and staff_member.profile and staff_member.profile.user:
+            # Staff has user account - send both in-app and email notification
+            NotificationService.send_notification(
+                user=staff_member.profile.user,
+                title=f"Reminder: Appointment Tomorrow",
+                message=f"You have an appointment tomorrow at {booking.start_time} with {booking.name}",
+                notification_type='booking_reminder',
+                business=business,
+                related_object_id=booking.id,
+                related_object_type='booking',
+                send_email_flag=True,
+                email_subject=f"Reminder: Appointment tomorrow - {booking.name}",
+                email_template='email/bookings/booking_day_before_reminder_staff.html',
+                email_context=staff_context
+            )
+        elif staff_member.email:
+            # Staff doesn't have user account - send email only
             NotificationService.send_email_notification(
                 to_email=staff_member.email,
                 subject=f"Reminder: Appointment tomorrow - {booking.name}",

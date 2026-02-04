@@ -1,71 +1,49 @@
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
 from django.contrib.auth.models import Group
+from django.contrib import messages
 
 
 class StaffAccessMiddleware:
     """
-    Middleware to restrict staff users to only access allowed pages.
-    Staff users can only access:
-    - Core pages (landing page, etc.)
-    - Auth pages (login, logout, profile, etc.)
-    - Staff detail page (their own profile)
-    - Static and media files
+    Middleware to restrict staff users to ONLY staff portal and core auth URLs.
+    Staff users can ONLY access:
+    - /staff/ - Staff portal (dashboard, bookings)
+    - /login/, /logout/, /password_reset/ - Authentication
+    - /static/, /media/ - Static files
+    
+    Staff users are BLOCKED from:
+    - /dashboard/ - Business dashboard
+    - /bookings/ - Booking management
+    - /leads/ - Lead management
+    - /business/ - Business settings
+    - Everything else
     """
     
     def __init__(self, get_response):
         self.get_response = get_response
         
-        # Define allowed URL patterns for staff users
-        self.allowed_namespaces = [
-            'core',      # Core pages like landing page
-            'accounts',  # Auth pages like login, logout, profile
-            'staff',     # Staff portal pages
-        ]
-        
-        # Define allowed URL names (without namespace)
-        self.allowed_url_names = [
-            'index',
+        # ONLY these URL patterns are allowed for staff users
+        self.allowed_url_patterns = [
+            'staff',           # /staff/ - Staff portal
+            'accounts',        # /accounts/ - Login, logout, profile
             'login',
             'logout',
-            'admin:index',  # Allow admin if staff has admin access
+            'password_reset',
+            'password_change',
+            'booking_detail',  # Allow viewing booking details
         ]
         
-        # Define allowed URL names in business namespace (staff-related views)
-        self.allowed_business_urls = [
-            'staff',
-            'staff_detail',
-            'add_staff',
-            'update_staff',
-            'update_staff_status',
-            'add_staff_availability',
-            'update_staff_availability',
-            'delete_staff_availability',
-            'add_staff_off_day',
-            'update_weekly_off_days',
-            'add_service_assignment',
-            'update_service_assignment',
-            'delete_service_assignment',
-            'add_staff_role',
-            'update_staff_role',
-            'delete_staff_role',
-            'staff_accounts',
-            'create_staff_account',
-            'delete_staff_account',
-            'toggle_staff_account_status',
-            'reset_staff_account_password',
-        ]
-        
-        # Define allowed URL names in bookings namespace
-        self.allowed_bookings_urls = [
-            'booking_detail',
-        ]
-        
-        # Define URL path prefixes that are always allowed
+        # ONLY these URL path prefixes are allowed
         self.allowed_path_prefixes = [
-            '/static/',
-            '/media/',
-            '/admin/jsi18n/',  # Django admin JavaScript translations
+            '/staff/',              # Staff portal
+            '/accounts/login/',     # Login
+            '/accounts/logout/',    # Logout
+            '/accounts/password',   # Password reset/change
+            '/bookings/booking/',   # Booking detail pages
+            '/static/',             # Static files
+            '/media/',              # Media files
+            '/admin/jsi18n/',       # Django admin JS (if needed)
         ]
     
     def __call__(self, request):
@@ -83,11 +61,18 @@ class StaffAccessMiddleware:
         except Exception:
             is_staff_user = False
         
-        # If not a staff user, allow all access
+        # Also check for staff_profile
+        if not is_staff_user and hasattr(request.user, 'staff_profile'):
+            is_staff_user = True
+        
+        # If not a staff user, allow all access (normal business user)
         if not is_staff_user:
             return self.get_response(request)
         
-        # Staff user - check if they're accessing allowed URLs
+        # ============================================
+        # STAFF USER - RESTRICT ACCESS
+        # ============================================
+        
         current_path = request.path
         
         # Check if path starts with allowed prefixes
@@ -101,34 +86,30 @@ class StaffAccessMiddleware:
             url_name = resolved.url_name
             namespace = resolved.namespace
             
-            # Check if namespace is allowed
-            if namespace in self.allowed_namespaces:
+            # Check if namespace is in allowed patterns
+            if namespace in self.allowed_url_patterns:
                 return self.get_response(request)
             
-            # Check if URL name is allowed
-            if url_name in self.allowed_url_names:
-                return self.get_response(request)
-            
-            # Check if it's a business namespace URL that's allowed for staff
-            if namespace == 'business' and url_name in self.allowed_business_urls:
-                return self.get_response(request)
-            
-            # Check if it's a bookings namespace URL that's allowed for staff
-            if namespace == 'bookings' and url_name in self.allowed_bookings_urls:
-                return self.get_response(request)
+            # Check if URL name contains allowed patterns
+            for pattern in self.allowed_url_patterns:
+                if url_name and pattern in url_name:
+                    return self.get_response(request)
             
         except Exception:
-            # If URL resolution fails, redirect to staff portal
+            # If URL resolution fails, block access
             pass
         
-        # If we reach here, staff user is trying to access a restricted page
-        # Redirect them to their staff detail page
-        try:
-            staff_profile = request.user.staff_profile
-            return redirect('business:staff_detail', staff_id=staff_profile.staff_member.id)
-        except Exception:
-            # If staff profile doesn't exist, redirect to login
-            return redirect('accounts:login')
+        # ============================================
+        # BLOCKED - Redirect to staff portal
+        # ============================================
+        
+        messages.warning(
+            request,
+            'You do not have permission to access this page. Staff users can only access the staff portal.'
+        )
+        
+        # Redirect to staff dashboard
+        return redirect('staff:dashboard')
     
     def process_exception(self, request, exception):
         """Handle exceptions during request processing"""
