@@ -1120,3 +1120,98 @@ class BookingServiceItem(models.Model):
                     
             self.price_at_booking = self.service_item.calculate_price(base_price, self.quantity)
         super().save(*args, **kwargs)
+
+
+class PayoutStatus(models.TextChoices):
+    """Status choices for staff payouts"""
+    PENDING = 'pending', 'Pending'
+    PAID = 'paid', 'Paid'
+    CANCELLED = 'cancelled', 'Cancelled'
+
+
+class StaffPayout(models.Model):
+    """
+    Tracks payout records for staff members.
+    Each payout accumulates completed bookings and can be marked as paid when processed.
+    """
+    id = models.CharField(primary_key=True, editable=False, max_length=255)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='staff_payouts')
+    staff_member = models.ForeignKey(StaffMember, on_delete=models.CASCADE, related_name='payouts')
+    
+    # Financial details
+    bookings = models.ManyToManyField('bookings.Booking', related_name='staff_payouts', blank=True)
+
+    # Status tracking
+    status = models.CharField(
+        max_length=20, 
+        choices=PayoutStatus.choices, 
+        default=PayoutStatus.PENDING
+    )
+    
+    # Payment details
+    paid_date = models.DateField(blank=True, null=True, help_text="Date when the payout was marked as paid")
+    payment_method = models.CharField(
+        max_length=50, 
+        blank=True, 
+        null=True,
+        help_text="Method of payment (e.g., Bank Transfer, Cash, Check)"
+    )
+    payment_reference = models.CharField(
+        max_length=255, 
+        blank=True, 
+        null=True,
+        help_text="Reference number or transaction ID"
+    )
+    
+    # Additional information
+    notes = models.TextField(blank=True, null=True, help_text="Additional notes about this payout")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Staff Payout"
+        verbose_name_plural = "Staff Payouts"
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.staff_member.get_full_name()} - {self.status} - {self.get_total_bookings()} bookings"
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.id = generate_id('payout_')
+        super().save(*args, **kwargs)
+    
+    def mark_as_paid(self, payment_method=None, payment_reference=None, paid_date=None, user=None):
+        """Mark this payout as paid"""
+        self.status = PayoutStatus.PAID
+        self.paid_date = paid_date or timezone.now().date()
+        if payment_method:
+            self.payment_method = payment_method
+        if payment_reference:
+            self.payment_reference = payment_reference
+        self.save(update_fields=['status', 'paid_date', 'payment_method', 'payment_reference', 'updated_at'])
+    
+    def mark_as_pending(self):
+        """Mark this payout as pending"""
+        self.status = PayoutStatus.PENDING
+        self.paid_date = None
+        self.save(update_fields=['status', 'paid_date', 'updated_at'])
+    
+    def get_total_bookings(self):
+        """Get the total number of bookings in this payout"""
+        return self.bookings.count()
+    
+    def get_total_revenue(self):
+        """Calculate total revenue from all bookings in this payout"""
+        total = Decimal('0.00')
+        for booking in self.bookings.all():
+            total += booking.get_total()
+        return total
+    
+    def get_payout_amount(self):
+        """Calculate the payout amount based on business configuration"""
+        if hasattr(self.business, 'configuration'):
+            percentage = self.business.configuration.staff_pay_percentage
+            return (self.get_total_revenue() * percentage) / Decimal('100.00')
+        return Decimal('0.00')
+

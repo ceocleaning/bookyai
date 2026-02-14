@@ -1,0 +1,284 @@
+{% extends "common/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Create Payout{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dark-theme-bookings">
+    <!-- Back Button & Header -->
+    <div class="mb-4">
+        <a href="{% url 'bookings:payout_list' %}" class="btn btn-link text-muted p-0 mb-3">
+            <i class="fas fa-arrow-left me-2"></i>Back to Payouts
+        </a>
+        <div>
+            <h2 class="h3 mb-1 fw-bold text-white">Create New Payout</h2>
+            <p class="text-muted small mb-0">Generate a payout for a staff member based on completed bookings.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Create Payout Form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-bottom border-secondary-soft py-3">
+                    <h5 class="mb-0 text-white fw-bold">Payout Details</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="createPayoutForm">
+                        {% csrf_token %}
+                        
+                        <!-- Staff Member Selection -->
+                        <div class="mb-4">
+                            <label for="staff_member" class="form-label text-light-soft">Staff Member <span class="text-danger">*</span></label>
+                            <select name="staff_member" id="staff_member" class="form-select bg-dark-soft border-secondary text-white" required>
+                                <option value="">Select staff member...</option>
+                                {% for staff in staff_members %}
+                                    <option value="{{ staff.id }}">{{ staff.get_full_name }} ({{ staff.email }})</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Select the staff member to create a payout for.</small>
+                        </div>
+
+                        <!-- Period Selection -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="period_start" class="form-label text-light-soft">Period Start <span class="text-danger">*</span></label>
+                                <input type="date" name="period_start" id="period_start" class="form-control bg-dark-soft border-secondary text-white" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="period_end" class="form-label text-light-soft">Period End <span class="text-danger">*</span></label>
+                                <input type="date" name="period_end" id="period_end" class="form-control bg-dark-soft border-secondary text-white" required>
+                            </div>
+                        </div>
+
+                        <!-- Quick Period Presets -->
+                        <div class="mb-4">
+                            <label class="form-label text-light-soft">Quick Presets</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary period-preset" data-preset="last_week">Last Week</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary period-preset" data-preset="last_month">Last Month</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary period-preset" data-preset="this_month">This Month</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary period-preset" data-preset="last_30_days">Last 30 Days</button>
+                            </div>
+                        </div>
+
+                        <!-- Payout Percentage -->
+                        <div class="mb-4">
+                            <label for="payout_percentage" class="form-label text-light-soft">Payout Percentage <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" name="payout_percentage" id="payout_percentage" class="form-control bg-dark-soft border-secondary text-white" step="0.01" min="0" max="100" value="{{ default_percentage }}" required>
+                                <span class="input-group-text bg-dark-soft border-secondary text-white">%</span>
+                            </div>
+                            <small class="text-muted">Percentage of booking revenue paid to staff (default: {{ default_percentage }}%).</small>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-4">
+                            <label for="notes" class="form-label text-light-soft">Notes (Optional)</label>
+                            <textarea name="notes" id="notes" rows="3" class="form-control bg-dark-soft border-secondary text-white" placeholder="Add any additional notes about this payout..."></textarea>
+                        </div>
+
+                        <!-- Preview Section -->
+                        <div id="bookingPreview" class="alert alert-info bg-info-soft border-0 text-white d-none">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Payout Preview</strong>
+                            </div>
+                            <div id="previewContent">
+                                <p class="mb-1">Loading...</p>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2 justify-content-end pt-3 border-top border-secondary-soft">
+                            <a href="{% url 'bookings:payout_list' %}" class="btn btn-secondary">Cancel</a>
+                            <button type="button" id="previewBtn" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-2"></i>Preview
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-2"></i>Create Payout
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-transparent border-bottom border-secondary-soft py-3">
+                    <h5 class="mb-0 text-white fw-bold">
+                        <i class="fas fa-question-circle me-2"></i>How It Works
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <h6 class="text-white mb-2">1. Select Staff Member</h6>
+                        <p class="text-muted small mb-0">Choose the staff member you want to create a payout for.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-white mb-2">2. Choose Period</h6>
+                        <p class="text-muted small mb-0">Select the date range for completed bookings to include.</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-white mb-2">3. Set Percentage</h6>
+                        <p class="text-muted small mb-0">Define what percentage of booking revenue goes to the staff member.</p>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-2">4. Review & Create</h6>
+                        <p class="text-muted small mb-0">Preview the payout details before creating it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card border-0 shadow-sm bg-warning-soft">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-lightbulb fa-2x text-warning me-3"></i>
+                        <div>
+                            <h6 class="text-white mb-2">Tip</h6>
+                            <p class="text-muted small mb-0">Only completed bookings within the selected period will be included in the payout calculation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings-index.css' %}">
+<style>
+    .bg-info-soft {
+        background: rgba(23, 162, 184, 0.1);
+    }
+    .bg-warning-soft {
+        background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.05) 100%);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Period presets
+    document.querySelectorAll('.period-preset').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const preset = this.dataset.preset;
+            const today = new Date();
+            let startDate, endDate;
+
+            switch(preset) {
+                case 'last_week':
+                    endDate = new Date(today.setDate(today.getDate() - today.getDay()));
+                    startDate = new Date(endDate);
+                    startDate.setDate(endDate.getDate() - 6);
+                    break;
+                case 'last_month':
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
+                case 'this_month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'last_30_days':
+                    endDate = new Date();
+                    startDate = new Date();
+                    startDate.setDate(endDate.getDate() - 30);
+                    break;
+            }
+
+            document.getElementById('period_start').value = formatDate(startDate);
+            document.getElementById('period_end').value = formatDate(endDate);
+            
+            // Trigger preview if staff is selected
+            if (document.getElementById('staff_member').value) {
+                loadPreview();
+            }
+        });
+    });
+
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Preview button
+    document.getElementById('previewBtn').addEventListener('click', loadPreview);
+
+    // Auto-preview when fields change
+    ['staff_member', 'period_start', 'period_end', 'payout_percentage'].forEach(fieldId => {
+        document.getElementById(fieldId).addEventListener('change', function() {
+            const staffMember = document.getElementById('staff_member').value;
+            const periodStart = document.getElementById('period_start').value;
+            const periodEnd = document.getElementById('period_end').value;
+            
+            if (staffMember && periodStart && periodEnd) {
+                loadPreview();
+            }
+        });
+    });
+
+    function loadPreview() {
+        const staffMember = document.getElementById('staff_member').value;
+        const periodStart = document.getElementById('period_start').value;
+        const periodEnd = document.getElementById('period_end').value;
+        const payoutPercentage = document.getElementById('payout_percentage').value || 0;
+
+        if (!staffMember || !periodStart || !periodEnd) {
+            alert('Please fill in staff member and period dates first.');
+            return;
+        }
+
+        const previewDiv = document.getElementById('bookingPreview');
+        const previewContent = document.getElementById('previewContent');
+        
+        previewDiv.classList.remove('d-none');
+        previewContent.innerHTML = '<p class="mb-0"><i class="fas fa-spinner fa-spin me-2"></i>Loading preview...</p>';
+
+        // Fetch booking data
+        fetch(`{% url 'bookings:get_staff_bookings' %}?staff_member=${staffMember}&period_start=${periodStart}&period_end=${periodEnd}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const totalRevenue = parseFloat(data.total_revenue);
+                    const payoutAmount = (totalRevenue * parseFloat(payoutPercentage)) / 100;
+                    
+                    previewContent.innerHTML = `
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <strong>Total Bookings:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                ${data.total_bookings}
+                            </div>
+                            <div class="col-6">
+                                <strong>Total Revenue:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                $${totalRevenue.toFixed(2)}
+                            </div>
+                            <div class="col-6">
+                                <strong>Payout (${payoutPercentage}%):</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong class="text-success">$${payoutAmount.toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    previewContent.innerHTML = `<p class="mb-0 text-danger">${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                previewContent.innerHTML = '<p class="mb-0 text-danger">Error loading preview. Please try again.</p>';
+                console.error('Error:', error);
+            });
+    }
+</script>
+{% endblock %}

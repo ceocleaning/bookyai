@@ -881,6 +881,8 @@ def update_business_configuration(request):
     business = request.user.business
     
     try:
+        from decimal import Decimal
+        
         # Get or create configuration
         config, created = BusinessConfiguration.objects.get_or_create(business=business)
         
@@ -892,6 +894,13 @@ def update_business_configuration(request):
         config.twilio_phone_number = request.POST.get('twilio_phone_number', '')
         config.twilio_sid = request.POST.get('twilio_sid', '')
         config.twilio_auth_token = request.POST.get('twilio_auth_token', '')
+        
+        # Update staff payout settings
+        staff_pay_percentage = request.POST.get('staff_pay_percentage', '0.00')
+        try:
+            config.staff_pay_percentage = Decimal(staff_pay_percentage)
+        except (ValueError, TypeError):
+            config.staff_pay_percentage = Decimal('0.00')
         
         # Save changes
         config.save()

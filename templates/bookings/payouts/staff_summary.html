@@ -1,0 +1,179 @@
+{% extends "common/dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Staff Payout Summary{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 dark-theme-bookings">
+    <!-- Back Button & Header -->
+    <div class="mb-4">
+        <a href="{% url 'bookings:payout_list' %}" class="btn btn-link text-muted p-0 mb-3">
+            <i class="fas fa-arrow-left me-2"></i>Back to Payouts
+        </a>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h2 class="h3 mb-1 fw-bold text-white">Staff Payout Summary</h2>
+                <p class="text-muted small mb-0">Overview of payout statistics for all staff members.</p>
+            </div>
+            <div>
+                <a href="{% url 'bookings:create_payout' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Create Payout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Summary Cards -->
+    {% if staff_summaries %}
+        <div class="row g-4">
+            {% for summary in staff_summaries %}
+                <div class="col-lg-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100 staff-summary-card">
+                        <div class="card-body p-4">
+                            <!-- Staff Header -->
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="avatar-circle-lg me-3">
+                                    {{ summary.staff.first_name|slice:":1"|upper }}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="text-white mb-1">{{ summary.staff.get_full_name }}</h5>
+                                    <p class="text-muted small mb-0">{{ summary.staff.email }}</p>
+                                </div>
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end bg-dark-soft border-secondary">
+                                        <li>
+                                            <a class="dropdown-item text-white" href="{% url 'bookings:create_payout' %}?staff={{ summary.staff.id }}">
+                                                <i class="fas fa-plus me-2"></i>Create Payout
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-white" href="{% url 'bookings:payout_list' %}?staff={{ summary.staff.id }}">
+                                                <i class="fas fa-list me-2"></i>View Payouts
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Statistics Grid -->
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <p class="text-muted small mb-1">Total Paid</p>
+                                        <h4 class="text-success mb-0">${{ summary.total_paid|floatformat:2 }}</h4>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <p class="text-muted small mb-1">Total Pending</p>
+                                        <h4 class="text-warning mb-0">${{ summary.total_pending|floatformat:2 }}</h4>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <p class="text-muted small mb-1">Total Bookings</p>
+                                        <h4 class="text-white mb-0">{{ summary.total_bookings }}</h4>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-box">
+                                        <p class="text-muted small mb-1">Unpaid Bookings</p>
+                                        <h4 class="text-info mb-0">{{ summary.unpaid_bookings }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            {% if summary.total_paid > 0 or summary.total_pending > 0 %}
+                                {% widthratio summary.total_paid summary.total_paid|add:summary.total_pending 100 as paid_percentage %}
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between text-muted small mb-1">
+                                        <span>Payment Progress</span>
+                                        <span>{{ paid_percentage }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1);">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ paid_percentage }}%"></div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-2 pt-3 border-top border-secondary-soft">
+                                <a href="{% url 'bookings:create_payout' %}?staff={{ summary.staff.id }}" class="btn btn-sm btn-primary flex-grow-1">
+                                    <i class="fas fa-plus me-1"></i>New Payout
+                                </a>
+                                <a href="{% url 'bookings:payout_list' %}?staff={{ summary.staff.id }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-history"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="card border-0 shadow-sm text-center py-5">
+            <div class="card-body py-5">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-users fa-4x opacity-20"></i>
+                </div>
+                <h4 class="text-white">No Active Staff Members</h4>
+                <p class="text-muted mx-auto" style="max-width: 400px;">
+                    You don't have any active staff members yet. Add staff members to start tracking their payouts.
+                </p>
+                <a href="{% url 'staff:staff_list' %}" class="btn btn-primary mt-2">
+                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings-index.css' %}">
+<style>
+    .avatar-circle-lg {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        flex-shrink: 0;
+    }
+    
+    .staff-summary-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .staff-summary-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .stat-box {
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .progress-bar {
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}

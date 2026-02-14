@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
     Booking, BookingServiceItem, StaffServiceAssignment, StaffAvailability, 
-    StaffRole, StaffMember, BookingEvent, BookingEventType, ReminderType, BookingReminder
+    StaffRole, StaffMember, BookingEvent, BookingEventType, ReminderType, BookingReminder,
+    StaffPayout
 )
 
 @admin.register(BookingEventType)
@@ -17,6 +18,16 @@ class ReminderTypeAdmin(admin.ModelAdmin):
     list_filter = ['business', 'is_enabled']
     search_fields = ['name', 'reminder_key']
     ordering = ['business', 'display_order']
+
+@admin.register(StaffPayout)
+class StaffPayoutAdmin(admin.ModelAdmin):
+    list_display = ['staff_member', 'business', 'status', 'paid_date', 'created_at']
+    list_filter = ['business', 'status', 'created_at']
+    search_fields = ['staff_member__first_name', 'staff_member__last_name', 'staff_member__email']
+    ordering = ['-created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    filter_horizontal = ['bookings']  # Makes the M2M field easier to manage
+
 
 admin.site.register(Booking)
 admin.site.register(BookingServiceItem)

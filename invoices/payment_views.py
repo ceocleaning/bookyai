@@ -10,6 +10,7 @@ import uuid
 import requests
 from square import Square as Client
 from .models import Invoice, Payment
+from bookings.models import BookingStatus
 from business.models import Business, SquareCredentials, StripeCredentials
 
 
@@ -76,6 +77,9 @@ def process_payment(request):
                 payment.paidAt = timezone.now()
                 invoice.isPaid = True
                 invoice.save()
+            
+            invoice.booking.status = BookingStatus.CONFIRMED
+            invoice.booking.save()
 
             return JsonResponse({
                 'success': True,

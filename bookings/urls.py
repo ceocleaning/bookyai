@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, widget_views
+from . import views, widget_views, payout_views
 from .views_widget_example import widget_showcase
 
 app_name = 'bookings'
@@ -30,4 +30,14 @@ urlpatterns = [
     path('<str:booking_id>/available-timeslots/', views.get_available_timeslots, name='get_available_timeslots'),
     path('<str:booking_id>/trigger-event/', views.trigger_booking_event, name='trigger_booking_event'),
     path('bulk-delete/', views.bulk_delete_bookings, name='bulk_delete_bookings'),
+    
+    # Staff Payout URLs
+    path('payouts/', payout_views.payout_list, name='payout_list'),
+    path('payouts/create/', payout_views.create_payout, name='create_payout'),
+    path('payouts/<str:payout_id>/', payout_views.payout_detail, name='payout_detail'),
+    path('payouts/<str:payout_id>/mark-paid/', payout_views.mark_payout_paid, name='mark_payout_paid'),
+    path('payouts/<str:payout_id>/mark-pending/', payout_views.mark_payout_pending, name='mark_payout_pending'),
+    path('payouts/summary/staff/', payout_views.staff_payout_summary, name='staff_payout_summary'),
+    path('payouts/api/staff-bookings/', payout_views.get_staff_bookings, name='get_staff_bookings'),
 ]
+

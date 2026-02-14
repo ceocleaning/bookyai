@@ -432,7 +432,7 @@
             {% endif %}
             
             <!-- Invoice & Payment Information -->
-            {% if not request.user|has_group:"staff" %}
+      
             {% if invoice %}
                 <div class="card mb-4">
                     <div class="card-header text-white d-flex justify-content-between align-items-center">
@@ -570,7 +570,7 @@
                     </div>
                 </div>
             {% endif %}
-            {% endif %}
+
             
             <!-- Timeline -->
             <div class="card mb-4">

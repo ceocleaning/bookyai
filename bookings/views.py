@@ -360,11 +360,6 @@ def create_booking(request):
                     quantity=quantity,
                     selected_value=field_value if service_item.field_type in ['select', 'boolean'] else None
                 )
-
-                print(f"  Processing item {item_id} ({service_item.name}):")
-                print(f"    Field type: {service_item.field_type}, Price type: {service_item.price_type}")
-                print(f"    Field value to save: '{field_value}'")
-                print(f"    Quantity: {quantity}, Price at booking: {price_at_booking}")
                 
                 # Create the booking service item
                 booking_service_item = BookingServiceItem.objects.create(
@@ -377,9 +372,7 @@ def create_booking(request):
                 # Set the appropriate field value based on field type
                 booking_service_item.set_response_value(field_value)
                 booking_service_item.save()
-                
-                print(f"    Saved - select_value: '{booking_service_item.select_value}', "
-                      f"boolean_value: {booking_service_item.boolean_value}")
+               
             except (ServiceItem.DoesNotExist, ValueError):
                 # Log this but don't fail the booking
                 pass
