@@ -6,7 +6,7 @@ from django.contrib import messages
 import json
 from .utils import get_user_business
 
-from bookings.models import StaffMember, StaffRole, StaffAvailability, WEEKDAY_CHOICES, AVAILABILITY_TYPE
+from bookings.models import StaffMember, StaffRole, StaffAvailability, WEEKDAY_CHOICES, AVAILABILITY_TYPE, StaffPayout, PayoutStatus
 
 
 
@@ -221,7 +221,19 @@ def staff_detail(request, staff_id):
         business=business,
         is_active=True
     ).order_by('name')
-    
+
+    # Get payout data for this staff member
+    all_payouts = StaffPayout.objects.filter(
+        staff_member=staff, business=business
+    ).prefetch_related('bookings').order_by('-created_at')
+
+    paid_payouts = all_payouts.filter(status=PayoutStatus.PAID)
+    pending_payouts = all_payouts.filter(status=PayoutStatus.PENDING)
+
+    total_paid_amount = sum(p.get_payout_amount() for p in paid_payouts)
+    total_pending_amount = sum(p.get_payout_amount() for p in pending_payouts)
+    total_overall_amount = total_paid_amount + total_pending_amount
+
     context = {
         'business': business,
         'staff': staff,
@@ -237,6 +249,12 @@ def staff_detail(request, staff_id):
         'week_start': week_start,
         'week_end': week_end,
         'week_offset': week_offset,
+        # Payout data
+        'paid_payouts': paid_payouts,
+        'pending_payouts': pending_payouts,
+        'total_paid_amount': total_paid_amount,
+        'total_pending_amount': total_pending_amount,
+        'total_overall_amount': total_overall_amount,
     }
     
     return render(request, 'business/staff_detail.html', context)
