@@ -72,9 +72,10 @@ urlpatterns = [
     # Staff management
     path('staff/', staff_views.staff_management, name='staff'),
     path('staff/add/', staff_views.add_staff, name='add_staff'),
-    path('staff/<str:staff_id>/', staff_views.staff_detail, name='staff_detail'),
+    path('staff/<str:staff_id>/detail/', staff_views.staff_detail, name='staff_detail'),
     path('staff/<str:staff_id>/update/', staff_views.update_staff, name='update_staff'),
     path('staff/update-status/', staff_views.update_staff_status, name='update_staff_status'),
+    path('staff/delete/', staff_views.delete_staff, name='delete_staff'),
     path('staff/<staff_id>/add-availability/', staff_views.add_staff_availability, name='add_staff_availability'),
     path('staff/<staff_id>/update-availability/', staff_views.update_staff_availability, name='update_staff_availability'),
     path('staff/delete/availability/', staff_views.delete_staff_availability, name='delete_staff_availability'),

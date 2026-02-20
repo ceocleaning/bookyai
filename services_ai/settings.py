@@ -179,6 +179,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://bookyai.up.railway.app',
+    'https://63ed-37-111-171-174.ngrok-free.app',
 ]
 
 # Allow iframes from same origin for template preview

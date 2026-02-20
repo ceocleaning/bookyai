@@ -4,8 +4,12 @@ Signals for Invoice and Payment notifications
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from invoices.models import Invoice, Payment, InvoiceStatus
+from bookings.models import BookingStatus
 from notifications.services.invoices.payment_completed import notify_invoice_paid
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Store previous invoice state
 _invoice_previous_state = {}
@@ -50,7 +54,9 @@ def invoice_pre_save_handler(sender, instance, **kwargs):
 @receiver(post_save, sender=Invoice)
 def invoice_post_save_handler(sender, instance, created, **kwargs):
     """
-    Handle invoice status changes, particularly when marked as paid.
+    Handle invoice status changes:
+    - Send notification when invoice is marked as paid.
+    - Confirm the linked booking when invoice is paid or authorized.
     
     Args:
         sender: The model class (Invoice)
@@ -68,6 +74,18 @@ def invoice_post_save_handler(sender, instance, created, **kwargs):
             # Get the most recent payment for this invoice
             payment = instance.payments.order_by('-created_at').first()
             notify_invoice_paid(instance, payment=payment)
+        
+        # Confirm booking when invoice is paid or authorized
+        if old_status and old_status not in (InvoiceStatus.PAID, InvoiceStatus.AUTHORIZED):
+            if instance.status in (InvoiceStatus.PAID, InvoiceStatus.AUTHORIZED):
+                booking = instance.booking
+                if booking and booking.status != BookingStatus.CONFIRMED:
+                    booking.status = BookingStatus.CONFIRMED
+                    booking.save(update_fields=['status', 'updated_at'])
+                    logger.info(
+                        f"Booking {booking.pk} confirmed after invoice {instance.invoice_number} "
+                        f"status changed to {instance.status}."
+                    )
         
         # Clean up previous state to avoid memory leaks
         if instance.pk in _invoice_previous_state:

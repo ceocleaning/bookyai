@@ -35,6 +35,12 @@ class SubscriptionRequiredMiddleware:
         'staff',            # Staff portal - always accessible for staff users
     ]
     
+    # Specific URL names that should always be accessible
+    EXEMPT_URL_NAMES = [
+        'api_industries',           # Business registration - load industries
+        'api_register_business',    # Business registration - submit form
+    ]
+    
     def __init__(self, get_response):
         self.get_response = get_response
     
@@ -91,6 +97,10 @@ class SubscriptionRequiredMiddleware:
                 return False
             if request.path.startswith(f'/{exempt_pattern}/'):
                 return False
+        
+        # Check if URL name is in the specific exempt URL names
+        if url_name and url_name in self.EXEMPT_URL_NAMES:
+            return False
         
         # Check if URL is in restricted patterns
         for restricted_pattern in self.RESTRICTED_URL_PATTERNS:

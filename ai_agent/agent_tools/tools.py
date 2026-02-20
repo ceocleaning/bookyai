@@ -436,7 +436,7 @@ class BookAppointmentTool(BaseTool):
                     booking_date=date_obj,
                     start_time=time_obj,
                     end_time=(datetime.combine(date_obj, time_obj) + timedelta(minutes=service.duration)).time(),
-                    status=BookingStatus.CONFIRMED,
+                    status=BookingStatus.PENDING,
                     notes=notes or ''
                 )
                 print(f"[DEBUG] Created booking: {booking.id}")

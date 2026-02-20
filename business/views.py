@@ -28,12 +28,15 @@ def business_registration(request):
     return render(request, 'business/register.html')
 
 
-@login_required
 @require_http_methods(["GET"])
 def get_industries(request):
     """API endpoint to get all active industries"""
-    industries = Industry.objects.filter(is_active=True).values('id', 'name', 'description', 'icon')
-    return JsonResponse({'industries': list(industries)})
+    try:
+        industries = Industry.objects.filter(is_active=True).values('id', 'name', 'description', 'icon')
+        return JsonResponse({'industries': list(industries)})
+    except Exception as e:
+        print(e)
+        return JsonResponse({'error': str(e)})
 
 
 

@@ -432,22 +432,12 @@ def edit_booking(request, booking_id):
     custom_fields = BusinessCustomField.objects.filter(business=business, is_active=True).order_by('display_order', 'name')
     
     if request.method == 'POST':
-        # Basic Booking fields
+        # Basic Booking fields (date/time/staff are NOT editable)
         service_type_id = request.POST.get('service_type')
-        booking_date = request.POST.get('booking_date')
-        start_time = request.POST.get('start_time')
-        end_time = request.POST.get('end_time')
         location_type = request.POST.get('location_type')
         location_details = request.POST.get('location_details')
         notes = request.POST.get('notes')
-        staff_member_id = request.POST.get('staff_member_id')
-        
-        # Debug: Print received date/time values
-        print(f"=== EDIT BOOKING POST DATA ===")
-        print(f"Booking Date: {booking_date}")
-        print(f"Start Time: {start_time}")
-        print(f"End Time: {end_time}")
-        
+
         # Client information
         client_name = request.POST.get('client_name')
         client_email = request.POST.get('client_email')
@@ -458,18 +448,12 @@ def edit_booking(request, booking_id):
         errors = []
         if not service_type_id:
             errors.append('Service type is required.')
-        if not booking_date:
-            errors.append('Booking date is required.')
-        if not start_time or not end_time:
-            errors.append('Start and end time are required.')
         if not client_name:
             errors.append('Client name is required.')
         if not client_email:
             errors.append('Client email is required.')
         if not client_phone:
             errors.append('Client phone is required.')
-        if not staff_member_id:
-            errors.append('Staff member selection is required.')
             
         if errors:
             for err in errors:
@@ -499,13 +483,10 @@ def edit_booking(request, booking_id):
             business=business
         )
         
-        # Update Booking
+        # Update Booking (date/time/staff are preserved — not modified)
         booking.lead = lead
-        booking.customer = customer  # Link to customer
+        booking.customer = customer
         booking.service_offering = service_offering
-        booking.booking_date = booking_date
-        booking.start_time = start_time
-        booking.end_time = end_time
         booking.location_type = location_type
         booking.location_details = location_details
         booking.notes = notes
@@ -513,27 +494,6 @@ def edit_booking(request, booking_id):
         booking.email = client_email
         booking.phone_number = client_phone
         booking.save()
-        
-        # Debug: Confirm saved values
-        print(f"=== BOOKING SAVED ===")
-        print(f"Saved Booking Date: {booking.booking_date}")
-        print(f"Saved Start Time: {booking.start_time}")
-        print(f"Saved End Time: {booking.end_time}")
-
-        # Update staff assignment
-        try:
-            staff_member = StaffMember.objects.get(id=staff_member_id, business=business)
-            # Delete existing staff assignments
-            BookingStaffAssignment.objects.filter(booking=booking).delete()
-            # Create new staff assignment
-            BookingStaffAssignment.objects.create(
-                booking=booking,
-                staff_member=staff_member,
-                is_primary=True
-            )
-        except StaffMember.DoesNotExist:
-            messages.error(request, 'Selected staff member not found.')
-            return redirect('bookings:edit_booking', booking_id=booking_id)
 
         # Update custom fields
         # Delete existing custom fields

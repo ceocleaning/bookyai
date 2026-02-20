@@ -10,11 +10,9 @@ from django.conf import settings
 from django.urls import reverse
 
 class InvoiceStatus(models.TextChoices):
-    DRAFT = 'draft', 'Draft'
     PENDING = 'pending', 'Pending'
     PAID = 'paid', 'Paid'
-    PARTIALLY_PAID = 'partially_paid', 'Partially Paid'
-    OVERDUE = 'overdue', 'Overdue'
+    AUTHORIZED = 'authorized', 'Authorized'
     CANCELLED = 'cancelled', 'Cancelled'
     REFUNDED = 'refunded', 'Refunded'
 
@@ -37,7 +35,7 @@ class Invoice(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=255)
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='invoices')
     invoice_number = models.CharField(max_length=50, unique=True)
-    status = models.CharField(max_length=20, choices=InvoiceStatus.choices, default=InvoiceStatus.DRAFT)
+    status = models.CharField(max_length=20, choices=InvoiceStatus.choices, default=InvoiceStatus.PENDING)
     due_date = models.DateField()
     notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

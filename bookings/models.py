@@ -675,7 +675,7 @@ class Booking(models.Model):
         for booking_item in self.service_items.all():
             if booking_item.service_item:
                 # Calculate item cost: price * quantity
-                item_cost = booking_item.service_item.price * booking_item.quantity
+                item_cost = booking_item.service_item.price_value * booking_item.quantity
                 total += item_cost
         
         return total

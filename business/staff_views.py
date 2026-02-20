@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
@@ -394,7 +395,7 @@ def add_staff_availability(request, staff_id):
             
             if existing_availabilities.exists() and not off_day:
                 messages.warning(request, f'An availability for this weekday already exists. Please edit the existing one instead.')
-                return redirect('business:staff_detail', staff_id=staff_id)
+                return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
             
             # If it's an off day, we can have multiple (or replace existing)
             if off_day:
@@ -418,11 +419,11 @@ def add_staff_availability(request, staff_id):
             
             if not from_date or not to_date:
                 messages.error(request, 'Both from and to dates are required.')
-                return redirect('business:staff_detail', staff_id=staff_id)
+                return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
             
             if to_date < from_date:
                 messages.error(request, 'To date must be after or equal to from date.')
-                return redirect('business:staff_detail', staff_id=staff_id)
+                return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
             
             # Create holidays for each date in the range
             from datetime import timedelta as td
@@ -469,7 +470,7 @@ def add_staff_availability(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error adding availability: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
 
 @login_required
 @require_http_methods(["POST"])
@@ -537,7 +538,7 @@ def update_staff_availability(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error updating availability: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
 
 @login_required
 @require_http_methods(["POST"])
@@ -616,7 +617,7 @@ def add_staff_off_day(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error adding off day: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
 
 @login_required
 @require_http_methods(["POST"])
@@ -662,7 +663,7 @@ def update_weekly_off_days(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error updating weekly off days: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=availability")
 
 # Staff Role Management Views
 @login_required
@@ -773,7 +774,7 @@ def add_service_assignment(request, staff_id):
         # Validate required fields
         if not service_offering_id:
             messages.error(request, 'Service is required.')
-            return redirect('business:staff_detail', staff_id=staff_id)
+            return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=services")
         
         # Get service offering, ensuring it belongs to this business
         service_offering = get_object_or_404(ServiceOffering, id=service_offering_id, business=business)
@@ -781,7 +782,7 @@ def add_service_assignment(request, staff_id):
         # Check if assignment already exists
         if StaffServiceAssignment.objects.filter(staff_member=staff, service_offering=service_offering).exists():
             messages.warning(request, f'{staff.get_full_name()} is already assigned to {service_offering.name}.')
-            return redirect('business:staff_detail', staff_id=staff_id)
+            return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=services")
         
         # If this is marked as primary, unmark any existing primary assignments
         if is_primary:
@@ -798,7 +799,7 @@ def add_service_assignment(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error assigning service: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=services")
 
 @login_required
 @require_http_methods(["POST"])
@@ -835,7 +836,7 @@ def update_service_assignment(request, staff_id):
         if assignment.service_offering != service_offering:
             if StaffServiceAssignment.objects.filter(staff_member=staff, service_offering=service_offering).exists():
                 messages.warning(request, f'{staff.get_full_name()} is already assigned to {service_offering.name}.')
-                return redirect('business:staff_detail', staff_id=staff_id)
+                return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=services")
         
         # If this is marked as primary, unmark any existing primary assignments
         if is_primary and not assignment.is_primary:
@@ -850,7 +851,7 @@ def update_service_assignment(request, staff_id):
     except Exception as e:
         messages.error(request, f'Error updating service assignment: {str(e)}')
     
-    return redirect('business:staff_detail', staff_id=staff_id)
+    return redirect(f"{reverse('business:staff_detail', kwargs={'staff_id': staff_id})}?tab=services")
 
 @login_required
 @require_http_methods(["POST"])
@@ -929,6 +930,67 @@ def delete_staff_role(request):
         return JsonResponse({
             'success': True,
             'message': f'Staff role "{role_name}" deleted successfully!'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'An error occurred: {str(e)}'
+        })
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_staff(request):
+    """
+    Delete a staff member.
+    Checks for active bookings before allowing deletion.
+    """
+    business = get_user_business(request.user)
+    if not business:
+        return JsonResponse({
+            'success': False,
+            'message': 'No business associated with your account.'
+        })
+
+    try:
+        data = json.loads(request.body)
+
+        staff_id = data.get('staff_id')
+
+ 
+
+        staff = get_object_or_404(StaffMember, id=staff_id, business=business)
+
+        # Check for active bookings (pending, confirmed, or rescheduled)
+        from bookings.models import BookingStaffAssignment
+        active_bookings = BookingStaffAssignment.objects.filter(
+            staff_member=staff,
+            booking__status__in=['pending', 'confirmed', 'rescheduled']
+        ).count()
+
+        if active_bookings > 0:
+            return JsonResponse({
+                'success': False,
+                'message': f'Cannot delete {staff.get_full_name()} because they have {active_bookings} active booking(s). '
+                           f'Please reassign or cancel those bookings first.'
+            })
+
+        staff_name = staff.get_full_name()
+
+        # If the staff member has a linked user account, unlink it
+        if hasattr(staff, 'staff_profile_link'):
+            try:
+                profile = staff.staff_profile_link
+                profile.delete()
+            except Exception:
+                pass
+
+        # Delete the staff member (cascades to availabilities, assignments, etc.)
+        staff.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Staff member "{staff_name}" has been deleted successfully.'
         })
     except Exception as e:
         return JsonResponse({

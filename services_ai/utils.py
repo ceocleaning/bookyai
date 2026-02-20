@@ -26,58 +26,67 @@ def send_email(from_email, to_email, subject, reply_to=None, text_content='', at
     - attachments (list of dict, optional): Attachments [{'filename': '...', 'content': '...', 'content_type': '...'}].
     """
 
-    url = "https://api.emailit.com/v1/emails"
-    req_headers = {
-        "Authorization": f"Bearer {EMAILIT_API_KEY}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
 
-    # Normalize from_email
-    default_domain = "cleaningbizai.com"
-    pattern = r"^(.*?)<([^@<>]+)@([^@<>]+)>$"
-    match = re.match(pattern, from_email.strip())
+    print(f"""
+    from_email: {from_email}
+    to_email: {to_email}
+    subject: {subject}
+    reply_to: {reply_to}
+    text_content: {text_content}
+    """)
 
-    if match:
-        business_name, user, _ = match.groups()
-        business_name = business_name.strip()
-        from_email = f"{business_name} <{user}@{default_domain}>"
-    else:
-        # Fallback if invalid format
-        from_email = f"Booky AI <noreply@{default_domain}>"
+    # url = "https://api.emailit.com/v1/emails"
+    # req_headers = {
+    #     "Authorization": f"Bearer {EMAILIT_API_KEY}",
+    #     "Content-Type": "application/json",
+    #     "Accept": "application/json"
+    # }
 
-    data = {
-        "from": from_email,
-        "to": to_email,
-        "subject": subject,
-        "text": str(text_content) if text_content else str(html_content)
-    }
+    # # Normalize from_email
+    # default_domain = "cleaningbizai.com"
+    # pattern = r"^(.*?)<([^@<>]+)@([^@<>]+)>$"
+    # match = re.match(pattern, from_email.strip())
 
-    if html_content:
-        data["html"] = html_content
+    # if match:
+    #     business_name, user, _ = match.groups()
+    #     business_name = business_name.strip()
+    #     from_email = f"{business_name} <{user}@{default_domain}>"
+    # else:
+    #     # Fallback if invalid format
+    #     from_email = f"Booky AI <noreply@{default_domain}>"
 
-    if reply_to:
-        data["reply_to"] = reply_to
-    if attachments:
-        data["attachments"] = attachments
+    # data = {
+    #     "from": from_email,
+    #     "to": to_email,
+    #     "subject": subject,
+    #     "text": str(text_content) if text_content else str(html_content)
+    # }
 
-    # if settings.DEBUG == False:
-    try:
-        response = requests.post(url, json=data, headers=req_headers)
+    # if html_content:
+    #     data["html"] = html_content
 
-        if response.status_code in [200, 201]:
-            return {"success": True, "response": response.json()}
-        else:
-            print(response.text)
+    # if reply_to:
+    #     data["reply_to"] = reply_to
+    # if attachments:
+    #     data["attachments"] = attachments
 
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to send email: {str(e)}")
-        return {
-            "success": False,
-            "error": str(e),
-            "status_code": getattr(e.response, "status_code", None),
-            "response_text": getattr(e.response, "text", None)
-    }
+    # # if settings.DEBUG == False:
+    # try:
+    #     response = requests.post(url, json=data, headers=req_headers)
+
+    #     if response.status_code in [200, 201]:
+    #         return {"success": True, "response": response.json()}
+    #     else:
+    #         print(response.text)
+
+    # except requests.exceptions.RequestException as e:
+    #     print(f"Failed to send email: {str(e)}")
+    #     return {
+    #         "success": False,
+    #         "error": str(e),
+    #         "status_code": getattr(e.response, "status_code", None),
+    #         "response_text": getattr(e.response, "text", None)
+    # }
 
     # else:
         # return {"success": True, "response": "Email not sent in debug mode"}

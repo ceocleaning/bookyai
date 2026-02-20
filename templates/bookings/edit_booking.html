@@ -45,11 +45,6 @@
                         <div class="step-line"></div>
                         <div class="step" data-step="4">
                             <div class="step-number">4</div>
-                            <div class="step-label">Date & Time</div>
-                        </div>
-                        <div class="step-line"></div>
-                        <div class="step" data-step="5">
-                            <div class="step-number">5</div>
                             <div class="step-label">Notes</div>
                         </div>
                     </div>
@@ -211,61 +206,13 @@
                                     <i class="fas fa-arrow-left me-2"></i>Previous
                                 </button>
                                 <button type="button" class="btn btn-primary next-step" data-next="4">
-                                    Next: Date & Time <i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 4: Date & Time Selection -->
-                        <div class="form-step" id="step-4">
-                            <h4 class="mb-4"><i class="fas fa-calendar-alt me-2"></i>Date & Time Selection</h4>
-                            
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="booking_date" class="form-label">Booking Date <span class="text-danger">*</span></label>
-                                    <input type="date" name="booking_date" id="booking_date" class="form-control" value="{{ booking.booking_date|date:'Y-m-d' }}" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="start_time" class="form-label">Start Time <span class="text-danger">*</span></label>
-                                    <input type="time" name="start_time" id="start_time" class="form-control" value="{{ booking.start_time|time:'H:i' }}" required>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="end_time" class="form-label">End Time <span class="text-danger">*</span></label>
-                                    <input type="time" name="end_time" id="end_time" class="form-control" value="{{ booking.end_time|time:'H:i' }}" required>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label for="staff_member_id" class="form-label">Select Staff Member <span class="text-danger">*</span></label>
-                                <select name="staff_member_id" id="staff_member_id" class="form-select" required>
-                                    <option value="">Select a staff member...</option>
-                                </select>
-                                <div id="staff-availability-message" class="form-text mt-2"></div>
-                            </div>
-                            
-                            <!-- Alternate Timeslots Section -->
-                            <div id="alternate-timeslots-container" class="mt-3 d-none">
-                                <div class="alert alert-warning">
-                                    <h6><i class="fas fa-exclamation-triangle me-2"></i>No staff available at selected time</h6>
-                                    <p class="mb-2">Consider these alternatives:</p>
-                                    <div id="alternate-timeslots">
-                                        <!-- Alternate timeslots will be populated via JavaScript -->
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-outline-secondary prev-step" data-prev="3">
-                                    <i class="fas fa-arrow-left me-2"></i>Previous
-                                </button>
-                                <button type="button" class="btn btn-primary next-step" data-next="5">
                                     Next: Notes <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Step 5: Notes -->
-                        <div class="form-step" id="step-5">
+                        <!-- Step 4: Notes (previously step 5) -->
+                        <div class="form-step" id="step-4">
                             <h4 class="mb-4"><i class="fas fa-sticky-note me-2"></i>Additional Notes</h4>
                             
                             <div class="mb-3">
@@ -275,7 +222,7 @@
                             </div>
                             
                             <div class="d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-outline-secondary prev-step" data-prev="4">
+                                <button type="button" class="btn btn-outline-secondary prev-step" data-prev="3">
                                     <i class="fas fa-arrow-left me-2"></i>Previous
                                 </button>
                                 <button type="submit" class="btn btn-success btn-lg">
@@ -299,7 +246,10 @@
                     <div class="summary-section mb-3">
                         <h6 class="text-muted mb-2">Date & Time</h6>
                         <div id="summary-datetime" class="summary-value">
-                            <i class="fas fa-calendar text-muted me-2"></i>Not selected yet
+                            <i class="fas fa-calendar text-primary me-2"></i>
+                            {{ booking.booking_date|date:"D, M d, Y" }}<br>
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            {{ booking.start_time|time:"g:i A" }} - {{ booking.end_time|time:"g:i A" }}
                         </div>
                     </div>
                     
@@ -392,8 +342,8 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/bookings-create-booking.js' %}"></script>
-<script src="{% static 'js/bookings-create-booking-multistep.js' %}"></script>
+<script src="{% static 'js/bookings-edit-booking.js' %}"></script>
+<script src="{% static 'js/bookings-edit-booking-multistep.js' %}"></script>
 <script>
     // Edit booking pre-population and lead selection functionality
     document.addEventListener('DOMContentLoaded', function() {
@@ -406,13 +356,7 @@
         const bookingFieldsData = {{ booking_fields_data_json|safe }};
         const bookingServiceItems = {{ booking_service_items_json|safe }};
         const bookingLeadId = '{{ booking.lead.id|default:"" }}';
-        const bookingStaffId = '{{ staff_assignment.staff_member.id|default:"" }}';
         const originalServiceId = '{{ booking.service_offering.id }}';
-        
-        console.log('=== EDIT BOOKING DEBUG ===');
-        console.log('Original Service ID:', originalServiceId);
-        console.log('Booking Service Items:', bookingServiceItems);
-        console.log('Booking Fields Data:', bookingFieldsData);
         
         // Function to fetch leads from the API
         function fetchLeads() {
@@ -476,11 +420,8 @@
         }
         
         // Wait for service items to load, then pre-populate them
-        // We need to wait for the service change event to trigger and load items first
         const serviceRadio = document.querySelector('input[name="service_type"]:checked');
         if (serviceRadio) {
-            console.log('Initial service radio found:', serviceRadio.value);
-            
             // Trigger the change event to load service items
             serviceRadio.dispatchEvent(new Event('change', { bubbles: true }));
             
@@ -493,14 +434,8 @@
         // Listen for service type changes to re-populate when switching back to original service
         document.querySelectorAll('input[name="service_type"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                console.log('Service changed to:', this.value);
-                console.log('Original service was:', originalServiceId);
-                console.log('Is same service?', this.value === originalServiceId);
-                
                 // If user switches back to the original service, re-populate the items
                 if (this.value === originalServiceId) {
-                    console.log('User switched back to original service, re-populating items');
-                    // Wait for the new service items to load, then pre-populate
                     setTimeout(() => {
                         prePopulateServiceItems();
                     }, 1000);
@@ -510,34 +445,22 @@
         
         // Function to pre-populate service items
         function prePopulateServiceItems() {
-            console.log('=== PRE-POPULATE SERVICE ITEMS ===');
-            
             if (!bookingServiceItems || bookingServiceItems.length === 0) {
-                console.log('No booking service items to pre-populate');
                 return;
             }
             
             // Check if we're still on the original service
             const currentServiceRadio = document.querySelector('input[name="service_type"]:checked');
             if (!currentServiceRadio || currentServiceRadio.value !== originalServiceId) {
-                console.log('Service has changed, skipping pre-population');
-                console.log('Current service:', currentServiceRadio?.value, 'Original:', originalServiceId);
                 return;
             }
             
-            console.log('Pre-populating', bookingServiceItems.length, 'service items');
-            
             // First pass: Check all checkboxes and trigger change events
             bookingServiceItems.forEach(item => {
-                console.log('Pre-populating item:', item);
-                
                 const checkbox = document.getElementById(`item_${item.id}`);
                 if (checkbox) {
                     checkbox.checked = true;
-                    // Trigger change event to update selectedItems and summary
                     checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-                } else {
-                    console.log('Checkbox not found for item:', item.id);
                 }
             });
             
@@ -546,75 +469,47 @@
                 bookingServiceItems.forEach(item => {
                     if (!item.response_value) return;
                     
-                    console.log('Setting field value:', item.id, 'to', item.response_value);
-                    
                     // Check if this is a boolean field (radio buttons with _yes/_no suffixes)
                     const yesRadio = document.getElementById(`field_${item.id}_yes`);
                     const noRadio = document.getElementById(`field_${item.id}_no`);
                     
                     if (yesRadio && noRadio) {
-                        // Handle boolean fields with option pricing (yes/no radio buttons)
-                        console.log('Boolean field detected for item:', item.id);
                         if (item.response_value === 'yes' || item.response_value === 'true') {
                             yesRadio.checked = true;
                         } else if (item.response_value === 'no' || item.response_value === 'false') {
                             noRadio.checked = true;
                         }
                     } else {
-                        // Handle other field types (select, number, text, textarea)
                         const fieldInput = document.getElementById(`field_${item.id}`);
                         if (fieldInput) {
-                            if (fieldInput.tagName === 'SELECT') {
-                                // Handle select fields
-                                console.log('Select field detected for item:', item.id);
-                                fieldInput.value = item.response_value;
-                            } else if (fieldInput.type === 'number') {
-                                // Handle number fields
-                                console.log('Number field detected for item:', item.id);
-                                fieldInput.value = item.response_value;
-                            } else if (fieldInput.tagName === 'TEXTAREA') {
-                                // Handle textarea fields
-                                console.log('Textarea field detected for item:', item.id);
-                                fieldInput.value = item.response_value;
-                            } else {
-                                // Handle text fields
-                                console.log('Text field detected for item:', item.id);
-                                fieldInput.value = item.response_value;
-                            }
+                            fieldInput.value = item.response_value;
                         }
                     }
                     
-                    // Set the quantity if it exists (for items with separate quantity controls)
+                    // Set the quantity if it exists
                     const quantityInput = document.getElementById(`quantity_${item.id}`);
                     if (quantityInput && item.quantity) {
-                        console.log('Setting quantity:', item.id, 'to', item.quantity);
                         quantityInput.value = item.quantity;
                     }
                 });
                 
                 // Third pass: Trigger all change events at once after another delay
                 setTimeout(() => {
-                    console.log('Triggering change events for all items');
-                    
                     bookingServiceItems.forEach(item => {
                         if (!item.response_value) return;
                         
-                        // Check if this is a boolean field
                         const yesRadio = document.getElementById(`field_${item.id}_yes`);
                         const noRadio = document.getElementById(`field_${item.id}_no`);
                         
                         if (yesRadio && noRadio) {
-                            // Trigger change event on the checked radio button
                             if (yesRadio.checked) {
                                 yesRadio.dispatchEvent(new Event('change', { bubbles: true }));
                             } else if (noRadio.checked) {
                                 noRadio.dispatchEvent(new Event('change', { bubbles: true }));
                             }
                         } else {
-                            // Handle other field types
                             const fieldInput = document.getElementById(`field_${item.id}`);
                             if (fieldInput) {
-                                // Trigger input event for number fields (this is what the listener uses)
                                 if (fieldInput.type === 'number') {
                                     fieldInput.dispatchEvent(new Event('input', { bubbles: true }));
                                 } else {
@@ -623,32 +518,8 @@
                             }
                         }
                     });
-                    
-                    console.log('Pre-population complete');
                 }, 200);
             }, 300);
-        }
-        
-        // Pre-populate staff member after availability check
-        // We'll need to wait for the staff dropdown to be populated
-        if (bookingStaffId) {
-            // Check periodically if staff dropdown has options
-            const checkStaffInterval = setInterval(() => {
-                const staffSelect = document.getElementById('staff_member_id');
-                if (staffSelect && staffSelect.options.length > 1) {
-                    // Try to select the booking's staff member
-                    for (let i = 0; i < staffSelect.options.length; i++) {
-                        if (staffSelect.options[i].value === bookingStaffId) {
-                            staffSelect.selectedIndex = i;
-                            clearInterval(checkStaffInterval);
-                            break;
-                        }
-                    }
-                }
-            }, 500);
-            
-            // Clear interval after 10 seconds to prevent infinite checking
-            setTimeout(() => clearInterval(checkStaffInterval), 10000);
         }
     });
 </script>
