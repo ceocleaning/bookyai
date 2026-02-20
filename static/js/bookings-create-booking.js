@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const locationTypeSelect = document.getElementById('location_type');
     const locationDetailsInput = document.getElementById('location_details');
     // Staff selection elements
-    const staffMemberSelect = document.getElementById('staff_member_id');
+    const staffMemberHiddenInput = document.getElementById('staff_member_id');
+    const staffSelectionContainer = document.getElementById('staff-selection-container');
     const staffAvailabilityMessage = document.getElementById('staff-availability-message');
     const alternateTimeslotsContainer = document.getElementById('alternate-timeslots-container');
     const alternateTimeslots = document.getElementById('alternate-timeslots');
@@ -306,34 +307,80 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Reset staff selection
     function resetStaffSelection() {
-        // Clear staff dropdown
-        while (staffMemberSelect.options.length > 1) {
-            staffMemberSelect.remove(1);
-        }
-        staffMemberSelect.value = '';
+        // Clear staff cards container
+        staffSelectionContainer.innerHTML = `
+            <div class="text-muted small p-3 text-center" id="staff-placeholder">
+                <i class="fas fa-user-clock me-2"></i>Select a date & time above to see available staff
+            </div>
+        `;
+        staffMemberHiddenInput.value = '';
         staffAvailabilityMessage.textContent = '';
         alternateTimeslotsContainer.classList.add('d-none');
     }
     
-    // Populate staff dropdown with available staff
+    // Populate staff selection with radio-button style cards
     function populateStaffDropdown(staffList) {
-        // Clear existing options except the default one
-        while (staffMemberSelect.options.length > 1) {
-            staffMemberSelect.remove(1);
-        }
+        // Clear existing content
+        staffSelectionContainer.innerHTML = '';
+        staffMemberHiddenInput.value = '';
         
         if (staffList && staffList.length > 0) {
-            staffList.forEach(staff => {
-                const option = document.createElement('option');
-                option.value = staff.id;
-                option.textContent = staff.name;
-                staffMemberSelect.appendChild(option);
+            staffList.forEach((staff, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'staff-card-wrapper';
+                
+                const radioInput = document.createElement('input');
+                radioInput.type = 'radio';
+                radioInput.name = 'staff_member_radio';
+                radioInput.id = `staff_${staff.id}`;
+                radioInput.value = staff.id;
+                radioInput.className = 'staff-card-input';
+                
+                const label = document.createElement('label');
+                label.className = 'staff-card-label';
+                label.htmlFor = `staff_${staff.id}`;
+                
+                // Get initials from staff name
+                const nameParts = staff.name.split(' ');
+                const initials = nameParts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
+                
+                label.innerHTML = `
+                    <div class="staff-card-avatar">
+                        ${initials}
+                    </div>
+                    <div class="staff-card-info">
+                        <div class="staff-card-name">${staff.name}</div>
+                        <div class="staff-card-badge">Available</div>
+                    </div>
+                    <div class="staff-card-check">
+                        <i class="fas fa-check"></i>
+                    </div>
+                `;
+                
+                wrapper.appendChild(radioInput);
+                wrapper.appendChild(label);
+                staffSelectionContainer.appendChild(wrapper);
+                
+                // Add click handler to update hidden input
+                radioInput.addEventListener('change', function() {
+                    staffMemberHiddenInput.value = this.value;
+                    // Clear validation error
+                    staffMemberHiddenInput.classList.remove('is-invalid');
+                    staffSelectionContainer.classList.remove('is-invalid');
+                });
+                
+                // Auto-select first staff member
+                if (index === 0) {
+                    radioInput.checked = true;
+                    staffMemberHiddenInput.value = staff.id;
+                }
             });
-            
-            // Select the first staff member by default
-            if (staffMemberSelect.options.length > 1) {
-                staffMemberSelect.selectedIndex = 1;
-            }
+        } else {
+            staffSelectionContainer.innerHTML = `
+                <div class="text-muted small p-3 text-center">
+                    <i class="fas fa-user-slash me-2"></i>No staff available for this time slot
+                </div>
+            `;
         }
     }
     
@@ -1106,8 +1153,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!input.value || !input.value.trim()) {
                     valid = false;
                     input.classList.add('is-invalid');
+                    // For hidden staff input, highlight the visual container instead
+                    if (input.id === 'staff_member_id' && staffSelectionContainer) {
+                        staffSelectionContainer.classList.add('is-invalid');
+                    }
                 } else {
                     input.classList.remove('is-invalid');
+                    if (input.id === 'staff_member_id' && staffSelectionContainer) {
+                        staffSelectionContainer.classList.remove('is-invalid');
+                    }
                 }
             }
         });

@@ -255,10 +255,13 @@
                             </div>
                             
                             <div class="mb-3">
-                                <label for="staff_member_id" class="form-label">Select Staff Member <span class="text-danger">*</span></label>
-                                <select name="staff_member_id" id="staff_member_id" class="form-select" required>
-                                    <option value="">Select a staff member...</option>
-                                </select>
+                                <label class="form-label">Select Staff Member <span class="text-danger">*</span></label>
+                                <input type="hidden" name="staff_member_id" id="staff_member_id" required>
+                                <div id="staff-selection-container" class="staff-selection-container">
+                                    <div class="text-muted small p-3 text-center" id="staff-placeholder">
+                                        <i class="fas fa-user-clock me-2"></i>Select a date & time above to see available staff
+                                    </div>
+                                </div>
                                 <div id="staff-availability-message" class="form-text mt-2"></div>
                             </div>
                             

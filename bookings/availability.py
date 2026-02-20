@@ -46,34 +46,13 @@ def check_timeslot_availability(business, start_time, duration_minutes, service=
         
         # Note: We don't check business hours separately because staff availability IS the business hours
         
-        # Check if there are any conflicting bookings
-        try:
-            # Get all valid booking status values
-            valid_statuses = []
-            for status in BookingStatus:
-                if str(status).upper() == 'CONFIRMED' or str(status).upper() == 'PENDING' or str(status).upper() == 'RESCHEDULED':
-                    valid_statuses.append(status)
-            
-            print(f"[DEBUG] Valid booking statuses: {valid_statuses}")
-            
-       
-            conflicting_bookings = Booking.objects.filter(
-                    business=business,
-                    booking_date=start_time.date(),
-                    start_time__lte=end_time.time(),
-                    end_time__gte=start_time.time(),
-                    status__in=valid_statuses
-                )
-            
-            print(f"[DEBUG] Found {conflicting_bookings.count()} conflicting bookings")
-            
-            if conflicting_bookings.exists():
-                return False, "Time slot conflicts with existing bookings", []
-                
-        except Exception as e:
-            print(f"[DEBUG] Error checking conflicting bookings: {str(e)}")
-            # If there's an error with the booking fields, return a generic message
-            return False, "Unable to check booking conflicts", []
+        # Build valid booking statuses for per-staff conflict checks
+        valid_statuses = []
+        for status in BookingStatus:
+            if str(status).upper() in ('CONFIRMED', 'PENDING', 'RESCHEDULED'):
+                valid_statuses.append(status)
+        
+        print(f"[DEBUG] Valid booking statuses: {valid_statuses}")
         
         # Check if any staff is available
         try:
@@ -116,10 +95,26 @@ def check_timeslot_availability(business, start_time, duration_minutes, service=
                         print(f"[DEBUG] Staff {staff.id} has no service assignments - skipping")
                         continue
                     
-                    # Check if staff is available at this time
-                    if is_staff_available(staff, start_time.date(), start_time.time(), end_time.time()):
-                        available_staff.append(staff)
-                        print(f"[DEBUG] Staff {staff.id} is available")
+                    # Check if staff has schedule availability (weekly/specific rules)
+                    if not is_staff_available(staff, start_time.date(), start_time.time(), end_time.time()):
+                        print(f"[DEBUG] Staff {staff.id} is not available per schedule rules")
+                        continue
+                    
+                    # Check if staff has any conflicting bookings at this time
+                    staff_has_conflict = BookingStaffAssignment.objects.filter(
+                        staff_member=staff,
+                        booking__booking_date=start_time.date(),
+                        booking__start_time__lt=end_time.time(),
+                        booking__end_time__gt=start_time.time(),
+                        booking__status__in=valid_statuses
+                    ).exists()
+                    
+                    if staff_has_conflict:
+                        print(f"[DEBUG] Staff {staff.id} has a conflicting booking - skipping")
+                        continue
+                    
+                    available_staff.append(staff)
+                    print(f"[DEBUG] Staff {staff.id} is available")
                 except Exception as e:
                     print(f"[DEBUG] Error checking availability for staff {staff.id}: {str(e)}")
                     # Continue to the next staff member
